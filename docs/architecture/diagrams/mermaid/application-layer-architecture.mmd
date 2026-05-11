@@ -1,0 +1,16 @@
+flowchart TB
+    Presentation["Presentation Layer\nJavaFX Views / FXML"]
+    Controllers["Application Controller Layer\nControllers and Navigation"]
+    Services["Service Layer\nBusiness Rules and Validation"]
+    DataAccess["Data Access Layer\nDAO / JDBC"]
+    Database["Database Layer\nRelational Tables"]
+    Utilities["Utility Layer\nSession, Validators, Date/Time, Files, Logs"]
+
+    Presentation --> Controllers
+    Controllers --> Services
+    Services --> DataAccess
+    DataAccess --> Database
+    Controllers --> Utilities
+    Services --> Utilities
+    DataAccess --> Utilities
+

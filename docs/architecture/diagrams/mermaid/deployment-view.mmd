@@ -1,0 +1,19 @@
+flowchart LR
+    subgraph Desktop["Authorized Campus Desktop"]
+        Runtime["Java Runtime"]
+        App["JavaFX Desktop Application"]
+        Scheduler["School Closing Auto-Logout Process"]
+        Driver["JDBC Driver"]
+        Images[("Local Image Storage")]
+        Runtime --> App
+        App --> Scheduler
+        App --> Driver
+        Scheduler --> Driver
+        App --> Images
+    end
+
+    DB[("Relational Database\nLocal or Campus Server\nNeeds Team Confirmation")]
+    Backup[("Database Backup\nNeeds Team Confirmation")]
+
+    Driver --> DB
+    DB --> Backup

@@ -1,0 +1,34 @@
+flowchart LR
+    Auth["Authentication and Role Access"]
+    Students["Student Management"]
+    Devices["Device Management"]
+    Pending["Pending Registration"]
+    Event["Temporary/Event Device"]
+    Monitor["Ingress-Egress Monitoring"]
+    Search["Search and Monitoring"]
+    Reports["Reports"]
+    Users["User Management"]
+    Audit["Audit/Logging"]
+    DB["Database Utility"]
+
+    Auth --> Users
+    Students --> Devices
+    Devices --> Pending
+    Devices --> Event
+    Devices --> Monitor
+    Pending --> Audit
+    Event --> Monitor
+    Monitor --> Search
+    Monitor --> Reports
+    Reports --> Audit
+    Users --> Audit
+    Auth --> Audit
+    Students --> DB
+    Devices --> DB
+    Pending --> DB
+    Event --> DB
+    Monitor --> DB
+    Reports --> DB
+    Users --> DB
+    Audit --> DB
+

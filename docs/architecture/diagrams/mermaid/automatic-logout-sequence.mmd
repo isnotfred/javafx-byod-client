@@ -1,0 +1,16 @@
+sequenceDiagram
+    participant Scheduler as School Closing Scheduler
+    participant Service as MonitoringService
+    participant DAO as DeviceLogDAO / DeviceDAO
+    participant DB as Relational Database
+    participant Audit as AuditService
+
+    Scheduler->>Service: runAutomaticLogout(10:00 PM)
+    Service->>DAO: find devices still Inside
+    DAO->>DB: SELECT open device_logs where campus_status = Inside
+    DB-->>DAO: Open ingress records
+    DAO-->>Service: Open ingress records
+    Service->>Service: Set egress time to 10:00 PM
+    Service->>DAO: Update logs and set campus_status Outside
+    DAO->>DB: UPDATE device_logs auto_logged_out = true; UPDATE devices
+    Service->>Audit: record automatic logout summary

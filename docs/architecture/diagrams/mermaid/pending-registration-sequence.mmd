@@ -1,0 +1,27 @@
+sequenceDiagram
+    actor Guard as Security Guard
+    actor Admin as System Administrator
+    participant UI as JavaFX Screens
+    participant Service as PendingRegistrationService
+    participant DAO as StudentDAO / DeviceDAO
+    participant DB as Relational Database
+    participant Audit as AuditService
+
+    Guard->>UI: Submit pending student/device details with proof if student is not encoded
+    UI->>Service: submitPendingRegistration(details, guard)
+    Service->>Service: Validate minimum details, proof fields, and duplicates
+    Service->>DAO: Save pending student/device
+    DAO->>DB: INSERT/UPDATE pending records
+    Service->>Audit: record pending submission
+    Service-->>UI: Pending saved
+    Admin->>UI: Open pending approval list
+    UI->>Service: reviewPending()
+    Service->>DAO: Load pending records
+    DAO->>DB: SELECT pending records
+    DB-->>DAO: Pending list
+    DAO-->>Service: Pending list
+    Admin->>UI: Review proof, then approve or reject
+    UI->>Service: decidePending(id, decision, reason)
+    Service->>DAO: Update registration_status and reviewer fields
+    DAO->>DB: UPDATE pending record
+    Service->>Audit: record approval/rejection

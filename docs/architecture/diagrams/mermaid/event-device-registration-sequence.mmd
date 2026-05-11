@@ -1,0 +1,17 @@
+sequenceDiagram
+    actor User as Admin or Security Guard
+    participant UI as Event Device Screen
+    participant Service as EventDeviceService
+    participant DAO as DeviceDAO / EventDeviceDAO
+    participant DB as Relational Database
+    participant Monitor as MonitoringService
+
+    User->>UI: Enter equipment, event, and approval document details
+    UI->>Service: registerEventDevice(details)
+    Service->>Service: Validate responsible person, event name, paper approval or signed GPOA, purpose, expected exit
+    Service->>DAO: Save device and event details
+    DAO->>DB: INSERT devices; INSERT event_devices
+    Service-->>UI: Event device saved
+    User->>UI: Log ingress/egress when equipment passes gate
+    UI->>Monitor: logIngress/logEgress(eventDevice)
+    Monitor->>DB: INSERT/UPDATE device_logs and campus_status

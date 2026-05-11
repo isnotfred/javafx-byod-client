@@ -1,0 +1,70 @@
+erDiagram
+    students ||--o{ devices : owns
+    devices ||--o{ device_logs : has
+    devices ||--o| event_devices : event_details
+    users ||--o{ students : submits_reviews
+    users ||--o{ devices : submits_reviews
+    users ||--o{ device_logs : logs
+    users ||--o{ audit_logs : performs
+
+    students {
+        string student_id PK
+        string first_name
+        string last_name
+        string course
+        string section
+        string student_status
+        string record_status
+        string proof_type
+        string proof_reference
+        int submitted_by FK
+        datetime submitted_at
+        int reviewed_by FK
+        datetime reviewed_at
+    }
+    devices {
+        int device_id PK
+        string student_id FK
+        string device_type
+        string serial_number
+        string asset_tag
+        string registration_status
+        string campus_status
+        string device_status
+        string device_purpose
+    }
+    event_devices {
+        int event_device_id PK
+        int device_id FK
+        string responsible_person_name
+        string event_name
+        string event_purpose
+        string approval_document_type
+        string approval_document_reference
+        datetime expected_exit_at
+    }
+    device_logs {
+        int log_id PK
+        int device_id FK
+        string student_id FK
+        datetime ingress_time
+        datetime egress_time
+        string log_status
+        boolean auto_logged_out
+        string entry_type
+    }
+    users {
+        int user_id PK
+        string username
+        string password_hash
+        string role
+        string status
+    }
+    audit_logs {
+        int audit_id PK
+        int user_id FK
+        string action
+        string entity_type
+        string entity_id
+        datetime created_at
+    }

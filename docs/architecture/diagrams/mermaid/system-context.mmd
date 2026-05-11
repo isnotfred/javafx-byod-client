@@ -1,0 +1,16 @@
+flowchart LR
+    Admin["System Administrator / IT Staff"]
+    Guard["Security Guard / Gate Personnel"]
+    Student["Student (Indirect User)"]
+    Campus["Campus Administration Process"]
+    App["BYOD Registration and Monitoring System\nJava Desktop Application"]
+    DB[("Relational Database")]
+    Files[("Local Image/File Storage")]
+
+    Admin -->|"manage records, approvals, reports"| App
+    Guard -->|"search, log ingress/egress, submit pending"| App
+    Student -->|"presents device and information"| Guard
+    Campus -->|"policies and review process"| Admin
+    App -->|"JDBC read/write"| DB
+    App -->|"optional device images"| Files
+

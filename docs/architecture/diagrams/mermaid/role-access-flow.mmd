@@ -1,0 +1,20 @@
+flowchart TB
+    Login["User logs in"]
+    Auth{"Valid and active account?"}
+    Role{"Role?"}
+    Admin["Admin access\nStudents, devices, users, reports, approvals, overrides if allowed"]
+    Guard["Guard access\nSearch, ingress, egress, active devices, pending submission"]
+    Deny["Access denied"]
+    Action{"Requested action allowed?"}
+    Execute["Execute action"]
+
+    Login --> Auth
+    Auth -- No --> Deny
+    Auth -- Yes --> Role
+    Role -- Admin --> Admin
+    Role -- Security Guard --> Guard
+    Admin --> Action
+    Guard --> Action
+    Action -- Yes --> Execute
+    Action -- No --> Deny
+

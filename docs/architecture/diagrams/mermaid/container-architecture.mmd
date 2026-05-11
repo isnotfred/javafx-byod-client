@@ -1,0 +1,17 @@
+flowchart TB
+    User["Admin / Guard"]
+    UI["JavaFX Desktop Client\nFXML, Controllers, TableViews, Forms"]
+    Services["Service Layer\nValidation, Workflows, Role Checks"]
+    DAO["DAO / Repository Layer\nJDBC and SQL"]
+    DB[("Relational Database")]
+    Files[("Local Image Storage")]
+    Utils["Utility Layer\nSession, Date/Time, Hashing, Logging"]
+
+    User --> UI
+    UI --> Services
+    Services --> DAO
+    DAO --> DB
+    UI --> Files
+    Services --> Utils
+    DAO --> Utils
+

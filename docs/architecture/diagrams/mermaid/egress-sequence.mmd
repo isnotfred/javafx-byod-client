@@ -1,0 +1,23 @@
+sequenceDiagram
+    actor Guard as Security Guard
+    participant UI as JavaFX Monitoring Screen
+    participant Service as MonitoringService
+    participant DAO as DeviceLogDAO / DeviceDAO
+    participant DB as Relational Database
+    participant Audit as AuditService
+
+    Guard->>UI: Search active device
+    UI->>Service: findActiveIngress(criteria)
+    Service->>DAO: query active log
+    DAO->>DB: SELECT open device_log
+    DB-->>DAO: Active ingress data
+    DAO-->>Service: Active log
+    Service-->>UI: Display active device details
+    Guard->>UI: Confirm visual verification and log egress
+    UI->>Service: logEgress(logId, currentUser)
+    Service->>Service: Validate device is Inside with open ingress
+    Service->>DAO: Update egress time and set campus_status Outside
+    DAO->>DB: UPDATE device_logs; UPDATE devices
+    Service->>Audit: record egress event
+    Service-->>UI: Success or validation error
+

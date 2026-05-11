@@ -1,0 +1,19 @@
+stateDiagram-v2
+    state "Registration Status" as Registration {
+        [*] --> Pending
+        Pending --> Approved: Admin approves
+        Pending --> Rejected: Admin rejects
+        Approved --> Rejected: Admin rejects later if policy allows
+    }
+
+    state "Campus Status" as Campus {
+        [*] --> Outside
+        Outside --> Inside: Ingress logged
+        Inside --> Outside: Egress logged
+    }
+
+    state "Device Status" as Device {
+        [*] --> Active
+        Active --> Inactive: Admin deactivates
+        Inactive --> Active: Admin reactivates
+    }
