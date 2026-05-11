@@ -1,0 +1,17 @@
+@startuml
+node "Authorized Campus Desktop" {
+  artifact "Java Runtime"
+  artifact "JavaFX Desktop Application"
+  artifact "JDBC Driver"
+  folder "Local Image Storage"
+}
+
+node "Database Host\nLocal or Campus Server" {
+  database "Relational Database"
+}
+
+"JavaFX Desktop Application" --> "JDBC Driver"
+"JDBC Driver" --> "Relational Database"
+"JavaFX Desktop Application" --> "Local Image Storage"
+@enduml
+

@@ -1,0 +1,85 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class Student {
+  studentId
+  firstName
+  lastName
+  course
+  section
+  studentStatus
+  recordStatus
+  proofType
+  proofReference
+  submittedBy
+  submittedAt
+  reviewedBy
+  reviewedAt
+}
+
+class Device {
+  deviceId
+  studentId
+  deviceType
+  serialNumber
+  registrationStatus
+  campusStatus
+  deviceStatus
+  devicePurpose
+}
+
+class DeviceLog {
+  logId
+  deviceId
+  ingressTime
+  egressTime
+  logStatus
+}
+
+class User {
+  userId
+  username
+  passwordHash
+  role
+  status
+}
+
+class Event {
+  eventName
+  responsiblePerson
+  approvalDocumentType
+  approvalDocumentReference
+  expectedExitAt
+}
+
+class AuditLog {
+  auditId
+  action
+  entityType
+  entityId
+  createdAt
+}
+
+class StudentService
+class DeviceService
+class MonitoringService
+class ReportService
+class StudentDAO
+class DeviceDAO
+class DeviceLogDAO
+class UserDAO
+
+Student "1" -- "0..*" Device
+Device "1" -- "0..*" DeviceLog
+Device "1" -- "0..1" Event
+User "1" -- "0..*" AuditLog
+
+StudentService --> StudentDAO
+DeviceService --> DeviceDAO
+MonitoringService --> DeviceDAO
+MonitoringService --> DeviceLogDAO
+ReportService --> StudentDAO
+ReportService --> DeviceDAO
+ReportService --> DeviceLogDAO
+UserDAO --> User
+@enduml

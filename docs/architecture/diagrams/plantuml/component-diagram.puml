@@ -1,0 +1,23 @@
+@startuml
+skinparam componentStyle rectangle
+
+actor "Admin" as Admin
+actor "Security Guard" as Guard
+
+component "JavaFX UI\nScreens and Controllers" as UI
+component "Service Layer\nRules and Workflows" as Services
+component "DAO/JDBC Layer\nSQL Access" as DAO
+database "Relational Database" as DB
+folder "Local Image Storage" as Files
+component "Utility Layer\nSession, Validation, Logging" as Utils
+
+Admin --> UI
+Guard --> UI
+UI --> Services
+Services --> DAO
+DAO --> DB
+UI --> Files
+Services --> Utils
+DAO --> Utils
+@enduml
+
