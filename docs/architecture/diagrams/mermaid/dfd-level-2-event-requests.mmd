@@ -1,0 +1,50 @@
+flowchart TB
+    Admin["Admin"]
+    Guard["Guard"]
+    Student["Student"]
+    Policy["Campus Administration Process"]
+
+    P40(("4.0 Capture Event Request Screen Input"))
+    P41(("4.1 Capture Event Request"))
+    P42(("4.2 Validate Event Request"))
+    P43(("4.3 Store Event Header and Line Items"))
+    P44(("4.4 Verify Event Device Line Item"))
+    P45(("4.5 Review Event Request"))
+    P46(("4.6 Read Active Event Requests"))
+    P8(("8. Write Audit Logs"))
+
+    D2[("D2 students")]
+    D4[("D4 event_requests")]
+    D5[("D5 event_request_devices")]
+    D7[("D7 audit_logs")]
+    V3[("V3 v_active_event_requests")]
+
+    Student -->|"responsible student details"| Guard
+    Policy -->|"event access rules and document requirements"| P42
+    Admin -->|"event request data"| P40
+    Guard -->|"event request data"| P40
+    P40 -->|"event request form data"| P41
+    P41 -->|"header and line-item data"| P42
+    P42 -->|"responsible student check"| D2
+    P42 -->|"validated request data"| P43
+    P43 -->|"event header"| D4
+    P43 -->|"event device line items"| D5
+    P43 -->|"EVENT_REQUEST_CREATED"| P8
+
+    Guard -->|"verification result"| P40
+    P40 -->|"verification result"| P44
+    P44 -->|"verified_by and verified_at"| D5
+
+    Admin -->|"approve, reject, or mark returned"| P40
+    P40 -->|"review decision data"| P45
+    P45 -->|"request status and reviewer data"| D4
+    P45 -->|"EVENT_REQUEST_APPROVED, RETURNED, or REJECTED"| P8
+
+    Admin -->|"active request queue request"| P40
+    Guard -->|"active request queue request"| P40
+    P40 -->|"active request queue request"| P46
+    P46 -->|"active event request read"| V3
+    P46 -->|"active event requests with device counts"| P40
+    P40 -->|"active event requests with device counts"| Admin
+    P40 -->|"active event requests with device counts"| Guard
+    P8 -->|"audit row"| D7

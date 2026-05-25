@@ -1,38 +1,51 @@
 # 04 - Application Architecture
 
-## Recommended Layers
+## Target Layers
 
-| Layer | Responsibility |
-| --- | --- |
-| Presentation Layer | JavaFX FXML views, forms, tables, alerts, and screen layouts. |
-| Application/Controller Layer | JavaFX controllers, navigation, event handling, form binding, and UI state updates. |
-| Service Layer | Business rules, validation, role checks, status transitions, workflow orchestration, and transaction boundaries. |
-| Data Access Layer | DAO/repository classes using JDBC and SQL queries. |
-| Database Layer | Relational tables, constraints, indexes, and persisted records. |
-| Utility Layer | Session context, password hashing, date/time handling, validators, file/image helpers, and logging helpers. |
+| Layer | Location | Responsibility |
+| --- | --- | --- |
+| JavaFX Presentation | Frontend repo | FXML views, controls, styles, alerts, table rendering. |
+| JavaFX Controller | Frontend repo | Screen events, form binding, validation display, API calls. |
+| API Client | Frontend repo | HTTPS/JSON requests to Spring Boot and response parsing. |
+| REST Controller | Backend repo | Endpoint mapping, request deserialization, response status/body. |
+| Service | Backend repo | Business rules, role checks, validation, transactions, workflow orchestration. |
+| DAO | Backend repo | Parameterized SQL, RowMapper logic, calls to database functions/views. |
+| Database | Railway PostgreSQL | Tables, keys, constraints, triggers, views, functions, indexes. |
+| Utility/Config | Frontend/backend as needed | Session/token storage, password hashing, date handling, validation helpers, DataSource configuration. |
 
 ## Layer Rules
 
-- Controllers call services, not DAOs directly.
-- Services call DAOs and utilities.
-- DAOs contain SQL and map result sets to domain objects.
-- Database constraints protect critical data integrity.
-- Utilities must not own business workflows.
+- JavaFX controllers do not contain SQL.
+- JavaFX does not use JDBC or database credentials.
+- REST controllers do not call DAOs directly.
+- Services do not reference JavaFX classes.
+- DAOs do not implement role policy.
+- Database constraints remain the final guard for critical integrity rules.
 
-## Suggested Package Direction
+## Suggested Backend Package Direction
+
+```text
+com.pup.byod.backend
+  controller
+  service
+  dao
+  model
+  config
+  util
+  exception
+```
+
+## Suggested Frontend Package Direction
 
 ```text
 pup.edu.ph.it.javabyodsystem
-  app
   controller
   model
-  service
-  dao
-  db
+  api
+  session
   util
 ```
 
 ## Diagram
 
 See `diagrams/mermaid/application-layer-architecture.mmd`.
-

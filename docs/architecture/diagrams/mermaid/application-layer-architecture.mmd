@@ -1,16 +1,19 @@
 flowchart TB
-    Presentation["Presentation Layer\nJavaFX Views / FXML"]
-    Controllers["Application Controller Layer\nControllers and Navigation"]
-    Services["Service Layer\nBusiness Rules and Validation"]
-    DataAccess["Data Access Layer\nDAO / JDBC"]
-    Database["Database Layer\nRelational Tables"]
-    Utilities["Utility Layer\nSession, Validators, Date/Time, Files, Logs"]
+    Presentation["JavaFX Presentation\nFXML / CSS / Controls"]
+    FxControllers["JavaFX Controllers\nScreen Events / Binding"]
+    ApiClient["Frontend API Client\nHTTPS JSON"]
+    RestControllers["Spring Boot REST Controllers"]
+    Services["Backend Services\nRules / Roles / Transactions"]
+    DAOs["Backend DAOs\nParameterized SQL"]
+    Database["PostgreSQL\nConstraints / Views / Triggers / Functions"]
+    Config["Config and Utilities\nSession, DataSource, Password Hashing, Dates"]
 
-    Presentation --> Controllers
-    Controllers --> Services
-    Services --> DataAccess
-    DataAccess --> Database
-    Controllers --> Utilities
-    Services --> Utilities
-    DataAccess --> Utilities
-
+    Presentation --> FxControllers
+    FxControllers --> ApiClient
+    ApiClient --> RestControllers
+    RestControllers --> Services
+    Services --> DAOs
+    DAOs --> Database
+    FxControllers --> Config
+    Services --> Config
+    DAOs --> Config

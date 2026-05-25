@@ -1,0 +1,18 @@
+flowchart LR
+    Admin["External Entity: Admin"]
+    Guard["External Entity: Guard"]
+    Student["External Entity: Student"]
+    Policy["External Entity: Campus Administration Process"]
+    Scheduler["External Entity: Backend Scheduler"]
+    System(("0. BYOD Device Management System"))
+    DB[("Railway PostgreSQL Data Stores")]
+
+    Admin -->|"student/device/user/report/audit requests"| System
+    System -->|"admin dashboards, approvals, reports, audit views"| Admin
+    Guard -->|"search, pending registration, event request, entry/exit data"| System
+    System -->|"eligibility results, warnings, active-device data"| Guard
+    Student -->|"student identity and device details"| Guard
+    Policy -->|"event, access, and closing-time rules"| System
+    Scheduler -->|"automatic logout trigger"| System
+    System -->|"validated reads and writes"| DB
+    DB -->|"records, derived status, queues, reports"| System

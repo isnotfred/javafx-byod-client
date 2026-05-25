@@ -1,6 +1,16 @@
 # Architecture Documentation
 
-This folder contains the System Architect documentation package for the BYOD Registration and Monitoring System.
+This folder contains the target architecture package for the BYOD Device Management System.
+
+## Architecture Baseline
+
+The current target architecture is a 3-tier client-server system:
+
+```text
+JavaFX Desktop Frontend -> Spring Boot REST API -> Railway PostgreSQL
+```
+
+The JavaFX frontend communicates only with the backend API over HTTPS/JSON. The Spring Boot backend owns validation, role checks, transactions, JDBC data access, and audit writing. PostgreSQL stores the canonical schema, views, triggers, functions, and indexes.
 
 ## Read First
 
@@ -8,26 +18,27 @@ This folder contains the System Architect documentation package for the BYOD Reg
 2. `04-application-architecture.md`
 3. `05-module-architecture.md`
 4. `06-data-architecture.md`
-5. `13-architecture-gap-analysis.md`
+5. `08-deployment-architecture.md`
+6. `13-architecture-gap-analysis.md`
 
 ## Architecture Documents
 
 | File | Purpose |
 | --- | --- |
-| `01-architecture-overview.md` | Overall architecture summary, scope, constraints, and current/future boundaries. |
+| `01-architecture-overview.md` | Overall 3-tier architecture summary, scope, and constraints. |
 | `02-architecture-goals-and-principles.md` | Architecture goals and implementation principles. |
-| `03-system-context-architecture.md` | System context, actors, external process, and context diagram. |
-| `04-application-architecture.md` | Recommended layered Java desktop architecture. |
-| `05-module-architecture.md` | Major modules, responsibilities, tables, services, and requirements. |
-| `06-data-architecture.md` | Database structure, keys, constraints, status fields, and ERD. |
-| `07-security-architecture.md` | Authentication, authorization, permissions, session handling, and audit trail. |
-| `08-deployment-architecture.md` | Desktop runtime, JDBC/database connection, file storage, backup assumptions, and deployment view. |
-| `09-integration-architecture.md` | Current internal integrations and future integration boundaries. |
-| `10-error-handling-and-logging-architecture.md` | Validation, database, permission, file, and audit logging approach. |
-| `11-performance-and-scalability-considerations.md` | Search, indexing, report queries, filtering, and peak-hour considerations. |
+| `03-system-context-architecture.md` | System context, actors, external systems, and context diagram. |
+| `04-application-architecture.md` | Frontend/backend/database layering. |
+| `05-module-architecture.md` | Major modules, responsibilities, endpoints, services, and tables/views. |
+| `06-data-architecture.md` | PostgreSQL schema structure, keys, constraints, views, triggers, and indexes. |
+| `07-security-architecture.md` | Authentication, authorization, permissions, session/token handling, and audit trail. |
+| `08-deployment-architecture.md` | JavaFX desktop, Railway backend, Railway PostgreSQL, env vars, and backup considerations. |
+| `09-integration-architecture.md` | Frontend/backend/database/API integration rules. |
+| `10-error-handling-and-logging-architecture.md` | HTTP error mapping, validation, trigger errors, and audit logging. |
+| `11-performance-and-scalability-considerations.md` | Search, indexing, report queries, and high-volume log handling. |
 | `12-architecture-decisions.md` | ADR-style architecture decisions. |
-| `13-architecture-gap-analysis.md` | Current architecture gaps, impact, recommendations, and priority. |
-| `14-future-architecture-enhancements.md` | Future architecture options outside current scope. |
+| `13-architecture-gap-analysis.md` | Current architecture gaps and recommendations. |
+| `14-future-architecture-enhancements.md` | Future options outside current scope. |
 
 ## Diagram Formats
 
@@ -37,12 +48,24 @@ This folder contains the System Architect documentation package for the BYOD Reg
 | `diagrams/plantuml/` | `.puml` | UML class, component, and deployment diagrams. |
 | `diagrams/structurizr/` | `.dsl` | C4 model context, container, component, and deployment views. |
 | `diagrams/bpmn/` | `.bpmn.md` | BPMN-style process descriptions. |
-| `diagrams/visual/` | Markdown guidance | Notes for stakeholder-facing diagram tools. |
+| `diagrams/visual/` | Markdown guidance | Stakeholder-facing diagram guidance. |
 
-## Source of Truth
+## Source Of Truth
 
-This package is based on `../system-analysis/` and the project brief. It documents recommended architecture only; it does not implement Java code, database migrations, or deployment scripts.
+Architecture documents must remain aligned with:
 
-## Additional Mermaid Diagram
+- `../system-analysis/06-data-requirements-and-data-dictionary.md`
+- `05-module-architecture.md`
+- `../system-analysis/`
 
-`diagrams/mermaid/automatic-logout-sequence.mmd` documents the school-closing automatic logout process for devices still marked Inside.
+## Data Flow Diagrams
+
+Formal DFD documentation is maintained in `../system-analysis/14-data-flow-diagrams.md`.
+
+| Mermaid Source | Purpose |
+| --- | --- |
+| `diagrams/mermaid/dfd-level-0-context.mmd` | Context-level DFD for external entities and the BYOD system. |
+| `diagrams/mermaid/dfd-level-1-system.mmd` | System-level DFD for major backend processes and data stores. |
+| `diagrams/mermaid/dfd-level-2-gate-monitoring.mmd` | Detailed DFD for search, eligibility, entry/exit logging, and audit. |
+| `diagrams/mermaid/dfd-level-2-pending-registration.mmd` | Detailed DFD for guard pending submission and admin decision. |
+| `diagrams/mermaid/dfd-level-2-event-requests.mmd` | Detailed DFD for event request headers, line items, verification, and review. |

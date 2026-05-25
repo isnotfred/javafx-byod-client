@@ -2,52 +2,52 @@
 
 ## Authentication
 
-Users authenticate through username and password. Passwords must be stored as hashes, not plain text. Inactive users are denied login.
+Users authenticate through the Spring Boot backend. Passwords are stored as bcrypt or argon2 hashes in `users.password_hash`; plaintext passwords are never stored.
+
+Inactive accounts are denied before dashboard access.
 
 ## Role-Based Access Control
 
-| Capability | Admin | Security Guard |
+| Capability | `admin` | `guard` |
 | --- | --- | --- |
-| Manage students | Yes | No |
+| Login | Yes | Yes |
 | Search students/devices | Yes | Yes |
-| Manage approved devices | Yes | No |
-| Submit pending registration | Yes | Yes |
-| Approve/reject pending registration | Yes | No |
-| Register event device | Yes | Yes |
-| Log ingress/egress | Yes | Yes |
-| Generate reports | Yes | Limited view if allowed |
+| Manage students | Yes | Limited to quick pending flow only |
+| Manage permanent BYOD devices | Yes | No |
+| Submit pending device registration | Yes | Yes |
+| Approve/reject pending device | Yes | No |
+| Manage event requests | Yes | Submit/verify where allowed |
+| Log approved active device entry/exit | Yes | Yes |
+| Generate reports | Yes | Limited operational views only if allowed |
 | Manage users | Yes | No |
-| Reactivate inactive device | Needs Team Confirmation | No |
-| Delete logs | No normal deletion | No |
+| View full audit history | Yes | No by default |
+| Update/delete immutable logs | No | No |
 
-## Session Handling
+## Session Or Token Handling
 
-- Store current user ID, role, and display name in a session context after login.
-- Controllers must check session state before opening protected screens.
-- Services must enforce role permissions even if a screen is opened incorrectly.
-- Clear session state on logout.
+- The backend returns authenticated user context after successful login.
+- Frontend stores only the minimum session/token data needed for API calls and screen routing.
+- Backend services enforce roles regardless of frontend navigation.
+- Logout clears frontend session/token data and records audit where implemented.
 
-## Data Protection Recommendations
+## Data Protection
 
-- Hash passwords with a current password hashing algorithm.
-- Avoid storing sensitive values in UI logs or error dialogs.
-- Restrict direct database access to authorized application users.
-- Store uploaded image paths consistently and avoid exposing system folders in UI messages.
+- Keep database credentials only in backend Railway/local configuration.
+- Use HTTPS for frontend/backend communication in deployed environments.
+- Use parameterized SQL in DAOs.
+- Avoid displaying stack traces or raw database errors in JavaFX alerts.
+- Avoid exposing local filesystem details when image path handling fails.
 
 ## Audit Trail
 
-Recommended audit events:
+Audit writes use `fn_write_audit_log()` and standardized `action_type` values. Required audit categories include:
 
-- Login attempt.
-- Student created/updated/deactivated.
-- Device created/updated/status changed.
-- Pending registration submitted.
-- Pending registration approved/rejected.
-- Ingress logged.
-- Egress logged.
-- Device activated or deactivated.
-- Report generated.
-- Admin override or log correction.
+- User login, logout, failed login, account changes.
+- Student create/update/deactivate.
+- Device register/update/approve/reject/deactivate.
+- Gate entry, exit, automatic exit.
+- Event request create/approve/return/reject.
+- Automatic logout batch.
 
 ## Diagram
 

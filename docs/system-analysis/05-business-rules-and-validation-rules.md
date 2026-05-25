@@ -1,106 +1,96 @@
-# 05 - Business Rules and Validation Rules
+# 05 - Business Rules And Validation Rules
 
 ## Business Rules
 
 | ID | Business Rule | Notes |
 | --- | --- | --- |
-| BR-001 | Only valid students may be associated with regular BYOD devices. | Pending student submission is allowed only when manually verified with accepted school proof. |
-| BR-002 | A device must be registered or submitted as pending before it can be monitored. | Pending devices may receive temporary entry while waiting for admin approval. |
-| BR-003 | Each normal BYOD device must belong to one student owner. | Event devices use responsible person instead of normal ownership. |
-| BR-004 | A student may register more than one device. | Duplicate serial numbers are not allowed. |
-| BR-005 | Security guards must visually verify devices before logging ingress or egress. | System supports this with displayed details and images. |
-| BR-006 | Ingress and egress must use automatic system timestamps. | Manual timestamp editing is not allowed for normal users. |
-| BR-007 | Admin users approve or reject pending registrations. | Guards cannot approve/reject. |
-| BR-008 | Event equipment must be classified separately from regular BYOD devices. | Use Temporary/Event Device purpose. |
-| BR-009 | Event equipment must have proof of approval before guard accepts it for entry. | Accept paper approval or signed GPOA details. |
-| BR-010 | Inactive and rejected devices cannot enter through the normal workflow. | Admin reactivation or approval changes must be audit-tracked if implemented. |
-| BR-011 | Device logs must be preserved for audit and reports. | Use corrections/remarks instead of deletion. |
-| BR-012 | Reports must be available for administrative review. | Report data must match saved records. |
-| BR-013 | Devices still inside at 10:00 PM must be automatically logged out. | Use 10:00 PM egress timestamp and system-generated remark. |
+| BR-001 | Only `admin` and `guard` users can log in. | Students are indirect actors only. |
+| BR-002 | Inactive user accounts cannot access the system. | Enforced before dashboard access. |
+| BR-003 | Student records are deactivated instead of deleted when history exists. | `trg_protect_student_delete` blocks unsafe deletes. |
+| BR-004 | Permanent BYOD devices must belong to one student. | `devices.student_id` references `students`. |
+| BR-005 | Device serial numbers are globally unique for permanent BYOD records. | Enforced by unique constraint. |
+| BR-006 | Pending device registrations require admin approval before gate logging. | `trg_device_logs_approved_only` blocks unapproved devices. |
+| BR-007 | Rejected devices require remarks and cannot be logged through the normal gate workflow. | Enforced by check constraint and log trigger. |
+| BR-008 | Campus presence is derived from latest gate log. | No stored device column is updated for presence. |
+| BR-009 | Entry and exit records are append-only. | `device_logs` rows cannot be updated or deleted. |
+| BR-010 | Two consecutive manual events of the same type for one device are invalid. | Prevents duplicate entry or duplicate exit rows. |
+| BR-011 | Automatic logout is system-generated and has no human handler. | `auto_exit = TRUE`, `handled_by = NULL`. |
+| BR-012 | Event request devices are request/verification records unless a future gate-log relationship is added. | Current schema has no direct FK from `device_logs` to `event_request_devices`. |
+| BR-013 | Audit logs are immutable and written through the database function. | Use `fn_write_audit_log()`. |
 
 ## Validation Rules
 
-### Student Registration
+### Authentication And Users
 
 | ID | Validation Rule |
 | --- | --- |
-| VR-001 | Student ID is required and must be unique. |
-| VR-002 | First name and last name are required. |
-| VR-003 | Course and section are required for normal student records. |
-| VR-004 | Inactive students cannot receive new approved devices unless reactivated by admin. |
-| VR-005 | Pending student records submitted by guards must include student ID, student name, course/section if available, proof type, proof reference or remarks, submitted_by, submitted_at, and `record_status = Pending`. |
+| VR-001 | `users.username` is required, unique, and at least 3 characters. |
+| VR-002 | `users.password_hash` is required and must be long enough to prevent plaintext storage. |
+| VR-003 | `users.role` must be `admin` or `guard`. |
+| VR-004 | `users.status` must be `active` or `inactive`. |
+| VR-005 | Inactive accounts must be rejected at login. |
 
-### Device Registration
-
-| ID | Validation Rule |
-| --- | --- |
-| VR-006 | Device type is required. |
-| VR-007 | Brand and serial number are required for normal BYOD devices. |
-| VR-008 | Serial number must be unique among active device records. |
-| VR-009 | Normal BYOD devices must reference a student or pending student record. |
-| VR-010 | `registration_status` must be Pending, Approved, or Rejected. |
-| VR-011 | `campus_status` must be Inside or Outside. |
-| VR-012 | `device_status` must be Active or Inactive. |
-| VR-013 | `device_purpose` must be Academic BYOD, School Event, Organization Activity, Temporary Equipment, or Other Approved Purpose. |
-
-### Pending Registration
+### Students
 
 | ID | Validation Rule |
 | --- | --- |
-| VR-014 | A guard may submit but not approve or reject pending registrations. |
-| VR-015 | Pending records must store submitted_by and submitted_at. |
-| VR-016 | Pending student proof type must be School ID, Registration Form, Enrollment Record, or Other School-Approved Proof. |
-| VR-017 | Pending student proof reference or remarks are required when the pending student is not yet encoded in the system. |
-| VR-018 | Approval must store approved_by and approved_at. |
-| VR-019 | Rejection must store rejected_by, rejected_at, and rejection_reason. |
-| VR-020 | A pending device may be logged for temporary ingress while waiting for admin approval. |
+| VR-006 | `students.student_id` is required, non-blank, and unique. |
+| VR-007 | `students.first_name` and `students.last_name` are required and non-blank. |
+| VR-008 | `students.status` must be `active` or `inactive`. |
 
-### Temporary/Event Devices
+### Devices
 
 | ID | Validation Rule |
 | --- | --- |
-| VR-021 | Temporary/event devices require responsible person, event name, purpose, expected exit date/time, and approval document details. |
-| VR-022 | Approval document type must be Paper Approval, Signed GPOA, or Other Approved Document. |
-| VR-023 | Guard must record who verified the approval document and when it was verified. |
-| VR-024 | Temporary/event devices must not be counted as normal student BYOD unless linked to a student-owned device. |
-| VR-025 | Expected exit date/time must not be earlier than ingress time. |
+| VR-009 | `devices.student_id` is required and must reference an existing student. |
+| VR-010 | `devices.serial_number` is required and unique. |
+| VR-011 | `devices.device_type` must be `laptop`, `tablet`, or `phone`. |
+| VR-012 | `devices.device_purpose` must be one of the schema-approved values. |
+| VR-013 | `devices.registration_status` must be `pending`, `approved`, or `rejected`. |
+| VR-014 | `devices.device_status` must be `active` or `inactive`. |
+| VR-015 | `reviewed_by` and `reviewed_at` must both be null or both be populated. |
+| VR-016 | Rejected devices must have non-blank remarks. |
+| VR-017 | Direct `approved` to `rejected` and `rejected` to `approved` transitions are blocked by trigger. |
 
-### Ingress
-
-| ID | Validation Rule |
-| --- | --- |
-| VR-026 | Device must exist as Approved or eligible Pending before ingress can be logged. |
-| VR-027 | Device must currently be Outside. |
-| VR-028 | Device must not be Rejected, Inactive, or unauthorized pending. |
-| VR-029 | System must create only one active open ingress per device. |
-| VR-030 | Ingress timestamp and logged_in_by are system-generated/stored. |
-
-### Egress
+### Event Requests
 
 | ID | Validation Rule |
 | --- | --- |
-| VR-031 | Device must have an active ingress record. |
-| VR-032 | Device must currently be Inside. |
-| VR-033 | Egress timestamp must not be earlier than ingress timestamp. |
-| VR-034 | Egress timestamp and logged_out_by are system-generated/stored. |
-| VR-035 | Automatic logout must only apply to devices still marked Inside at 10:00 PM. |
-| VR-036 | Automatic logout must record a system user or system process marker and an auto-logout remark. |
+| VR-018 | `event_requests.student_id` must reference an existing student. |
+| VR-019 | `event_requests.event_name` is required and non-blank. |
+| VR-020 | `event_requests.approval_doc_type` must be `Paper Approval` or `Signed GPOA`. |
+| VR-021 | `event_requests.end_date` must be on or after `start_date` when both are provided. |
+| VR-022 | `event_requests.status` must be `pending`, `approved`, `returned`, or `rejected`. |
+| VR-023 | Event review fields must follow the same reviewer/timestamp consistency rule. |
+| VR-024 | `event_request_devices.quantity` must be greater than zero. |
+| VR-025 | `event_request_devices.device_type` must be `laptop`, `tablet`, `phone`, `camera`, `projector`, or `other`. |
+| VR-026 | `event_request_devices.device_status` must be `pending`, `approved`, or `returned`. |
 
-### User Roles
-
-| ID | Validation Rule |
-| --- | --- |
-| VR-037 | Username is required and unique. |
-| VR-038 | Password hash is required. |
-| VR-039 | Role must be Admin or Security Guard. |
-| VR-040 | Inactive accounts cannot log in. |
-| VR-041 | Guard accounts cannot access admin-only functions. |
-
-### Reports and Data Integrity
+### Gate Logs
 
 | ID | Validation Rule |
 | --- | --- |
-| VR-042 | Report date range start must not be later than end date. |
-| VR-043 | Reports must use saved database records, not unsaved UI state. |
-| VR-044 | Normal users cannot permanently delete device logs. |
-| VR-045 | Corrections, event approval document verification, automatic logout, overrides, and status changes must be audit-tracked. |
+| VR-027 | `device_logs.event_type` must be `entry` or `exit`. |
+| VR-028 | Manual gate rows must have `handled_by` populated. |
+| VR-029 | Automatic exit rows must have `handled_by = NULL`, `auto_exit = TRUE`, and `event_type = 'exit'`. |
+| VR-030 | `logout_type` must be `manual`, `automatic`, or null where schema permits. |
+| VR-031 | Gate logs can be inserted only for approved active devices. |
+| VR-032 | Consecutive same-type manual events for one device are blocked. |
+| VR-033 | `device_logs.created_at` is overwritten by the database on insert. |
+
+### Audit
+
+| ID | Validation Rule |
+| --- | --- |
+| VR-034 | `audit_logs.action_type` must be one of the schema-approved action values. |
+| VR-035 | `audit_logs.target_table` is required and non-blank. |
+| VR-036 | `audit_logs.ip_address` must be null or 7 to 45 characters. |
+| VR-037 | Audit rows cannot be updated or deleted. |
+
+### Reports
+
+| ID | Validation Rule |
+| --- | --- |
+| VR-038 | Report start date must not be later than report end date. |
+| VR-039 | Reports must query saved database records and views. |
+| VR-040 | Large reports must be filtered in SQL before results are returned to JavaFX. |

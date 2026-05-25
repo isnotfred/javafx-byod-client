@@ -1,21 +1,26 @@
-# Visual Diagram Guidance
+# Visual Diagram Notes
 
-The text-based diagrams in this architecture package are intended for version control and developer handoff.
+Use the diagram source files in this folder set as the current visual baseline.
 
-For final presentation or stakeholder review, the team may recreate selected diagrams using:
+## Current Diagram Themes
 
-- draw.io
-- Lucidchart
-- Visio
-- Figma
+- JavaFX Desktop Frontend -> Spring Boot REST API -> Railway PostgreSQL.
+- Backend-only JDBC access.
+- PostgreSQL views, triggers, and functions as part of the architecture.
+- Immutable `device_logs` and `audit_logs`.
+- Derived campus status from latest log rows.
+- Pending devices blocked from gate logging until approved.
+- Event requests modeled with `event_requests` and `event_request_devices`.
 
-## Recommended Visual Diagrams
+## Recommended Stakeholder Diagrams
 
-- System context diagram.
-- Proposed ingress-egress process.
-- Architecture overview.
+- System context.
+- Container/deployment view.
 - Database ERD.
-- Ingress-egress workflow.
-
-Use the Mermaid, PlantUML, Structurizr, and BPMN-style files in this folder as the source material for stakeholder-facing versions.
-
+- Gate entry/exit sequence.
+- Pending registration sequence.
+- Automatic logout sequence.
+- Event request flow.
+- DFD Level 0 context.
+- DFD Level 1 system data flow.
+- DFD Level 2 gate monitoring, pending registration, and event request flows.

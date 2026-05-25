@@ -1,23 +1,27 @@
 sequenceDiagram
-    actor Guard as Security Guard
-    participant UI as JavaFX Monitoring Screen
-    participant Service as MonitoringService
+    actor Guard as Guard
+    participant UI as JavaFX Gate Screen
+    participant API as Spring Boot DeviceLogController
+    participant Service as DeviceLogService
     participant DAO as DeviceLogDAO / DeviceDAO
-    participant DB as Relational Database
-    participant Audit as AuditService
+    participant DB as PostgreSQL
+    participant Audit as AuditLogDAO
 
-    Guard->>UI: Search student ID or serial number
-    UI->>Service: findDeviceForIngress(criteria)
-    Service->>DAO: query device and latest log
-    DAO->>DB: SELECT device/log status
-    DB-->>DAO: Device and status data
-    DAO-->>Service: Device record
-    Service-->>UI: Display verification details
-    Guard->>UI: Confirm visual verification and log ingress
-    UI->>Service: logIngress(deviceId, currentUser)
-    Service->>Service: Validate approved/eligible, active, outside
-    Service->>DAO: Insert ingress log and set campus_status Inside
-    DAO->>DB: INSERT device_logs; UPDATE devices
-    Service->>Audit: record ingress event
-    Service-->>UI: Success or validation error
-
+    Guard->>UI: Search student or serial number
+    UI->>API: GET device status/search data
+    API->>Service: find device and derived state
+    Service->>DAO: query device and latest log/view
+    DAO->>DB: SELECT devices + latest device_logs
+    DB-->>DAO: Device and derived state
+    DAO-->>Service: Result
+    Service-->>API: Search result
+    API-->>UI: JSON result
+    Guard->>UI: Confirm entry
+    UI->>API: POST /device-logs event_type=entry
+    API->>Service: log entry
+    Service->>DAO: insert device_logs row
+    DAO->>DB: INSERT device_logs
+    DB-->>DAO: Triggers validate approved active and alternation
+    Service->>Audit: fn_write_audit_log DEVICE_ENTRY
+    Service-->>API: Success or rule error
+    API-->>UI: HTTP response

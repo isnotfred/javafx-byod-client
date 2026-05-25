@@ -1,85 +1,109 @@
 @startuml
 skinparam classAttributeIconSize 0
 
+class User {
+  userId
+  username
+  passwordHash
+  fullName
+  role
+  status
+}
+
 class Student {
   studentId
   firstName
   lastName
-  course
-  section
-  studentStatus
-  recordStatus
-  proofType
-  proofReference
-  submittedBy
-  submittedAt
-  reviewedBy
-  reviewedAt
+  courseYearLevel
+  status
 }
 
 class Device {
   deviceId
   studentId
+  deviceName
+  brand
+  model
+  serialNumber
+  deviceType
+  devicePurpose
+  registrationStatus
+  deviceStatus
+  reviewedBy
+  reviewedAt
+}
+
+class EventRequest {
+  eventRequestId
+  studentId
+  responsiblePerson
+  organization
+  eventName
+  approvalDocType
+  approvalDocRef
+  startDate
+  endDate
+  status
+}
+
+class EventRequestDevice {
+  eventDeviceId
+  eventRequestId
   deviceType
   serialNumber
-  registrationStatus
-  campusStatus
+  quantity
+  verifiedBy
+  verifiedAt
   deviceStatus
-  devicePurpose
 }
 
 class DeviceLog {
   logId
   deviceId
-  ingressTime
-  egressTime
-  logStatus
-}
-
-class User {
-  userId
-  username
-  passwordHash
-  role
-  status
-}
-
-class Event {
-  eventName
-  responsiblePerson
-  approvalDocumentType
-  approvalDocumentReference
-  expectedExitAt
+  studentId
+  eventType
+  eventTime
+  handledBy
+  logoutType
+  autoExit
 }
 
 class AuditLog {
   auditId
-  action
-  entityType
-  entityId
-  createdAt
+  userId
+  actionType
+  targetTable
+  targetId
+  oldValues
+  newValues
 }
 
-class StudentService
+class AuthController
+class DeviceController
+class EventRequestController
+class DeviceLogController
+class AuthService
 class DeviceService
-class MonitoringService
-class ReportService
-class StudentDAO
+class EventRequestService
+class DeviceLogService
 class DeviceDAO
+class EventRequestDAO
 class DeviceLogDAO
-class UserDAO
+class AuditLogDAO
 
 Student "1" -- "0..*" Device
+Student "1" -- "0..*" EventRequest
+EventRequest "1" -- "0..*" EventRequestDevice
 Device "1" -- "0..*" DeviceLog
-Device "1" -- "0..1" Event
 User "1" -- "0..*" AuditLog
+User "1" -- "0..*" DeviceLog
 
-StudentService --> StudentDAO
+AuthController --> AuthService
+DeviceController --> DeviceService
+EventRequestController --> EventRequestService
+DeviceLogController --> DeviceLogService
 DeviceService --> DeviceDAO
-MonitoringService --> DeviceDAO
-MonitoringService --> DeviceLogDAO
-ReportService --> StudentDAO
-ReportService --> DeviceDAO
-ReportService --> DeviceLogDAO
-UserDAO --> User
+EventRequestService --> EventRequestDAO
+DeviceLogService --> DeviceLogDAO
+DeviceLogService --> AuditLogDAO
 @enduml

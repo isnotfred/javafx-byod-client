@@ -1,23 +1,27 @@
 sequenceDiagram
-    actor Guard as Security Guard
-    participant UI as JavaFX Monitoring Screen
-    participant Service as MonitoringService
+    actor Guard as Guard
+    participant UI as JavaFX Gate Screen
+    participant API as Spring Boot DeviceLogController
+    participant Service as DeviceLogService
     participant DAO as DeviceLogDAO / DeviceDAO
-    participant DB as Relational Database
-    participant Audit as AuditService
+    participant DB as PostgreSQL
+    participant Audit as AuditLogDAO
 
     Guard->>UI: Search active device
-    UI->>Service: findActiveIngress(criteria)
-    Service->>DAO: query active log
-    DAO->>DB: SELECT open device_log
-    DB-->>DAO: Active ingress data
-    DAO-->>Service: Active log
-    Service-->>UI: Display active device details
-    Guard->>UI: Confirm visual verification and log egress
-    UI->>Service: logEgress(logId, currentUser)
-    Service->>Service: Validate device is Inside with open ingress
-    Service->>DAO: Update egress time and set campus_status Outside
-    DAO->>DB: UPDATE device_logs; UPDATE devices
-    Service->>Audit: record egress event
-    Service-->>UI: Success or validation error
-
+    UI->>API: GET active device/latest state
+    API->>Service: find latest device state
+    Service->>DAO: query latest log/view
+    DAO->>DB: SELECT latest device_logs
+    DB-->>DAO: Latest event data
+    DAO-->>Service: Result
+    Service-->>API: Active device result
+    API-->>UI: JSON result
+    Guard->>UI: Confirm exit
+    UI->>API: POST /device-logs event_type=exit logout_type=manual
+    API->>Service: log manual exit
+    Service->>DAO: insert device_logs row
+    DAO->>DB: INSERT device_logs
+    DB-->>DAO: Triggers validate approved active and alternation
+    Service->>Audit: fn_write_audit_log DEVICE_EXIT
+    Service-->>API: Success or rule error
+    API-->>UI: HTTP response

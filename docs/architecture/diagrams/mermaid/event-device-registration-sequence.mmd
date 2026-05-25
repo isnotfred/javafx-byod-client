@@ -1,17 +1,24 @@
 sequenceDiagram
-    actor User as Admin or Security Guard
-    participant UI as Event Device Screen
-    participant Service as EventDeviceService
-    participant DAO as DeviceDAO / EventDeviceDAO
-    participant DB as Relational Database
-    participant Monitor as MonitoringService
+    actor User as Admin or Guard
+    participant UI as JavaFX Event Request Screen
+    participant API as Spring Boot EventRequestController
+    participant Service as EventRequestService
+    participant DAO as EventRequestDAO / EventRequestDeviceDAO
+    participant DB as PostgreSQL
+    participant Audit as AuditLogDAO
 
-    User->>UI: Enter equipment, event, and approval document details
-    UI->>Service: registerEventDevice(details)
-    Service->>Service: Validate responsible person, event name, paper approval or signed GPOA, purpose, expected exit
-    Service->>DAO: Save device and event details
-    DAO->>DB: INSERT devices; INSERT event_devices
-    Service-->>UI: Event device saved
-    User->>UI: Log ingress/egress when equipment passes gate
-    UI->>Monitor: logIngress/logEgress(eventDevice)
-    Monitor->>DB: INSERT/UPDATE device_logs and campus_status
+    User->>UI: Enter event header and device line items
+    UI->>API: POST /event-requests
+    API->>Service: create event request
+    Service->>Service: validate document type, dates, line items
+    Service->>DAO: save request and line items
+    DAO->>DB: INSERT event_requests; INSERT event_request_devices
+    Service->>Audit: fn_write_audit_log EVENT_REQUEST_CREATED
+    API-->>UI: Event request saved
+
+    User->>UI: Verify event device line item
+    UI->>API: PUT /event-requests/{id}
+    API->>Service: update verification/status
+    Service->>DAO: update event_request_devices or event_requests
+    DAO->>DB: UPDATE event_request_devices / event_requests
+    API-->>UI: Updated request state

@@ -2,22 +2,20 @@
 skinparam componentStyle rectangle
 
 actor "Admin" as Admin
-actor "Security Guard" as Guard
+actor "Guard" as Guard
 
-component "JavaFX UI\nScreens and Controllers" as UI
-component "Service Layer\nRules and Workflows" as Services
-component "DAO/JDBC Layer\nSQL Access" as DAO
-database "Relational Database" as DB
-folder "Local Image Storage" as Files
-component "Utility Layer\nSession, Validation, Logging" as Utils
+component "JavaFX Desktop Frontend\nFXML, Controllers, API Client" as Frontend
+component "Spring Boot REST API\nControllers and Services" as Backend
+component "DAO/JDBC Layer\nNamedParameterJdbcTemplate" as DAO
+database "Railway PostgreSQL\nTables, Views, Triggers, Functions" as DB
+component "Automatic Logout Scheduler" as Scheduler
+folder "Image Storage\nPolicy TBD" as Images
 
-Admin --> UI
-Guard --> UI
-UI --> Services
-Services --> DAO
-DAO --> DB
-UI --> Files
-Services --> Utils
-DAO --> Utils
+Admin --> Frontend
+Guard --> Frontend
+Frontend --> Backend : HTTPS JSON
+Backend --> DAO
+Scheduler --> Backend
+DAO --> DB : JDBC over TLS
+Frontend ..> Images : optional
 @enduml
-

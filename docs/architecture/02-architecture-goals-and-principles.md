@@ -1,27 +1,23 @@
-# 02 - Architecture Goals and Principles
+# 02 - Architecture Goals And Principles
 
-## Architecture Goals
+## Goals
 
 | Goal | Description |
 | --- | --- |
-| Simplicity | Keep the architecture suitable for a student Java desktop project. |
-| Maintainability | Separate screens, business rules, and database access. |
-| Role-based security | Restrict features by Admin and Security Guard roles. |
-| Data integrity | Protect unique students, unique device identifiers, valid statuses, and valid log transitions. |
-| Fast gate search | Prioritize quick lookup by student ID, name, and serial number. |
-| Reliable logging | Preserve accurate ingress and egress timestamps. |
-| Auditability | Record sensitive actions such as approvals, rejections, overrides, and status changes. |
-| Local desktop suitability | Support operation from authorized campus desktop machines. |
+| Clear tier boundaries | JavaFX handles UI, Spring Boot handles workflows, PostgreSQL enforces data integrity. |
+| Secure access | Role checks protect admin and guard capabilities. |
+| Reliable gate logging | Entry/exit history is append-only and trigger-protected. |
+| Database-backed integrity | Constraints, views, triggers, and functions enforce critical rules. |
+| Deployable backend | Spring Boot and PostgreSQL target Railway deployment. |
+| Maintainable documentation | Docs remain aligned with the uploaded schema and API boundary. |
 
-## Architecture Principles
+## Principles
 
-- Keep JavaFX controllers focused on UI events, screen updates, and navigation.
-- Use service classes for business rules, validation, permission checks, and workflow decisions.
-- Use DAO or repository classes for SQL and JDBC operations.
-- Validate input before database writes.
-- Use transactions for multi-step operations such as ingress logging and campus-status updates.
-- Use deactivation or status changes instead of permanent deletion for important records.
-- Preserve device logs for audit and reporting.
-- Keep status concepts separate: registration status, campus status, device status, and device purpose.
-- Clearly mark unresolved policy decisions as **Needs Team Confirmation**.
-
+- Frontend controllers call backend APIs, not DAOs or JDBC.
+- Backend controllers map HTTP requests and responses only.
+- Backend services own business rules, validation, role checks, and transactions.
+- Backend DAOs own SQL and use parameterized queries.
+- Audit writes go through `fn_write_audit_log()`.
+- Database triggers protect rules that must not be bypassed by application bugs.
+- Reports query saved records and views with filters applied in SQL.
+- Open design gaps are documented explicitly instead of hidden.

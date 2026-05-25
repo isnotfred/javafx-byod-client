@@ -1,0 +1,40 @@
+flowchart TB
+    Guard["Guard"]
+    Student["Student"]
+    Admin["Admin"]
+
+    P30(("3.0 Capture Quick Pending Screen Input"))
+    P31(("3.1 Capture Pending Details"))
+    P32(("3.2 Validate Student and Device Data"))
+    P33(("3.3 Store Pending Device"))
+    P34(("3.4 Load Pending Approval Queue"))
+    P35(("3.5 Decide Pending Registration"))
+    P8(("8. Write Audit Logs"))
+
+    D2[("D2 students")]
+    D3[("D3 devices")]
+    D7[("D7 audit_logs")]
+    V2[("V2 v_pending_devices")]
+
+    Student -->|"identity and device details"| Guard
+    Guard -->|"student, proof remarks, device details"| P30
+    P30 -->|"pending registration form data"| P31
+    P31 -->|"pending registration data"| P32
+    P32 -->|"student existence check"| D2
+    P32 -->|"serial uniqueness check"| D3
+    P32 -->|"validated pending data"| P33
+    P33 -->|"insert/link student record"| D2
+    P33 -->|"device row with registration_status pending"| D3
+    P33 -->|"DEVICE_REGISTERED"| P8
+    P8 -->|"audit row"| D7
+
+    Admin -->|"open approval screen"| P30
+    P30 -->|"pending queue request"| P34
+    P34 -->|"pending queue read"| V2
+    V2 -->|"pending devices with student details"| P34
+    P34 -->|"pending approval list"| P30
+    P30 -->|"pending approval list"| Admin
+    Admin -->|"approve or reject with remarks"| P30
+    P30 -->|"approval decision data"| P35
+    P35 -->|"update registration_status and reviewer data"| D3
+    P35 -->|"DEVICE_APPROVED or DEVICE_REJECTED"| P8

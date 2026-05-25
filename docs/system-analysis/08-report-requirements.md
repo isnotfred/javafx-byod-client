@@ -2,88 +2,89 @@
 
 ## General Report Rules
 
-- Reports are generated from saved database records.
+- Reports are generated from saved database records and schema views.
 - Admin users can generate all reports.
-- Security guards may view active devices and daily gate records only if allowed by the UI design.
-- Date ranges must be valid.
-- Output format for current scope is on-screen table view. Print and export are optional future/current stretch features.
+- Guards may view active devices and recent gate activity only when allowed by UI policy.
+- Date ranges must be valid before backend query execution.
+- Large reports must filter in SQL before data is returned to JavaFX.
 
-## Daily Ingress-Egress Report
+## Daily Entry/Exit Report
 
 | Item | Requirement |
 | --- | --- |
-| Purpose | Show all entries and exits for a selected day. |
-| User | Admin; Guard view optional. |
-| Filters | Date, guard, student, device type, purpose, log status. |
-| Columns | Date, Student ID, Student/Responsible Person, Device Type, Brand/Model, Serial/Asset Tag, Purpose, Ingress Time, Egress Time, Log Status, Logged In By, Logged Out By, Auto Logout Flag, Remarks. |
-| Output | Table; optional print/export. |
+| Purpose | Show all entry and exit events for a selected day. |
+| User | `admin`; guard view optional. |
+| Filters | Date, user, student, device type, purpose, event type, automatic exit flag. |
+| Columns | Event time, event type, student ID, student name, device ID, device type, brand/model, serial number, purpose, handled by, logout type, automatic exit flag, notes. |
+| Data Sources | `device_logs`, `devices`, `students`, `users`. |
 
 ## Monthly Monitoring Report
 
 | Item | Requirement |
 | --- | --- |
-| Purpose | Summarize monitoring activity for a selected month. |
-| User | Admin. |
+| Purpose | Summarize monitoring activity for a month. |
+| User | `admin`. |
 | Filters | Month, year, device purpose, device type. |
-| Columns | Date, Total Ingress, Total Egress, Pending Entries, Event Device Entries, Auto Logout Count, Rejected/Inactive Attempts if tracked. |
-| Output | Table summary; optional print/export. |
+| Columns | Date, total entries, total exits, automatic exits, unique devices, rejected/inactive attempts if tracked by application logs. |
+| Data Sources | `device_logs`, `devices`. |
 
 ## Active Devices Report
 
 | Item | Requirement |
 | --- | --- |
 | Purpose | Identify devices currently inside campus. |
-| User | Admin; Guard view allowed. |
-| Filters | Ingress date, student/responsible person, device type, purpose, guard, overdue expected exit. |
-| Columns | Log ID, Device ID, Student ID, Owner/Responsible Person, Device Type, Serial/Asset Tag, Purpose, Ingress Time, Logged In By, Expected Exit, Auto Logout Status, Remarks. |
-| Output | Table. |
+| User | `admin`; guard view allowed. |
+| Filters | Entry date, student, device type, purpose, user who handled entry. |
+| Columns | Device ID, student ID, student name, device type, serial number, purpose, latest event time, derived campus status. |
+| Data Sources | `v_device_campus_status`, `devices`, `students`, latest-log query where needed. |
 
 ## Registered Devices Per Student Report
 
 | Item | Requirement |
 | --- | --- |
 | Purpose | Show devices registered under each student. |
-| User | Admin. |
-| Filters | Student ID/name, course, section, device type, registration status, device status. |
-| Columns | Student ID, Student Name, Course, Section, Device Type, Brand/Model, Serial Number, Registration Status, Device Status, Registered At. |
-| Output | Table. |
+| User | `admin`. |
+| Filters | Student ID/name, course/year level, device type, registration status, device status. |
+| Columns | Student ID, student name, course/year level, device ID, device name, type, brand/model, serial number, purpose, registration status, device status, created at. |
+| Data Sources | `students`, `devices`. |
 
 ## Pending Registrations Report
 
 | Item | Requirement |
 | --- | --- |
-| Purpose | Review registrations waiting for admin decision. |
-| User | Admin. |
-| Filters | Date submitted, submitted by, student, device type, temporary entry count. |
-| Columns | Pending ID/Device ID, Student Details, Device Type, Brand/Model, Serial/Asset Tag, Submitted By, Submitted At, Temporary Entry Count, Remarks. |
-| Output | Table. |
+| Purpose | Review device registrations waiting for admin decision. |
+| User | `admin`. |
+| Filters | Date submitted, student, device type, purpose. |
+| Columns | Device ID, student ID, student name, course/year level, device name, type, brand/model, serial number, purpose, image path, submitted at, remarks. |
+| Data Sources | `v_pending_devices`, `devices`. |
 
 ## Rejected/Inactive Devices Report
 
 | Item | Requirement |
 | --- | --- |
 | Purpose | Support review of rejected registrations and inactive devices. |
-| User | Admin. |
-| Filters | Status, date changed, student, device type, serial number. |
-| Columns | Device ID, Student ID, Student Name, Device Type, Serial Number, Registration Status, Device Status, Reason/Remarks, Last Updated By, Last Updated At. |
-| Output | Table. |
+| User | `admin`. |
+| Filters | Registration status, device status, updated date, student, device type, serial number. |
+| Columns | Device ID, student ID, student name, device type, serial number, registration status, device status, remarks, reviewed by, reviewed at, updated at. |
+| Data Sources | `devices`, `students`, `users`. |
 
-## Temporary/Event Device Report
+## Event Request Report
 
 | Item | Requirement |
 | --- | --- |
-| Purpose | Track event equipment separately from regular BYOD. |
-| User | Admin. |
-| Filters | Event name, date range, responsible person, organization, purpose, campus status. |
-| Columns | Device ID, Device Type, Serial/Asset Tag, Responsible Person, Event Name, Organization/Department, Purpose, Approval Document Type, Approval Document Reference, Verified By, Ingress Time, Egress Time, Expected Exit, Campus Status. |
-| Output | Table. |
+| Purpose | Track event access requests separately from permanent BYOD devices. |
+| User | `admin`. |
+| Filters | Event name, organization, responsible student, date range, request status, device status. |
+| Columns | Request ID, event name, organization, responsible person, student ID, approval document type, approval document reference, start date, end date, request status, device count, line-item device type, quantity, verified by, verified at. |
+| Data Sources | `event_requests`, `event_request_devices`, `v_active_event_requests`, `students`, `users`. |
+| Limitation | Direct gate entry/exit history for event line items is not available unless a future schema relationship is added. |
 
 ## Device History Report
 
 | Item | Requirement |
 | --- | --- |
-| Purpose | Show complete ingress-egress history for one device. |
-| User | Admin. |
-| Filters | Serial number/device ID, date range. |
-| Columns | Log ID, Device ID, Serial/Asset Tag, Owner/Responsible Person, Ingress Time, Egress Time, Logged In By, Logged Out By, Entry Type, Auto Logout Flag, Remarks. |
-| Output | Table. |
+| Purpose | Show complete gate history for one permanent BYOD device. |
+| User | `admin`. |
+| Filters | Device ID or serial number, date range. |
+| Columns | Log ID, event time, event type, student ID, device ID, serial number, handled by, logout type, automatic exit flag, notes. |
+| Data Sources | `device_logs`, `devices`, `students`, `users`. |

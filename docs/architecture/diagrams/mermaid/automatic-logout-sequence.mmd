@@ -1,16 +1,19 @@
 sequenceDiagram
-    participant Scheduler as School Closing Scheduler
-    participant Service as MonitoringService
-    participant DAO as DeviceLogDAO / DeviceDAO
-    participant DB as Relational Database
-    participant Audit as AuditService
+    participant Scheduler as Backend Scheduler
+    participant Service as DeviceLogService
+    participant DAO as DeviceLogDAO
+    participant DB as PostgreSQL
+    participant Audit as AuditLogDAO
 
-    Scheduler->>Service: runAutomaticLogout(10:00 PM)
-    Service->>DAO: find devices still Inside
-    DAO->>DB: SELECT open device_logs where campus_status = Inside
-    DB-->>DAO: Open ingress records
-    DAO-->>Service: Open ingress records
-    Service->>Service: Set egress time to 10:00 PM
-    Service->>DAO: Update logs and set campus_status Outside
-    DAO->>DB: UPDATE device_logs auto_logged_out = true; UPDATE devices
-    Service->>Audit: record automatic logout summary
+    Scheduler->>Service: runAutomaticLogout(closingTime)
+    Service->>DAO: find devices whose latest event is entry
+    DAO->>DB: SELECT latest device_logs per approved active device
+    DB-->>DAO: Devices currently inside
+    DAO-->>Service: Inside device list
+    loop Each inside device
+        Service->>DAO: insert automatic exit row
+        DAO->>DB: INSERT device_logs event_type=exit, auto_exit=true, logout_type=automatic, handled_by=null
+        DB-->>DAO: created_at forced by trigger
+        Service->>Audit: fn_write_audit_log DEVICE_AUTO_EXIT
+    end
+    Service->>Audit: fn_write_audit_log SYSTEM_AUTO_EXIT_BATCH

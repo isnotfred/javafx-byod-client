@@ -1,16 +1,16 @@
 flowchart LR
-    Admin["System Administrator / IT Staff"]
-    Guard["Security Guard / Gate Personnel"]
-    Student["Student (Indirect User)"]
-    Campus["Campus Administration Process"]
-    App["BYOD Registration and Monitoring System\nJava Desktop Application"]
-    DB[("Relational Database")]
-    Files[("Local Image/File Storage")]
+    Admin["Admin"]
+    Guard["Guard"]
+    Student["Student\n(indirect)"]
+    Frontend["JavaFX Desktop Frontend"]
+    Backend["Spring Boot REST API\nRailway"]
+    DB[("PostgreSQL\nRailway")]
+    Policy["Campus Administration Process"]
 
-    Admin -->|"manage records, approvals, reports"| App
-    Guard -->|"search, log ingress/egress, submit pending"| App
-    Student -->|"presents device and information"| Guard
-    Campus -->|"policies and review process"| Admin
-    App -->|"JDBC read/write"| DB
-    App -->|"optional device images"| Files
-
+    Admin -->|"manage records, approvals, reports"| Frontend
+    Guard -->|"search, pending submission, entry/exit"| Frontend
+    Student -->|"presents device/details"| Guard
+    Frontend -->|"HTTPS JSON"| Backend
+    Backend -->|"JDBC over TLS"| DB
+    Policy -->|"defines operating rules"| Admin
+    Policy -->|"defines gate rules"| Guard

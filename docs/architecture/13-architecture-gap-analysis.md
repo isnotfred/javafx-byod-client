@@ -2,24 +2,22 @@
 
 | Gap | Impact | Recommendation | Priority |
 | --- | --- | --- | --- |
-| Source code is still a JavaFX starter structure. | No real architecture is implemented yet. | Introduce packages for controller, service, DAO, model, db, and util. | High |
-| DAO/service/controller package structure is missing. | Business logic and SQL may become mixed into UI classes. | Enforce layered architecture before adding features. | High |
-| Audit logging is only recommended. | Sensitive actions may not be traceable. | Add `audit_logs` table and AuditService if time allows. | Medium |
-| Event-device document verification details are not implemented. | Guards can accept event devices at the gate, but missing paper approval or signed GPOA details would weaken accountability. | Add approval document type/reference and guard verification fields to event-device records and reports. | High |
-| Approval/rejection/override fields are not implemented. | Pending decisions and overrides may lack accountability. | Include reviewer, timestamp, reason, and remarks fields in schema. | High |
-| Error handling and logging strategy is not implemented. | Users may see unclear failures and developers may lack diagnostics. | Define validation, database, permission, and file error handling. | Medium |
-| Backup strategy and database location are unresolved. | Data loss or multi-gate inconsistency may occur. | Confirm local vs centralized database and backup process. | High |
-| Pending student proof workflow is documented but not implemented. | Guards may submit incomplete pending student records if proof fields are missing. | Add proof type, proof reference/remarks, submitted_by, submitted_at, and admin review handling in the student service and DAO. | High |
-| Pending-device repeat entry monitoring is not yet designed. | Pending devices may enter repeatedly while waiting for admin approval, so admins need visibility into repeated temporary use. | Include temporary entry counts in pending reports and prioritize admin review of frequently used pending devices. | Medium |
-| Automatic school-closing logout schedule is not implemented. | Devices still Inside need a reliable 10:00 PM egress record. | Implement automatic logout at 10:00 PM with system-generated remarks. | High |
-| Guard permissions and editing limits need confirmation. | Guards may change records beyond intended authority. | Restrict guards to search, logging, and submission unless confirmed otherwise. | High |
-| Indexes and report query strategy are not implemented. | Search and reports may become slow. | Add indexes and date-filtered report queries. | Medium |
-| Uploaded image storage location needs confirmation. | Image links may break across machines. | Choose managed local folder or shared storage path. | Medium |
-| Database deployment is unresolved. | Multi-user behavior depends on database location. | Confirm local per machine vs centralized campus server. | High |
+| Frontend repo is currently a JavaFX starter project. | Target screens, API client, models, and session handling are not implemented. | Add JavaFX packages and screens according to `../system-analysis/07-screen-requirements.md`. | High |
+| Backend repo is not present here. | REST API, services, DAOs, scheduler, and Railway deployment cannot be verified. | Create/link backend repository and implement endpoint groups summarized in `05-module-architecture.md`. | High |
+| Exact REST DTOs and response envelopes are undefined. | Frontend/backend integration could drift. | Define DTOs before coding API client and controllers. | High |
+| Authentication response format is undefined. | Session/token handling is unclear. | Decide token/session payload and logout behavior. | High |
+| Event request devices are not linked to gate logs. | Event device entry/exit reporting is not directly supported by the schema. | Decide between request-only tracking, an added FK, or companion permanent device rows. | High |
+| Railway env variables are unnamed. | Deployment documentation and code configuration remain incomplete. | Define backend base URL and database env names. | Medium |
+| Automatic logout timezone and schedule are not finalized. | Closing-time reconciliation may run at the wrong time. | Configure backend scheduler timezone explicitly. | High |
+| Image storage policy is open. | Device image paths may fail across machines. | Choose frontend-managed files, backend upload storage, or shared storage. | Medium |
+| Backup/restore procedure is missing. | Data recovery is not ready for production. | Document Railway backup frequency, retention, owner, and restore steps. | High |
+| API-level report endpoints are not specified. | Report implementation may scatter across modules. | Define report endpoint group or specific report endpoints before implementation. | Medium |
 
-## Needs Team Confirmation
+## Needs Confirmation
 
-- Should admins be allowed to reactivate inactive devices?
-- Are logs ever editable, or should corrections be made through remarks/audit entries?
-- Where should uploaded device images be stored?
-- Will the database be local per machine or centralized on a campus server?
+- Final Railway backend URL.
+- Backend database environment variable names.
+- Authentication token/session strategy.
+- Event device gate-logging strategy.
+- Image storage location and backup scope.
+- Automatic logout time and timezone.

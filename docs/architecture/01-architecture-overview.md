@@ -2,51 +2,49 @@
 
 ## System Purpose
 
-The BYOD Registration and Monitoring System is a desktop Java application for registering and monitoring student-owned academic devices entering and leaving campus. It supports student and device registration, pending registration, temporary/event device tracking, ingress and egress logs, active device monitoring, reports, role-based access, and JDBC-backed database storage.
+The BYOD Device Management System manages student-owned device registration and gate entry/exit monitoring. It supports admin and guard workflows, pending device approval, event access requests, immutable gate logs, reports, role-based access, and audit history.
 
 ## Architecture Summary
 
-The recommended architecture is a layered Java desktop application:
+The target architecture is a 3-tier client-server system:
 
-- JavaFX presentation layer for screens and controllers.
-- Application/controller layer for screen flow and user-action coordination.
-- Service layer for business rules, validation, role checks, and workflow decisions.
-- DAO/JDBC layer for SQL and database access.
-- Relational database for students, devices, logs, users, event devices, and audit logs.
-- Utility layer for session state, validation helpers, date/time handling, file/image paths, and logging.
+| Tier | Technology | Main Responsibility |
+| --- | --- | --- |
+| Frontend | JavaFX, FXML, CSS | UI, navigation, form input, table display, and HTTPS/JSON calls. |
+| Backend | Spring Boot REST API, JDBC/NamedParameterJdbcTemplate | Authentication, authorization, validation, business workflows, transactions, SQL access, and audit orchestration. |
+| Database | PostgreSQL on Railway | Persistent records, constraints, views, triggers, functions, indexes, and audit/log immutability. |
 
-JavaFX is preferred. Swing may be referenced only as an allowed desktop UI alternative from the project brief.
+The frontend never connects directly to PostgreSQL. All database access runs through backend DAOs.
 
 ## Main Users
 
 | User | Architecture Relevance |
 | --- | --- |
-| System Administrator / IT Staff | Needs full administrative modules, approval workflows, user management, reports, and audit visibility. |
-| Security Guard / Gate Personnel | Needs fast search, ingress/egress logging, active device monitoring, and pending submission workflows. |
-| Student | Indirect user whose data and devices are stored and verified by authorized staff. |
+| Admin | Needs full administrative screens, backend-protected permissions, reports, users, and audit access. |
+| Guard | Needs fast JavaFX gate screens and backend-protected entry/exit operations. |
+| Student | Indirect actor whose information is stored and verified by staff. |
 
 ## Main Capabilities
 
-- Login and role-based access.
+- Login and role-based API access.
 - Student management.
-- Device management.
-- Pending registration review.
-- Temporary/event device registration.
-- Ingress and egress monitoring.
-- Search and active device tracking.
-- Reports.
-- Audit logging for sensitive actions.
+- Device management and pending approval.
+- Event access request management.
+- Gate entry/exit logging.
+- Automatic school-closing exit process.
+- Active-device view from derived latest-log state.
+- Reports and immutable audit trail.
 
 ## Architectural Constraints
 
-- Desktop application only.
-- JDBC database access.
-- No current mobile app, web portal, RFID, barcode scanner, GPS tracking, cloud sync, or student self-registration.
-- Business rules must not be embedded directly in UI code.
-- SQL/database operations must stay in DAO or repository classes.
-- Device logs must be preserved for accountability.
+- JavaFX is the frontend client.
+- Spring Boot is the backend API boundary.
+- PostgreSQL is hosted on Railway.
+- Backend is the only database client.
+- SQL must stay in DAO classes.
+- Business rules must stay in services and database constraints/triggers, not JavaFX controllers.
+- `device_logs` and `audit_logs` are append-only from application perspective.
 
-## Current Scope vs Future Enhancements
+## Implementation State
 
-Current architecture covers local/campus desktop deployment with database storage and optional local image file paths. Future integrations such as QR codes, barcode scanners, RFID, cloud sync, email/SMS notification, mobile app, and web portal are documented only in `14-future-architecture-enhancements.md`.
-
+The current repository still contains a JavaFX starter project. This architecture package documents the target system and should guide implementation across frontend and backend repositories.

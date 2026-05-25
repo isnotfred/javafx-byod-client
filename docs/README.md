@@ -2,25 +2,34 @@
 
 This folder is the shared documentation area for the BYOD Registration and Monitoring System.
 
-Each team role can keep its own files in its own subfolder. The System Analyst documents are stored together in `system-analysis/`.
+## Current Target Baseline
+
+The current target design follows the uploaded May 2026 change package:
+
+- JavaFX desktop frontend for admin and guard users.
+- Spring Boot REST API backend over HTTPS/JSON.
+- PostgreSQL database hosted on Railway.
+- Backend-only database access through JDBC/NamedParameterJdbcTemplate.
+- Database schema baseline documented in `system-analysis/06-data-requirements-and-data-dictionary.md`.
+
+The Java source currently remains a starter JavaFX project. These documents describe the target system analysis and architecture, not completed implementation.
 
 ## Folder Index
 
 | Folder | Owner / Main Users | Purpose |
 | --- | --- | --- |
-| `system-analysis/` | System Analyst | Requirements, use cases, validation rules, data requirements, screen requirements, report requirements, QA criteria, gap analysis, traceability, and change log. |
-| `architecture/` | System Architect | Application architecture, module structure, data/security/deployment architecture, architecture decisions, gaps, future enhancements, and diagrams. |
+| `system-analysis/` | System Analyst, QA, stakeholders | Requirements, use cases, rules, data dictionary, screens, reports, tests, gaps, traceability, and interactions. |
+| `architecture/` | Solution Architect, developers, DevOps | 3-tier architecture, modules, security, deployment, performance, decisions, gaps, and diagram sources. |
+| `api/` | Backend/frontend developers | Endpoint-level REST API contract overview. |
 
-Future team folders may be added as needed, for example:
+## Source Of Truth
 
-- `business-analysis/`
-- `ui-ux/`
-- `database/`
-- `backend/`
-- `frontend/`
-- `qa/`
-- `project-management/`
+| Source | Status |
+| --- | --- |
+| `system-analysis/06-data-requirements-and-data-dictionary.md` | Database schema summary aligned to the uploaded PostgreSQL schema. |
+| `system-analysis/07-screen-requirements.md` | Canonical screen behavior aligned to the schema. |
+| `architecture/` | Target 3-tier architecture documentation. |
 
-## Current Scope Reminder
+## Out Of Scope Unless Added Later
 
-The current system is a desktop-based Java application using JavaFX or Swing and JDBC database storage. Mobile apps, web portals, RFID, barcode scanners, GPS tracking, cloud sync, and student self-registration are out of current scope and should be listed only as future enhancements.
+Student self-registration, web portal UI, mobile app, RFID, barcode scanner, GPS tracking, automated physical device detection, and detailed REST DTO definitions remain outside the documented current baseline.

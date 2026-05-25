@@ -1,31 +1,31 @@
 # 09 - Integration Architecture
 
-## Current Integration Points
+## Current Target Integration Points
 
-| Integration | Direction | Purpose |
-| --- | --- | --- |
-| JavaFX/Swing UI to services | UI to service | User actions invoke business workflows. |
-| Services to DAOs | Service to DAO | Business workflows persist and retrieve data. |
-| DAOs to JDBC | DAO to driver | Execute SQL through JDBC. |
-| JDBC to relational database | Driver to database | Store and retrieve records. |
-| FileChooser to image storage | UI/helper to local storage | Select optional device image files. |
+| Integration | Direction | Protocol/Mechanism | Purpose |
+| --- | --- | --- | --- |
+| JavaFX controller to backend REST controller | Frontend -> backend | HTTPS/JSON | Submit user actions and fetch screen data. |
+| Backend REST controller to service | Backend internal | Method call | Delegate validated request handling. |
+| Service to DAO | Backend internal | Method call | Execute business workflow reads/writes. |
+| DAO to PostgreSQL | Backend -> database | JDBC over TLS | Execute parameterized SQL and call schema functions/views. |
+| Backend scheduler to service | Backend internal | Scheduled task | Run automatic school-closing exit process. |
+| JavaFX to optional image storage | Frontend/backend TBD | File path or upload policy TBD | Store or reference device images. |
 
 ## Integration Rules
 
-- Controllers do not execute SQL.
-- Services do not depend on JavaFX controls.
-- DAOs do not implement business policy.
-- File/image storage must store stable paths or copied managed files, subject to team confirmation.
+- JavaFX uses the backend API only.
+- Backend API endpoint groups are summarized in `05-module-architecture.md` until a dedicated API contract is restored.
+- DAOs must use parameterized SQL.
+- Audit writes use the database function `fn_write_audit_log()`.
+- Database trigger exceptions are converted to safe HTTP errors.
+- Event request device gate-log integration is unresolved and must not be assumed.
 
 ## Future Integrations Only
 
 - QR code generation.
-- Barcode scanner.
+- Barcode scanners.
 - RFID.
-- Cloud database sync.
 - Email/SMS notification.
 - Mobile app.
 - Web portal.
-
-These are not part of current implementation scope.
-
+- Student self-service.

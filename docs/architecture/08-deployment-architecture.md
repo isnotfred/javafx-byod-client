@@ -2,34 +2,42 @@
 
 ## Deployment Summary
 
-The current scope is a Java desktop application installed on authorized campus computers. The application connects to a relational database through JDBC.
+The target deployment uses a JavaFX desktop frontend and Railway-hosted backend/database services.
 
-## Runtime Components
+| Component | Location | Description |
+| --- | --- | --- |
+| JavaFX Desktop Client | Authorized campus/admin computers | Runs UI screens and calls the backend API. |
+| Spring Boot Backend API | Railway | Hosts REST controllers, services, DAOs, validation, and scheduled automatic logout. |
+| PostgreSQL Database | Railway | Stores canonical schema and data. |
+| GitHub Repositories | GitHub | Frontend and backend version control. |
+| Optional Image Storage | To be decided | Stores or references device images. |
 
-| Component | Description |
-| --- | --- |
-| Desktop Machine | Runs the Java application used by Admins or Guards. |
-| Java Runtime | Required runtime for JavaFX/Swing application. |
-| JavaFX Application | Main desktop client and UI. |
-| JDBC Driver | Database connectivity driver. |
-| Relational Database | Local or campus server database. **Needs Team Confirmation.** |
-| Local Image Storage | Stores optional uploaded device images or image paths. **Needs Team Confirmation.** |
+## Runtime Flow
 
-## Deployment Assumptions
+1. User opens JavaFX.
+2. JavaFX calls Railway backend over HTTPS/JSON.
+3. Backend validates request and uses JDBC over TLS to Railway PostgreSQL.
+4. PostgreSQL executes constraints/triggers/views/functions.
+5. Backend returns HTTP status and JSON response.
+6. JavaFX updates the UI.
 
-- The system runs on authorized campus desktops.
-- The database can be local to one machine or centralized on a campus server.
-- If multiple gate computers are used, a centralized database is recommended.
-- Backup and restore procedures are required but not yet defined.
-- Cloud deployment is not current scope.
+## Configuration
+
+| Configuration | Owner | Status |
+| --- | --- | --- |
+| Backend base URL for JavaFX | Frontend config | Needs final Railway URL. |
+| PostgreSQL JDBC URL | Backend config | Needs Railway env variable names. |
+| Database username/password | Backend config | Needs Railway env variable names. |
+| Image path/storage policy | Frontend/backend | Open. |
+| Automatic logout schedule timezone | Backend config | Needs confirmation. |
 
 ## Backup Considerations
 
-- Back up the relational database regularly.
-- Include uploaded image folder backup if image files are stored locally.
+- Back up Railway PostgreSQL regularly.
 - Restrict backup access to authorized IT/admin personnel.
+- Include image storage in backup scope after storage policy is finalized.
+- Document restore procedure before production use.
 
 ## Diagram
 
 See `diagrams/mermaid/deployment-view.mmd`.
-

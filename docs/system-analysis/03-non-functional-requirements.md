@@ -4,62 +4,53 @@
 
 | ID | Requirement |
 | --- | --- |
-| NFR-001 | The interface shall be simple enough for guards to use during peak gate traffic. |
-| NFR-002 | Common guard actions shall be reachable from the guard dashboard: search, log ingress, log egress, quick pending registration, and active devices. |
-| NFR-003 | Error messages shall use clear non-technical wording. |
-| NFR-004 | Destructive or sensitive actions shall require confirmation. |
-| NFR-005 | Tables shall use readable column labels and support basic filtering where needed. |
+| NFR-001 | Guard workflows shall prioritize fast search, clear eligibility messages, and direct entry/exit actions. |
+| NFR-002 | Admin workflows shall group approval, event request, reporting, and user-management actions clearly. |
+| NFR-003 | JavaFX screens shall display user-safe validation messages returned by the backend. |
 
 ## Security
 
 | ID | Requirement |
 | --- | --- |
-| NFR-006 | The system shall enforce authentication before access. |
-| NFR-007 | The system shall enforce role-based authorization for Admin and Security Guard users. |
-| NFR-008 | Passwords shall be stored as secure hashes. |
-| NFR-009 | Admin-only actions shall not be accessible from guard screens. |
-| NFR-010 | Sensitive status changes and overrides shall be audit-tracked. |
+| NFR-004 | Passwords shall never be stored or logged as plaintext. |
+| NFR-005 | Role checks shall be enforced by the backend even if frontend navigation is bypassed. |
+| NFR-006 | The JavaFX client shall not connect directly to PostgreSQL. |
+| NFR-007 | Audit records shall capture sensitive lifecycle, login, gate, event, and system actions. |
+| NFR-008 | Database credentials shall be stored in backend deployment configuration, not in frontend files. |
 
-## Reliability
+## Reliability And Data Integrity
 
 | ID | Requirement |
 | --- | --- |
-| NFR-011 | The system shall prevent duplicate student IDs and duplicate active serial numbers. |
-| NFR-012 | The system shall prevent invalid ingress and egress status transitions. |
-| NFR-013 | The system shall display a clear message when database connection fails. |
-| NFR-014 | The system shall preserve existing records when validation fails. |
+| NFR-009 | PostgreSQL constraints and triggers shall enforce core business invariants. |
+| NFR-010 | `device_logs` and `audit_logs` shall be immutable after insert. |
+| NFR-011 | `created_at` for logs and audit rows shall be server-side generated to prevent backdating. |
+| NFR-012 | Multi-step operations shall be transactional in the Spring Boot service/DAO flow. |
+| NFR-013 | Deactivation shall be preferred over hard deletion for users, students, and devices with history. |
 
 ## Performance
 
 | ID | Requirement |
 | --- | --- |
-| NFR-015 | Search results should appear quickly enough for gate processing under normal school database size. |
-| NFR-016 | Ingress and egress save operations should complete without noticeable delay under normal use. |
-| NFR-017 | Reports should support filtering so users do not need to load all historical records at once. |
+| NFR-014 | Gate lookup by student ID, student name, and serial number shall be indexed or query-optimized. |
+| NFR-015 | Latest-device-status queries shall use the schema view or an equivalent indexed latest-log query. |
+| NFR-016 | Reports shall apply date and status filters in SQL before returning rows to the frontend. |
+| NFR-017 | High-volume `device_logs` and `audit_logs` shall use the schema's index and autovacuum tuning strategy. |
 
 ## Maintainability
 
 | ID | Requirement |
 | --- | --- |
-| NFR-018 | Requirements, screens, reports, and tests shall use consistent terms for statuses and user roles. |
-| NFR-019 | The codebase should keep UI, business logic, and database access separated where practical. |
-| NFR-020 | Status values should be centralized in code to avoid inconsistent spelling. |
-| NFR-021 | Database schema should use constraints and foreign keys to protect data integrity. |
+| NFR-018 | JavaFX controllers shall contain UI coordination only and call backend APIs. |
+| NFR-019 | Spring Boot controllers shall not contain SQL or business rules. |
+| NFR-020 | Services shall own validation, role checks, and workflow orchestration. |
+| NFR-021 | DAOs shall own SQL and use parameterized queries. |
+| NFR-022 | Documentation shall be kept aligned with the uploaded PostgreSQL schema and the system-analysis data dictionary. |
 
-## Data Integrity
-
-| ID | Requirement |
-| --- | --- |
-| NFR-022 | Every normal BYOD device shall reference a valid student owner or a pending student record. |
-| NFR-023 | Every device log shall reference one device and the user who performed the logged action. |
-| NFR-024 | A device shall not have more than one open active ingress record. |
-| NFR-025 | Egress time shall not be earlier than ingress time. |
-
-## Auditability
+## Deployment
 
 | ID | Requirement |
 | --- | --- |
-| NFR-026 | Device logs shall not be permanently deleted through normal application functions. |
-| NFR-027 | Approval, rejection, override, and correction actions shall store user, timestamp, action, and remarks. |
-| NFR-028 | Reports shall be reproducible from saved database records. |
-
+| NFR-023 | The target backend and PostgreSQL database shall deploy to Railway. |
+| NFR-024 | The frontend shall use a configurable backend base URL. |
+| NFR-025 | Railway environment variables, backup policy, and production URL shall be documented once finalized. |

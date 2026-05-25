@@ -1,34 +1,24 @@
-flowchart LR
-    Auth["Authentication and Role Access"]
-    Students["Student Management"]
-    Devices["Device Management"]
-    Pending["Pending Registration"]
-    Event["Temporary/Event Device"]
-    Monitor["Ingress-Egress Monitoring"]
-    Search["Search and Monitoring"]
-    Reports["Reports"]
-    Users["User Management"]
-    Audit["Audit/Logging"]
-    DB["Database Utility"]
+flowchart TB
+    Auth["Authentication\n/auth/login"]
+    Users["User Management\n/users"]
+    Students["Student Management\n/students"]
+    Devices["Device Management\n/devices"]
+    Events["Event Requests\n/event-requests"]
+    Logs["Gate Logs\n/device-logs"]
+    Audit["Audit\n/audit-logs"]
+    Reports["Reports\nendpoint TBD"]
+    DB[("PostgreSQL")]
 
-    Auth --> Users
-    Students --> Devices
-    Devices --> Pending
-    Devices --> Event
-    Devices --> Monitor
-    Pending --> Audit
-    Event --> Monitor
-    Monitor --> Search
-    Monitor --> Reports
-    Reports --> Audit
-    Users --> Audit
-    Auth --> Audit
+    Auth --> DB
+    Users --> DB
     Students --> DB
     Devices --> DB
-    Pending --> DB
-    Event --> DB
-    Monitor --> DB
-    Reports --> DB
-    Users --> DB
+    Events --> DB
+    Logs --> DB
     Audit --> DB
+    Reports --> DB
 
+    Devices -. uses .-> Logs
+    Logs -. writes audit .-> Audit
+    Devices -. writes audit .-> Audit
+    Events -. writes audit .-> Audit

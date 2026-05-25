@@ -1,17 +1,19 @@
 @startuml
 node "Authorized Campus Desktop" {
-  artifact "Java Runtime"
-  artifact "JavaFX Desktop Application"
-  artifact "JDBC Driver"
-  folder "Local Image Storage"
+  artifact "JavaFX Desktop Client" as Frontend
+  artifact "Backend URL Config" as Config
 }
 
-node "Database Host\nLocal or Campus Server" {
-  database "Relational Database"
+cloud "Railway" {
+  node "Spring Boot Service" {
+    artifact "REST API" as Backend
+    artifact "Automatic Logout Scheduler" as Scheduler
+  }
+  database "PostgreSQL" as DB
 }
 
-"JavaFX Desktop Application" --> "JDBC Driver"
-"JDBC Driver" --> "Relational Database"
-"JavaFX Desktop Application" --> "Local Image Storage"
+Frontend --> Backend : HTTPS JSON
+Backend --> DB : JDBC over TLS
+Scheduler --> DB : JDBC over TLS
+Config --> Frontend
 @enduml
-

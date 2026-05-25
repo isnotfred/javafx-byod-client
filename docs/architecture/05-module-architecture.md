@@ -2,23 +2,29 @@
 
 ## Module Summary
 
-| Module | Purpose | Main Screens | Main Services | Tables Used | Related Requirements |
-| --- | --- | --- | --- | --- | --- |
-| Authentication and Role Access | Login, logout, sessions, role checks. | Login, dashboards | AuthService, SessionService | users, audit_logs | FR-001 to FR-006 |
-| Student Management | Manage student records. | Student Management | StudentService | students, audit_logs | FR-007 to FR-012 |
-| Device Management | Manage approved BYOD records and device statuses. | Device Management | DeviceService | devices, students, users, audit_logs | FR-013 to FR-020 |
-| Pending Registration | Submit, approve, reject pending records. | Pending Approval, Guard Dashboard | PendingRegistrationService | devices, students, users, audit_logs | FR-021 to FR-027 |
-| Temporary/Event Device | Track approved event equipment and approval document verification separately. | Temporary/Event Device | EventDeviceService | devices, event_devices, device_logs | FR-028 to FR-034 |
-| Ingress-Egress Monitoring | Log entry and exit. | Monitoring, Active Devices | MonitoringService | devices, device_logs, users | FR-035 to FR-048 |
-| Search and Monitoring | Search records and active devices. | Guard Dashboard, Active Devices | SearchService | students, devices, device_logs | FR-049 to FR-052 |
-| Reports | Generate monitoring reports. | Reports | ReportService | students, devices, device_logs, event_devices, users | FR-053 to FR-061 |
-| User Management | Manage user accounts and roles. | User Management | UserService | users, audit_logs | FR-062 to FR-065 |
-| Audit/Logging | Record sensitive actions. | Admin audit view if implemented | AuditService | audit_logs | FR-066 to FR-067 |
-| Database Utility | Create connections and manage transactions. | None | DatabaseConnectionProvider | All tables | NFR-011 to NFR-028 |
+| Module | Frontend Screens | Backend Components | Database Objects | API Group |
+| --- | --- | --- | --- | --- |
+| Authentication | Login, dashboards | `AuthController`, `AuthService`, `UserDAO` | `users`, `audit_logs` | `/auth/login` |
+| User Management | User Management | `UserController`, `UserService`, `UserDAO` | `users`, `audit_logs` | `/users` |
+| Student Management | Student Management, lookup panels | `StudentController`, `StudentService`, `StudentDAO` | `students`, `audit_logs` | `/students` |
+| Device Management | Device Management, Pending Approval | `DeviceController`, `DeviceService`, `DeviceDAO` | `devices`, `v_pending_devices`, `v_device_campus_status`, `audit_logs` | `/devices` |
+| Event Requests | Event Request | `EventRequestController`, `EventRequestService`, event DAOs | `event_requests`, `event_request_devices`, `v_active_event_requests`, `audit_logs` | `/event-requests` |
+| Gate Monitoring | Guard Dashboard, Ingress/Egress, Active Devices | `DeviceLogController`, `DeviceLogService`, `DeviceLogDAO` | `device_logs`, `devices`, `v_device_campus_status`, `audit_logs` | `/device-logs` |
+| Reports | Reports | Report service methods across DAOs | Reporting tables/views | Existing endpoint groups until report endpoints are specified |
+| Audit | Logs/Audit view | `AuditLogController`, `AuditLogService`, `AuditLogDAO` | `audit_logs`, `fn_write_audit_log()` | `/audit-logs` |
 
 ## Module Interaction
 
-Controllers route user actions to module services. Services validate inputs, enforce roles, coordinate DAOs, update statuses, and record audit entries where required.
+1. JavaFX screen collects input and calls the backend API.
+2. REST controller maps the request and invokes a service.
+3. Service validates role, data, and workflow state.
+4. DAO executes parameterized SQL and calls schema views/functions.
+5. PostgreSQL constraints/triggers enforce final data rules.
+6. Backend returns JSON and HTTP status for JavaFX display.
+
+## Known Design Limitation
+
+`event_request_devices` are not directly related to `device_logs` in the uploaded schema. The Event Requests module can track request/verification/return data, but event-device gate history needs a future schema decision.
 
 ## Diagram
 

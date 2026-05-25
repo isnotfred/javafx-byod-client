@@ -1,38 +1,45 @@
-# 11 - Performance and Scalability Considerations
+# 11 - Performance And Scalability Considerations
 
 ## Gate Search Performance
 
-Gate search must be fast enough for peak entry and exit periods. The highest-priority lookup fields are student ID, student name, device serial number, and asset tag.
-
-## Database Indexes
-
-Recommended indexes:
+Gate operations must remain fast during peak traffic. Highest-priority lookup paths are:
 
 - `students.student_id`
 - `students.last_name`, `students.first_name`
 - `devices.serial_number`
-- `devices.asset_tag`
-- `devices.registration_status`, `devices.campus_status`, `devices.device_status`
-- `device_logs.device_id`
-- `device_logs.ingress_time`
-- `device_logs.egress_time`
+- latest `device_logs` row per device
+- `v_device_campus_status` for approved active devices
+
+## Database Indexes
+
+The uploaded schema already defines indexes for:
+
+- Student name and status.
+- Device owner, serial number, registration status, and pending queue.
+- Event request owner/status/date range.
+- Event request line items by parent request.
+- Latest device log lookup.
+- Open entry lookup for automatic logout.
+- Audit lookup by user/time, target, and timestamp.
 
 ## Query Strategy
 
-- Filter reports by date range before loading rows.
-- Avoid loading all historical logs into UI tables.
-- Use pagination or table limits for large result sets.
-- Load detail records only when a user selects a row.
-- Use specific report queries instead of one large general query.
+- Use `v_pending_devices` for approval queues.
+- Use `v_active_event_requests` for event request queues.
+- Use `v_device_campus_status` or equivalent latest-log query for active-device screens.
+- Apply report filters in SQL.
+- Avoid loading all historical logs into JavaFX tables.
+- Use pagination or row limits for large admin queries once API response shape is defined.
 
-## Local Database Considerations
+## Backend Scalability
 
-A single local database is simpler but limits multi-gate use. A centralized campus database is better if multiple desktops need shared real-time records. **Needs Team Confirmation.**
+- Railway backend can be scaled independently from JavaFX clients.
+- Connection pool size must match Railway PostgreSQL limits.
+- High-write tables `device_logs` and `audit_logs` use the schema autovacuum tuning.
+- Report endpoints should avoid long-running unfiltered queries.
 
-## Peak-Hour Considerations
+## Frontend Considerations
 
-- Keep guard dashboard focused on search and log actions.
-- Avoid slow report generation on guard screens.
-- Validate in memory before database write when possible.
-- Keep device image loading optional and lightweight.
-
+- Keep guard screens focused on search and entry/exit actions.
+- Defer report-heavy workflows to admin screens.
+- Load images lazily after the image storage policy is finalized.

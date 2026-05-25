@@ -1,91 +1,91 @@
 # 12 - Architecture Decisions
 
-## ADR-001 Use Desktop Java Application
+## ADR-001 Use JavaFX Desktop Frontend
 
 | Field | Value |
 | --- | --- |
 | Status | Accepted |
-| Context | Project scope requires a desktop-based application. |
-| Decision | Build as a Java desktop application. |
-| Consequences | No web/mobile access in current scope; deployment targets campus computers. |
+| Context | The project requires a desktop application experience for campus staff. |
+| Decision | Use JavaFX for the frontend. |
+| Consequences | UI logic stays in JavaFX controllers; backend access is through API calls. |
 
-## ADR-002 Prefer JavaFX for UI
-
-| Field | Value |
-| --- | --- |
-| Status | Accepted |
-| Context | Project brief allows JavaFX/Swing and recommends JavaFX. |
-| Decision | Use JavaFX as preferred UI framework. |
-| Consequences | Controllers should remain UI-focused and delegate logic to services. |
-
-## ADR-003 Use JDBC for Database Access
+## ADR-002 Use Spring Boot REST Backend
 
 | Field | Value |
 | --- | --- |
 | Status | Accepted |
-| Context | Project requires JDBC-based database storage. |
-| Decision | Use JDBC through DAO/repository classes. |
-| Consequences | SQL stays out of controllers; DAOs handle persistence. |
+| Context | The uploaded architecture defines JavaFX -> Spring Boot -> PostgreSQL. |
+| Decision | Use Spring Boot as the API and business logic tier. |
+| Consequences | Frontend does not own JDBC access; backend repository and deployment are required. |
 
-## ADR-004 Use Layered Architecture
+## ADR-003 Use PostgreSQL On Railway
 
 | Field | Value |
 | --- | --- |
 | Status | Accepted |
-| Context | The system needs maintainable UI, rules, and database access. |
-| Decision | Separate presentation, controller, service, DAO, database, and utility layers. |
-| Consequences | More files/classes, but clearer developer handoff and testability. |
+| Context | Uploaded schema and architecture target PostgreSQL hosted on Railway. |
+| Decision | Use Railway PostgreSQL as the database. |
+| Consequences | Backend configuration must define Railway database credentials and backup procedure. |
+
+## ADR-004 Backend-Only JDBC Access
+
+| Field | Value |
+| --- | --- |
+| Status | Accepted |
+| Context | Database credentials and SQL should not live in the JavaFX client. |
+| Decision | Use JDBC/NamedParameterJdbcTemplate only inside backend DAOs. |
+| Consequences | JavaFX calls JSON REST endpoints and never connects directly to PostgreSQL. |
 
 ## ADR-005 Use Role-Based Access Control
 
 | Field | Value |
 | --- | --- |
 | Status | Accepted |
-| Context | Admins and Guards have different permissions. |
-| Decision | Enforce roles in UI navigation and service methods. |
-| Consequences | Prevents guards from approving, rejecting, deleting logs, managing users, or changing official device status. |
+| Context | Admin and guard users have different capabilities. |
+| Decision | Enforce roles in frontend navigation and backend services. |
+| Consequences | Guards cannot approve pending BYOD devices, manage users, or view full audit history by default. |
 
-## ADR-006 Use Automatic Timestamping
-
-| Field | Value |
-| --- | --- |
-| Status | Accepted |
-| Context | Ingress and egress logs must be reliable. |
-| Decision | Generate timestamps through the system at save time. |
-| Consequences | Users cannot manually alter normal ingress/egress timestamps. |
-
-## ADR-007 Use Pending Registration Workflow
-
-| Field | Value |
-| --- | --- |
-| Status | Proposed |
-| Context | Guards may encounter unregistered devices at the gate. |
-| Decision | Allow pending submissions routed to admin review; pending devices may have repeat temporary entries until approved or rejected. |
-| Consequences | Faster gate handling but requires strict reporting and approval follow-up. |
-
-## ADR-008 Separate Device Status Concepts
+## ADR-006 Use Immutable Gate Logs
 
 | Field | Value |
 | --- | --- |
 | Status | Accepted |
-| Context | Registration, campus presence, security condition, and purpose are different concepts. |
-| Decision | Separate `registration_status`, `campus_status`, `device_status`, and `device_purpose`. |
-| Consequences | Reduces inconsistent workflow logic and report ambiguity. |
+| Context | Gate history must support accountability and reporting. |
+| Decision | Model gate activity as append-only `device_logs` rows. |
+| Consequences | Corrections require new records, remarks, or audit entries, not row edits. |
 
-## ADR-009 Track Event Equipment Separately
-
-| Field | Value |
-| --- | --- |
-| Status | Proposed |
-| Context | Event equipment is temporary and may not belong to one student. |
-| Decision | Track as Temporary/Event Device with responsible person, event details, and paper approval or signed GPOA verification details. |
-| Consequences | Requires event-device fields, guard verification fields, and separate reports. |
-
-## ADR-010 Preserve Logs Instead of Deleting
+## ADR-007 Derive Campus Presence From Logs
 
 | Field | Value |
 | --- | --- |
 | Status | Accepted |
-| Context | Logs support accountability and reports. |
-| Decision | Do not permanently delete device logs through normal application functions. |
-| Consequences | Corrections require remarks or audit entries. |
+| Context | The uploaded schema has no stored presence field on `devices`. |
+| Decision | Derive inside/outside from latest `device_logs` using `v_device_campus_status` or equivalent queries. |
+| Consequences | Gate screens and reports must not update device rows for presence changes. |
+
+## ADR-008 Block Pending Devices From Gate Logs
+
+| Field | Value |
+| --- | --- |
+| Status | Accepted |
+| Context | The uploaded trigger `trg_device_logs_approved_only` allows logs only for approved active devices. |
+| Decision | Pending devices require admin approval before entry/exit logging. |
+| Consequences | Older temporary pending-entry behavior is removed from the current baseline. |
+
+## ADR-009 Track Event Access With Request Tables
+
+| Field | Value |
+| --- | --- |
+| Status | Accepted with open gap |
+| Context | Uploaded schema uses `event_requests` and `event_request_devices`. |
+| Decision | Treat event device rows as request and verification records. |
+| Consequences | Direct event-device gate logging requires a future schema decision. |
+
+## ADR-010 Use Database-Enforced Audit Writer
+
+| Field | Value |
+| --- | --- |
+| Status | Accepted |
+| Context | Audit rows must be consistent and immutable. |
+| Decision | Write audit records through `fn_write_audit_log()`. |
+| Consequences | Application code should not insert directly into `audit_logs`. |

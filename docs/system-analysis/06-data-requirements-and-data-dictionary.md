@@ -1,171 +1,217 @@
-# 06 - Data Requirements and Data Dictionary
+# 06 - Data Requirements And Data Dictionary
 
-## Status Fields
+## Source Of Truth
 
-| Field | Allowed Values | Meaning |
-| --- | --- | --- |
-| `registration_status` | Pending, Approved, Rejected | Approval state of device/student registration. |
-| `campus_status` | Inside, Outside | Current physical monitoring state of the device. |
-| `device_status` | Active, Inactive | Operational availability of the device record. |
-| `device_purpose` | Academic BYOD, School Event, Organization Activity, Temporary Equipment, Other Approved Purpose | Reason the device/equipment is being brought to campus. |
+This document summarizes the uploaded PostgreSQL schema for system analysis and traceability.
 
-## Table: students
+## Database Objects
 
-| Field | Description | Suggested Type | Required | Constraints | Notes |
-| --- | --- | --- | --- | --- | --- |
-| student_id | Official student number | VARCHAR(30) | Yes | Primary key, unique | Use school student ID. |
-| first_name | Student first name | VARCHAR(100) | Yes |  |  |
-| last_name | Student last name | VARCHAR(100) | Yes |  |  |
-| course | Course/program | VARCHAR(100) | Required for Official; optional for Pending |  | Guard enters this if available for pending student records. |
-| section | Section/block | VARCHAR(50) | Required for Official; optional for Pending |  | Guard enters this if available for pending student records. |
-| contact_number | Contact number | VARCHAR(30) | Optional |  | Format validation recommended. |
-| email | Email address | VARCHAR(150) | Optional |  | Format validation recommended. |
-| student_status | Active or Inactive | VARCHAR(20) | Yes | Default Active | Inactive students cannot receive new approved devices. |
-| record_status | Official or Pending | VARCHAR(20) | Yes | Default Official | Pending supports guard-submitted student details. |
-| proof_type | Proof used for pending student verification | VARCHAR(50) | Required for Pending | School ID, Registration Form, Enrollment Record, Other School-Approved Proof | Nullable for official records created directly by Admin. |
-| proof_reference | Proof number, title, or remarks | VARCHAR(150) | Required for Pending |  | Example: school ID shown, enrollment form reference, or guard remarks. |
-| submitted_by | User who submitted pending student | INTEGER | Required for Pending | FK to users | Guard who submitted the pending student record. |
-| submitted_at | Pending student submission timestamp | DATETIME | Required for Pending | System generated |  |
-| reviewed_by | Admin reviewer | INTEGER | Optional | FK to users | Used when pending student is approved as Official or rejected/deactivated. |
-| reviewed_at | Review timestamp | DATETIME | Optional | System generated |  |
-| review_remarks | Admin review notes | TEXT | Optional |  | Required when rejecting or deactivating invalid pending student details. |
-| created_at | Creation timestamp | DATETIME | Yes | System generated |  |
-| updated_at | Last update timestamp | DATETIME | Optional | System generated |  |
+| Object | Purpose |
+| --- | --- |
+| `users` | Admin and guard accounts. No student logins. |
+| `students` | Student registry records. |
+| `devices` | Permanent BYOD device registrations and pending device submissions. |
+| `event_requests` | Header records for event-based temporary access requests. |
+| `event_request_devices` | Device line items under an event request. |
+| `device_logs` | Immutable gate entry/exit event rows. |
+| `audit_logs` | Immutable system-wide audit trail. |
+| `v_device_campus_status` | Derived inside/outside status for approved active devices. |
+| `v_pending_devices` | Admin pending-device approval queue. |
+| `v_active_event_requests` | Pending/approved event requests with device counts. |
 
-## Table: devices
+## Status And Enum Values
 
-| Field | Description | Suggested Type | Required | Constraints | Notes |
-| --- | --- | --- | --- | --- | --- |
-| device_id | Device identifier | INTEGER | Yes | Primary key, auto increment |  |
-| student_id | Student owner | VARCHAR(30) | Optional | FK to students | Required for Academic BYOD. Nullable for pure event equipment if event table is used. |
-| device_type | Laptop, Tablet, Camera, etc. | VARCHAR(50) | Yes |  | Avoid overly broad "Other" without remarks. |
-| brand | Device brand | VARCHAR(100) | Required for BYOD |  |  |
-| model | Device model | VARCHAR(100) | Optional |  |  |
-| serial_number | Device serial number | VARCHAR(100) | Required for BYOD | Unique where applicable | Some event equipment may use asset tag instead. |
-| asset_tag | School or event asset tag | VARCHAR(100) | Optional | Unique where applicable | Useful for event equipment. |
-| color | Physical color | VARCHAR(50) | Optional |  |  |
-| image_path | Local path to device image | VARCHAR(255) | Optional |  | Optional verification aid. |
-| registration_status | Pending, Approved, Rejected | VARCHAR(20) | Yes |  | Separate from campus/device status. |
-| campus_status | Inside, Outside | VARCHAR(20) | Yes | Default Outside | Current physical status. |
-| device_status | Active, Inactive | VARCHAR(20) | Yes | Default Active | Operational status used to allow or prevent monitoring actions. |
-| device_purpose | Device purpose | VARCHAR(50) | Yes |  | Academic BYOD or event purpose. |
-| submitted_by | User who submitted record | INTEGER | Optional | FK to users | Required for pending records. |
-| submitted_at | Submission timestamp | DATETIME | Optional |  | Required for pending records. |
-| approved_by | Admin approver | INTEGER | Optional | FK to users | Required when approved from pending. |
-| approved_at | Approval timestamp | DATETIME | Optional |  |  |
-| rejected_by | Admin rejector | INTEGER | Optional | FK to users | Required when rejected. |
-| rejected_at | Rejection timestamp | DATETIME | Optional |  |  |
-| rejection_reason | Reason for rejection | TEXT | Optional |  | Required when rejected. |
-| remarks | Notes | TEXT | Optional |  |  |
+| Field | Allowed Values |
+| --- | --- |
+| `users.role` | `admin`, `guard` |
+| `users.status`, `students.status`, `devices.device_status` | `active`, `inactive` |
+| `devices.device_type` | `laptop`, `tablet`, `phone` |
+| `devices.device_purpose` | `Academic BYOD`, `School Event`, `Organization Activity`, `Temporary Equipment`, `Other Approved Purpose` |
+| `devices.registration_status` | `pending`, `approved`, `rejected` |
+| `event_requests.approval_doc_type` | `Paper Approval`, `Signed GPOA` |
+| `event_requests.status` | `pending`, `approved`, `returned`, `rejected` |
+| `event_request_devices.device_type` | `laptop`, `tablet`, `phone`, `camera`, `projector`, `other` |
+| `event_request_devices.device_status` | `pending`, `approved`, `returned` |
+| `device_logs.event_type` | `entry`, `exit` |
+| `device_logs.logout_type` | `manual`, `automatic` |
 
-## Table: event_devices
+## Table: `users`
 
-Use this table when the implementation separates event details from the main device record.
+| Column | Type | Required | Key/Constraint | Notes |
+| --- | --- | --- | --- | --- |
+| `user_id` | SERIAL | Yes | PK | Account identifier. |
+| `username` | VARCHAR(100) | Yes | Unique, min length 3 | Login name. |
+| `password_hash` | TEXT | Yes | Min length 20 | bcrypt or argon2 hash only. |
+| `full_name` | VARCHAR(255) | No |  | Display name. |
+| `role` | VARCHAR(10) | Yes | `admin`, `guard` | Access control role. |
+| `status` | VARCHAR(10) | Yes | `active`, `inactive` | Inactive users cannot log in. |
+| `created_at` | TIMESTAMPTZ | Yes | Default current timestamp | Server timestamp. |
+| `updated_at` | TIMESTAMPTZ | Yes | Trigger-maintained | Updated on every update. |
 
-| Field | Description | Suggested Type | Required | Constraints | Notes |
-| --- | --- | --- | --- | --- | --- |
-| event_device_id | Event device identifier | INTEGER | Yes | Primary key, auto increment |  |
-| device_id | Linked device record | INTEGER | Yes | FK to devices |  |
-| responsible_person_name | Person accountable for equipment | VARCHAR(150) | Yes |  | Could be student, faculty, staff, or organizer. |
-| responsible_person_contact | Contact number/email | VARCHAR(150) | Optional |  |  |
-| event_name | Event/activity name | VARCHAR(150) | Yes |  |  |
-| organization_or_department | Group responsible | VARCHAR(150) | Optional |  |  |
-| event_purpose | Purpose of equipment | VARCHAR(150) | Yes |  |  |
-| approval_document_type | Paper Approval, Signed GPOA, Other Approved Document | VARCHAR(50) | Yes |  | Proof presented by organization/responsible person. |
-| approval_document_reference | Document number, title, signer, or short description | VARCHAR(150) | Yes |  | Use a practical reference if no formal number exists. |
-| approval_document_verified_by | Guard who checked the document | INTEGER | Yes | FK to users | Guard may accept event device entry at the gate. |
-| approval_document_verified_at | Verification timestamp | DATETIME | Yes | System generated | Recorded when guard verifies document. |
-| expected_exit_at | Expected exit/return time | DATETIME | Yes |  | Used for follow-up. |
-| reviewed_by | Admin reviewer | INTEGER | Optional | FK to users | Optional post-entry review; not required before ingress. |
-| remarks | Notes | TEXT | Optional |  |  |
+## Table: `students`
 
-## Table: device_logs
+| Column | Type | Required | Key/Constraint | Notes |
+| --- | --- | --- | --- | --- |
+| `student_id` | VARCHAR(50) | Yes | PK, non-blank | School student number. |
+| `first_name` | VARCHAR(100) | Yes | Non-blank | Student first name. |
+| `last_name` | VARCHAR(100) | Yes | Non-blank | Student last name. |
+| `course_year_level` | VARCHAR(100) | No |  | Course/year display value. |
+| `status` | VARCHAR(10) | Yes | `active`, `inactive` | Deactivation flag. |
+| `created_at` | TIMESTAMPTZ | Yes | Default current timestamp | Server timestamp. |
+| `updated_at` | TIMESTAMPTZ | Yes | Trigger-maintained | Updated on every update. |
 
-| Field | Description | Suggested Type | Required | Constraints | Notes |
-| --- | --- | --- | --- | --- | --- |
-| log_id | Log identifier | INTEGER | Yes | Primary key, auto increment |  |
-| device_id | Logged device | INTEGER | Yes | FK to devices |  |
-| student_id | Student owner if applicable | VARCHAR(30) | Optional | FK to students | Nullable for pure event equipment. |
-| ingress_time | Entry timestamp | DATETIME | Yes | System generated |  |
-| egress_time | Exit timestamp | DATETIME | Optional | Must be after ingress | Null means open ingress. |
-| log_status | Inside or Exited | VARCHAR(20) | Yes |  | Derived from egress state where possible. |
-| logged_in_by | User who logged ingress | INTEGER | Yes | FK to users |  |
-| logged_out_by | User who logged egress | INTEGER | Optional | FK to users |  |
-| auto_logged_out | Whether egress was automatic at school closing | BOOLEAN | Yes | Default false | True for school-closing auto logout. |
-| entry_type | Approved, Pending Temporary, Event | VARCHAR(30) | Yes |  | Helps reports. |
-| remarks | Notes | TEXT | Optional |  |  |
-| correction_reason | Correction note | TEXT | Optional |  | Admin-only correction note. |
+## Table: `devices`
 
-## Table: users
+| Column | Type | Required | Key/Constraint | Notes |
+| --- | --- | --- | --- | --- |
+| `device_id` | SERIAL | Yes | PK | Device identifier. |
+| `student_id` | VARCHAR(50) | Yes | FK to `students` | Permanent device owner. |
+| `device_name` | VARCHAR(255) | No |  | Friendly name. |
+| `brand` | VARCHAR(100) | No |  | Manufacturer. |
+| `model` | VARCHAR(100) | No |  | Model name. |
+| `serial_number` | VARCHAR(255) | Yes | Unique | Required global identifier. |
+| `device_type` | VARCHAR(10) | No | Check constraint | BYOD type. |
+| `device_purpose` | VARCHAR(100) | No | Check constraint | Purpose category. |
+| `registration_status` | VARCHAR(10) | Yes | Check constraint | Pending, approved, or rejected. |
+| `device_status` | VARCHAR(10) | Yes | Check constraint | Active or inactive. |
+| `reviewed_by` | INT | No | FK to `users` | Admin reviewer. |
+| `reviewed_at` | TIMESTAMPTZ | No | Paired with reviewer | Review timestamp. |
+| `remarks` | TEXT | No | Required when rejected | Notes/rejection reason/proof detail. |
+| `image_path` | VARCHAR(500) | No |  | Device image path. |
+| `created_at` | TIMESTAMPTZ | Yes | Default current timestamp | Server timestamp. |
+| `updated_at` | TIMESTAMPTZ | Yes | Trigger-maintained | Updated on every update. |
 
-| Field | Description | Suggested Type | Required | Constraints | Notes |
-| --- | --- | --- | --- | --- | --- |
-| user_id | User identifier | INTEGER | Yes | Primary key, auto increment |  |
-| username | Login username | VARCHAR(100) | Yes | Unique |  |
-| password_hash | Hashed password | VARCHAR(255) | Yes |  | Never store plain text. |
-| full_name | User full name | VARCHAR(150) | Yes |  |  |
-| role | Admin or Security Guard | VARCHAR(30) | Yes |  |  |
-| status | Active or Inactive | VARCHAR(20) | Yes | Default Active |  |
-| created_at | Creation timestamp | DATETIME | Yes | System generated |  |
-| updated_at | Last update timestamp | DATETIME | Optional | System generated |  |
+## Table: `event_requests`
 
-## Table: audit_logs
+| Column | Type | Required | Key/Constraint | Notes |
+| --- | --- | --- | --- | --- |
+| `event_request_id` | SERIAL | Yes | PK | Request identifier. |
+| `student_id` | VARCHAR(50) | Yes | FK to `students` | Responsible/submitting student. |
+| `responsible_person` | VARCHAR(255) | No |  | Person in charge. |
+| `organization` | VARCHAR(255) | No |  | Group or department. |
+| `event_name` | VARCHAR(255) | Yes | Non-blank | Event name. |
+| `event_purpose` | VARCHAR(255) | No |  | Purpose text. |
+| `approval_doc_type` | VARCHAR(20) | No | Check constraint | Paper approval or signed GPOA. |
+| `approval_doc_ref` | VARCHAR(255) | No |  | Document reference. |
+| `start_date` | DATE | No | Date range rule | Event start. |
+| `end_date` | DATE | No | Date range rule | Event end. |
+| `status` | VARCHAR(10) | Yes | Check constraint | Request workflow state. |
+| `is_submitted` | BOOLEAN | Yes | Default false | Physical form submission flag. |
+| `is_accommodated` | BOOLEAN | Yes | Default false | Gate accommodation flag. |
+| `reviewed_by` | INT | No | FK to `users` | Admin reviewer. |
+| `reviewed_at` | TIMESTAMPTZ | No | Paired with reviewer | Review timestamp. |
+| `remarks` | TEXT | No |  | Admin notes. |
+| `created_at` | TIMESTAMPTZ | Yes | Default current timestamp | Server timestamp. |
+| `updated_at` | TIMESTAMPTZ | Yes | Trigger-maintained | Updated on every update. |
 
-| Field | Description | Suggested Type | Required | Constraints | Notes |
-| --- | --- | --- | --- | --- | --- |
-| audit_id | Audit identifier | INTEGER | Yes | Primary key, auto increment |  |
-| user_id | User who performed action | INTEGER | Yes | FK to users |  |
-| action | Action name | VARCHAR(100) | Yes |  | Example: SUBMIT_PENDING_STUDENT, APPROVE_PENDING, REJECT_PENDING, REACTIVATE_DEVICE. |
-| entity_type | Affected entity/table | VARCHAR(50) | Yes |  |  |
-| entity_id | Affected record ID | VARCHAR(100) | Yes |  | String supports different key types. |
-| old_value | Previous value | TEXT | Optional |  |  |
-| new_value | New value | TEXT | Optional |  |  |
-| remarks | Reason or notes | TEXT | Optional |  | Required for sensitive changes. |
-| created_at | Audit timestamp | DATETIME | Yes | System generated |  |
+## Table: `event_request_devices`
 
-## Draft ERD
+| Column | Type | Required | Key/Constraint | Notes |
+| --- | --- | --- | --- | --- |
+| `event_device_id` | SERIAL | Yes | PK | Line-item identifier. |
+| `event_request_id` | INT | Yes | FK to `event_requests`, cascade delete | Parent request. |
+| `device_name` | VARCHAR(255) | No |  | Device label. |
+| `brand` | VARCHAR(100) | No |  | Brand. |
+| `model` | VARCHAR(100) | No |  | Model. |
+| `device_type` | VARCHAR(20) | No | Check constraint | Event device type. |
+| `serial_number` | VARCHAR(255) | No | Unique with request when provided | May be null. |
+| `quantity` | INT | Yes | Greater than zero | Defaults to 1. |
+| `verified_by` | INT | No | FK to `users` | Guard verifier. |
+| `verified_at` | TIMESTAMPTZ | No |  | Verification timestamp. |
+| `device_status` | VARCHAR(10) | Yes | Check constraint | Line-item status. |
+| `remarks` | TEXT | No |  | Notes. |
+| `created_at` | TIMESTAMPTZ | Yes | Default current timestamp | Server timestamp. |
+| `updated_at` | TIMESTAMPTZ | Yes | Trigger-maintained | Updated on every update. |
+
+## Table: `device_logs`
+
+| Column | Type | Required | Key/Constraint | Notes |
+| --- | --- | --- | --- | --- |
+| `log_id` | SERIAL | Yes | PK | Log identifier. |
+| `device_id` | INT | Yes | FK to `devices` | Logged permanent BYOD device. |
+| `student_id` | VARCHAR(50) | Yes | FK to `students` | Device owner at log time. |
+| `event_type` | VARCHAR(10) | Yes | `entry`, `exit` | One row per event. |
+| `event_time` | TIMESTAMPTZ | Yes | Default current timestamp | Event timestamp. |
+| `handled_by` | INT | Conditional | FK to `users` | Null only for automatic exits. |
+| `logout_type` | VARCHAR(10) | No | `manual`, `automatic` | Exit classification. |
+| `auto_exit` | BOOLEAN | Yes | Default false | System-generated exit flag. |
+| `notes` | TEXT | No |  | Guard/system notes. |
+| `created_at` | TIMESTAMPTZ | Yes | Forced by trigger | Cannot be backdated. |
+
+## Table: `audit_logs`
+
+| Column | Type | Required | Key/Constraint | Notes |
+| --- | --- | --- | --- | --- |
+| `audit_id` | SERIAL | Yes | PK | Audit identifier. |
+| `user_id` | INT | No | FK to `users`, set null on user delete | Actor when applicable. |
+| `action_type` | VARCHAR(100) | Yes | Check constraint | Standard action vocabulary. |
+| `target_table` | VARCHAR(100) | Yes | Non-blank | Affected table. |
+| `target_id` | VARCHAR(100) | No |  | Affected record key. |
+| `old_values` | JSONB | No |  | Before state. |
+| `new_values` | JSONB | No |  | After state. |
+| `ip_address` | VARCHAR(45) | No | Length check | Client/backend IP if available. |
+| `created_at` | TIMESTAMPTZ | Yes | Forced by trigger | Cannot be backdated. |
+
+## ERD
 
 ```mermaid
 erDiagram
     students ||--o{ devices : owns
-    devices ||--o{ device_logs : has
-    devices ||--o| event_devices : event_details
-    users ||--o{ students : submits_or_reviews
-    users ||--o{ devices : submits_or_reviews
-    users ||--o{ device_logs : logs
+    students ||--o{ event_requests : submits
+    event_requests ||--o{ event_request_devices : contains
+    devices ||--o{ device_logs : records
+    users ||--o{ devices : reviews
+    users ||--o{ event_requests : reviews
+    users ||--o{ event_request_devices : verifies
+    users ||--o{ device_logs : handles
     users ||--o{ audit_logs : performs
 
     students {
         string student_id PK
         string first_name
         string last_name
-        string course
-        string section
-        string student_status
-        string record_status
-        string proof_type
-        string proof_reference
-        int submitted_by FK
-        datetime submitted_at
-        int reviewed_by FK
-        datetime reviewed_at
+        string course_year_level
+        string status
     }
     devices {
         int device_id PK
         string student_id FK
+        string device_name
         string serial_number
-        string registration_status
-        string campus_status
-        string device_status
+        string device_type
         string device_purpose
+        string registration_status
+        string device_status
+        int reviewed_by FK
+    }
+    event_requests {
+        int event_request_id PK
+        string student_id FK
+        string responsible_person
+        string event_name
+        string approval_doc_type
+        date start_date
+        date end_date
+        string status
+    }
+    event_request_devices {
+        int event_device_id PK
+        int event_request_id FK
+        string device_type
+        string serial_number
+        int quantity
+        int verified_by FK
+        string device_status
     }
     device_logs {
         int log_id PK
         int device_id FK
         string student_id FK
-        datetime ingress_time
-        datetime egress_time
-        string log_status
+        string event_type
+        datetime event_time
+        int handled_by FK
+        string logout_type
+        boolean auto_exit
     }
     users {
         int user_id PK
@@ -173,21 +219,11 @@ erDiagram
         string role
         string status
     }
-    event_devices {
-        int event_device_id PK
-        int device_id FK
-        string responsible_person_name
-        string event_name
-        string approval_document_type
-        string approval_document_reference
-        int approval_document_verified_by FK
-        datetime expected_exit_at
-    }
     audit_logs {
         int audit_id PK
         int user_id FK
-        string action
-        string entity_type
-        string entity_id
+        string action_type
+        string target_table
+        string target_id
     }
 ```

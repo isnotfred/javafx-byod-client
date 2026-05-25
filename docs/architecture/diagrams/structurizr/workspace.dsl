@@ -1,35 +1,33 @@
-workspace "BYOD Registration and Monitoring System" "C4 model for the desktop BYOD monitoring system" {
+workspace "BYOD Device Management System" "C4 model for the target 3-tier BYOD monitoring system" {
     model {
-        admin = person "System Administrator" "Manages students, devices, users, approvals, reports, and exceptions."
-        guard = person "Security Guard" "Searches records, logs ingress/egress, and submits pending registrations."
-        student = person "Student" "Indirect user who presents devices for verification."
+        admin = person "Admin" "Manages students, devices, approvals, reports, users, and audit history."
+        guard = person "Guard" "Searches records, submits pending devices, and logs approved device entry/exit."
+        student = person "Student" "Indirect user who presents devices and details for verification."
 
-        byod = softwareSystem "BYOD Registration and Monitoring System" "Desktop Java application for device registration and ingress-egress monitoring." {
-            desktop = container "JavaFX Desktop Application" "Desktop UI, controllers, services, and DAO/JDBC access." "Java / JavaFX"
-            database = container "Relational Database" "Stores students, devices, device logs, users, event devices, and audit logs." "Relational Database"
-            files = container "Local File Storage" "Stores optional uploaded device images or image paths." "File System"
+        byod = softwareSystem "BYOD Device Management System" "JavaFX desktop frontend, Spring Boot REST API, and Railway PostgreSQL." {
+            frontend = container "JavaFX Desktop Frontend" "Desktop UI, controllers, API client, and session context." "Java / JavaFX"
+            backend = container "Spring Boot REST API" "HTTP endpoints, services, transactions, validation, scheduler, and DAO orchestration." "Java / Spring Boot"
+            database = container "Railway PostgreSQL" "Stores tables, views, triggers, functions, indexes, logs, and audit trail." "PostgreSQL"
+            images = container "Image Storage" "Stores or references optional device images; policy TBD." "TBD"
 
-            auth = component "Authentication Controller" "Handles login and session routing." "JavaFX Controller"
-            studentComponent = component "Student Management Component" "Manages student workflows." "Service + Controller"
-            deviceComponent = component "Device Management Component" "Manages devices and statuses." "Service + Controller"
-            monitoring = component "Monitoring Component" "Handles ingress, egress, and active devices." "Service + Controller"
-            pending = component "Pending Registration Component" "Handles pending submission and approval." "Service + Controller"
-            reports = component "Report Component" "Generates reports." "Service + Controller"
-            dao = component "DAO/JDBC Component" "Executes SQL and maps rows to domain objects." "JDBC DAO"
+            auth = component "Authentication API" "Authenticates users and returns role context." "Controller + Service"
+            device = component "Device API" "Manages devices and pending approvals." "Controller + Service"
+            eventRequest = component "Event Request API" "Manages event request headers and device line items." "Controller + Service"
+            gateLog = component "Gate Log API" "Writes immutable entry/exit records and reads derived status." "Controller + Service"
+            audit = component "Audit DAO" "Calls fn_write_audit_log for standardized audit rows." "DAO"
         }
 
-        admin -> desktop "Uses"
-        guard -> desktop "Uses"
-        student -> guard "Presents device to"
-        desktop -> database "Reads/writes using JDBC"
-        desktop -> files "Stores/retrieves optional images"
-        auth -> dao "Uses"
-        studentComponent -> dao "Uses"
-        deviceComponent -> dao "Uses"
-        monitoring -> dao "Uses"
-        pending -> dao "Uses"
-        reports -> dao "Uses"
-        dao -> database "Executes SQL against"
+        admin -> frontend "Uses"
+        guard -> frontend "Uses"
+        student -> guard "Presents device/details to"
+        frontend -> backend "Calls HTTPS JSON API"
+        frontend -> images "Uses optional image path/storage"
+        backend -> database "Reads/writes using JDBC over TLS"
+        auth -> database "Reads users and writes audit"
+        device -> database "Reads/writes devices and views"
+        eventRequest -> database "Reads/writes event requests"
+        gateLog -> database "Inserts device_logs and reads latest state"
+        audit -> database "Calls fn_write_audit_log"
     }
 
     views {
@@ -43,7 +41,7 @@ workspace "BYOD Registration and Monitoring System" "C4 model for the desktop BY
             autolayout tb
         }
 
-        component desktop "DesktopComponents" {
+        component backend "BackendComponents" {
             include *
             autolayout lr
         }
@@ -52,10 +50,9 @@ workspace "BYOD Registration and Monitoring System" "C4 model for the desktop BY
             element "Person" {
                 shape person
             }
-            element "Relational Database" {
+            element "PostgreSQL" {
                 shape cylinder
             }
         }
     }
 }
-

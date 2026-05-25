@@ -1,97 +1,86 @@
-# 09 - Acceptance Criteria and Test Scenarios
+# 09 - Acceptance Criteria And Test Scenarios
 
 ## Acceptance Criteria
 
-### Authentication and Roles
+### Authentication And Roles
 
-- Given an active admin account, when the admin logs in with valid credentials, then the admin dashboard is displayed.
-- Given an active guard account, when the guard logs in with valid credentials, then the guard dashboard is displayed.
-- Given a guard account, when the user attempts to access admin-only functions, then the system denies access.
-- Given an inactive account, when the user logs in, then the system rejects the login.
+- Given an active `admin` account, when valid credentials are submitted, then the admin dashboard is displayed.
+- Given an active `guard` account, when valid credentials are submitted, then the guard dashboard is displayed.
+- Given an inactive account, when valid credentials are submitted, then login is rejected.
+- Given a guard account, when an admin-only function is requested, then the backend denies access.
 
-### Student Management
+### Students
 
-- Admin can register a student with complete required details.
-- System rejects duplicate student IDs.
-- System rejects missing required student fields.
-- Admin can deactivate a student without deleting historical records.
-- Guard can submit a pending student record only with accepted proof, and only an admin can make the record official.
+- Admin can create a student with student ID, first name, last name, and status.
+- Duplicate student IDs are rejected.
+- Missing first name or last name is rejected.
+- Students with linked history are deactivated rather than hard-deleted.
 
-### Device Management
+### Devices And Pending Approval
 
-- Admin can register a device under an active student.
-- System rejects duplicate serial numbers.
-- System allows one student to have multiple devices.
-- System separates registration status, campus status, device status, and device purpose.
-- Inactive and rejected devices cannot enter through normal ingress.
+- Admin can register a permanent BYOD device under an existing student.
+- Duplicate serial numbers are rejected.
+- Pending device registrations appear in the approval queue.
+- Admin can approve a pending device.
+- Admin can reject a pending device only with remarks.
+- Guard cannot approve or reject a pending device.
+- Pending, rejected, and inactive devices cannot receive gate log records.
 
-### Pending Registration
+### Event Requests
 
-- Guard can submit an unregistered device as pending.
-- Pending registration appears in the admin approval list.
-- Admin can approve pending registration.
-- Admin can reject pending registration with reason.
-- Guard cannot approve or reject pending registrations.
-- Pending devices can be logged for temporary entry while waiting for admin approval.
+- Users with allowed access can create event request headers and device line items.
+- Event document type must be `Paper Approval` or `Signed GPOA`.
+- End date cannot be before start date.
+- Event request devices appear in event reports.
+- The system documents that event line items are not directly linked to `device_logs` in the uploaded schema.
 
-### Temporary/Event Devices
+### Gate Monitoring
 
-- User can register event equipment with responsible person, event name, and approval document details.
-- Guard can verify paper approval or signed GPOA before accepting temporary/event device entry.
-- System rejects event device records without responsible person, event name, approval document details, purpose, or expected exit.
-- Temporary/event devices appear in event-specific reports.
-- Temporary/event devices are not counted as regular Academic BYOD devices unless explicitly registered as such.
-
-### Ingress and Egress
-
-- Guard can log ingress for an approved active device currently Outside.
-- System records ingress timestamp and logged-in user.
-- Guard can log egress for a device currently Inside.
-- System records egress timestamp and logged-out user.
-- System prevents ingress for devices already Inside.
-- System prevents egress for devices without active ingress.
-- Devices still Inside at 10:00 PM are automatically logged out with a system-generated remark.
+- Entry for an approved active outside device creates one immutable `device_logs` row.
+- Exit for an approved active inside device creates one immutable `device_logs` row.
+- Consecutive entry or consecutive exit for the same device is rejected.
+- Automatic logout creates system exit rows with `auto_exit = TRUE`, `logout_type = 'automatic'`, and no human handler.
+- Campus status displays from derived latest-log state.
 
 ### Reports
 
 - Admin can generate all required reports with valid filters.
-- Reports show expected columns.
-- Reports match saved records.
 - Invalid date ranges are rejected.
+- Reports match saved database records.
 
 ## QA Test Scenarios
 
 | Test ID | Scenario | Given | When | Then |
 | --- | --- | --- | --- | --- |
-| TS-001 | Valid admin login | Active admin account exists | Admin enters valid credentials | Admin dashboard opens. |
-| TS-002 | Valid guard login | Active guard account exists | Guard enters valid credentials | Guard dashboard opens. |
-| TS-003 | Invalid password | User account exists | User enters wrong password | Login is rejected. |
-| TS-004 | Inactive login | User account is inactive | User enters valid credentials | Login is rejected with inactive account message. |
-| TS-005 | Guard permission denial | Guard is logged in | Guard attempts to open User Management | Access is denied. |
-| TS-006 | Add valid student | Admin is logged in | Admin saves complete student form | Student record is saved. |
-| TS-007 | Duplicate student ID | Student ID already exists | Admin saves same ID | System rejects duplicate. |
-| TS-008 | Missing student fields | Required fields are blank | Admin saves form | System displays required field messages. |
-| TS-009 | Pending student submission | Valid student is not encoded but is manually verified with accepted proof | Guard submits pending student/device details with proof type and proof reference/remarks | Pending student/device record is saved for admin review and student `record_status` remains Pending. |
-| TS-010 | Register valid device | Active student exists | Admin saves device with unique serial | Device is registered. |
-| TS-011 | Duplicate serial number | Serial number exists | Admin saves new device with same serial | System rejects duplicate. |
-| TS-012 | Multiple devices per student | Student has existing device | Admin registers another unique device | New device is saved. |
-| TS-013 | Submit pending device | Device is unregistered | Guard submits quick registration | Pending record appears in admin queue. |
-| TS-014 | Approve pending | Pending record exists | Admin approves it | Registration status becomes Approved. |
-| TS-015 | Reject pending | Pending record exists | Admin enters reason and rejects | Registration status becomes Rejected. |
-| TS-016 | Guard approval denied | Guard is logged in | Guard attempts approval | System denies access. |
-| TS-017 | Pending repeat temporary entry | Pending device is still waiting for admin approval | Guard logs another ingress on a later visit | System allows temporary entry and keeps registration status Pending. |
-| TS-018 | Register event device | Event details and approval document details are complete | User saves event device | Device is stored as Temporary/Event Device. |
-| TS-019 | Missing event responsible person | Event device form lacks responsible person | User saves form | System rejects record. |
-| TS-020 | Missing event approval document | Event device form lacks paper approval or signed GPOA details | Guard saves form | System rejects record. |
-| TS-021 | Approved device ingress | Approved active device is Outside | Guard logs ingress | Ingress is saved and campus status becomes Inside. |
-| TS-022 | Already inside ingress | Device is already Inside | Guard logs ingress | System rejects duplicate ingress. |
-| TS-023 | Inactive device ingress | Device is Inactive | Guard logs ingress | System rejects ingress. |
-| TS-024 | Rejected device ingress | Device is Rejected | Guard logs ingress | System rejects ingress. |
-| TS-025 | Valid egress | Device is Inside with active log | Guard logs egress | Egress is saved and campus status becomes Outside. |
-| TS-026 | Egress without ingress | Device is Outside | Guard logs egress | System rejects egress. |
-| TS-027 | Automatic school-closing logout | Device is still Inside at 10:00 PM | System runs automatic logout | Device egress is recorded at 10:00 PM, campus status becomes Outside, and remarks show automatic logout. |
-| TS-028 | Daily report | Logs exist for selected day | Admin generates daily report | Report shows matching logs. |
-| TS-029 | Monthly report | Logs exist for month | Admin generates monthly report | Summary totals match logs. |
-| TS-030 | Event device report | Event device logs exist | Admin generates event report | Event device records and approval document details appear. |
-| TS-031 | Invalid report date range | Start date is after end date | Admin generates report | System rejects date range. |
-| TS-032 | Missing pending student proof | Valid student is not encoded but proof type or proof reference is blank | Guard submits pending student/device details | System rejects the pending student submission and shows required proof messages. |
+| TS-001 | Valid admin login | Active user has role `admin` | User submits valid credentials | Admin dashboard opens and audit login event is recorded. |
+| TS-002 | Valid guard login | Active user has role `guard` | User submits valid credentials | Guard dashboard opens and audit login event is recorded. |
+| TS-003 | Invalid password | User exists | Wrong password is submitted | Login is rejected and `USER_LOGIN_FAILED` is audited. |
+| TS-004 | Inactive account | User status is `inactive` | Valid credentials are submitted | Login is rejected. |
+| TS-005 | Guard permission denial | Guard is authenticated | Guard requests User Management | Backend denies access. |
+| TS-006 | Add valid student | Admin is authenticated | Admin saves required student fields | Student row is inserted. |
+| TS-007 | Duplicate student ID | Student ID exists | Admin saves same ID | Save is rejected. |
+| TS-008 | Missing student names | Required name is blank | Admin saves form | Save is rejected. |
+| TS-009 | Register valid device | Student exists | Admin saves device with unique serial number | Device row is inserted. |
+| TS-010 | Duplicate serial number | Serial number exists | User saves another device with same serial number | Save is rejected. |
+| TS-011 | Submit pending device | Device is not registered | Guard saves quick pending registration | Device row is created with `registration_status = 'pending'`. |
+| TS-012 | Pending appears in queue | Pending device exists | Admin opens pending approval | Device appears from `v_pending_devices`. |
+| TS-013 | Approve pending | Pending device exists | Admin approves | Device status becomes `approved` with reviewer fields. |
+| TS-014 | Reject pending | Pending device exists | Admin enters remarks and rejects | Device status becomes `rejected`. |
+| TS-015 | Reject without remarks | Pending device exists | Admin rejects without remarks | Database/application rejects the action. |
+| TS-016 | Guard approval denied | Guard is authenticated | Guard attempts approval endpoint/action | Access is denied. |
+| TS-017 | Pending device entry blocked | Device registration status is `pending` | Guard logs entry | Database trigger blocks the log. |
+| TS-018 | Register event request | Valid event header and line item exist | User saves event request | Request and line item rows are inserted. |
+| TS-019 | Invalid event document type | Event request has unsupported document type | User saves request | Save is rejected. |
+| TS-020 | Invalid event date range | End date is before start date | User saves request | Save is rejected. |
+| TS-021 | Approved device entry | Approved active device latest state is outside | Guard logs entry | `device_logs` entry row is inserted. |
+| TS-022 | Duplicate entry blocked | Device latest event is entry | Guard logs another entry | Trigger rejects consecutive event. |
+| TS-023 | Inactive device entry blocked | Device status is `inactive` | Guard logs entry | Trigger rejects log. |
+| TS-024 | Rejected device entry blocked | Registration status is `rejected` | Guard logs entry | Trigger rejects log. |
+| TS-025 | Valid exit | Device latest event is entry | Guard logs exit | `device_logs` exit row is inserted. |
+| TS-026 | Exit without entry blocked | Device latest state is outside | Guard logs exit | Trigger rejects consecutive/invalid exit. |
+| TS-027 | Automatic logout | Device latest event is entry at school closing | Scheduler runs | Automatic exit row is inserted with no human handler. |
+| TS-028 | Immutable device log | Log row exists | User attempts update/delete | Database rejects the change. |
+| TS-029 | Immutable audit log | Audit row exists | User attempts update/delete | Database rejects the change. |
+| TS-030 | Daily report | Logs exist for selected day | Admin generates report | Report shows matching events. |
+| TS-031 | Event report | Event requests exist | Admin generates event report | Request and line-item data appear. |
+| TS-032 | Invalid report range | Start date is after end date | Admin generates report | Request is rejected. |

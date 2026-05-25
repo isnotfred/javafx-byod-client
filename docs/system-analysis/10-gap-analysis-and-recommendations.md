@@ -1,46 +1,32 @@
-# 10 - Gap Analysis and Recommendations
+# 10 - Gap Analysis And Recommendations
 
-## Review Result
+| Gap | Impact | Recommendation | Priority |
+| --- | --- | --- | --- |
+| Current repository source is still a JavaFX starter project. | Implementation does not yet match the target 3-tier documentation. | Treat these docs as the target baseline and create separate frontend/backend implementation work items. | High |
+| Spring Boot backend repository is not present in this repo. | API, service, DAO, Railway deployment, and backend tests cannot be verified here. | Create or link the backend repository and keep API docs synchronized. | High |
+| Exact REST DTOs are not specified. | Frontend/backend integration may drift. | Define request/response models before implementation. | High |
+| Authentication token/session format is not specified. | Role propagation and logout behavior remain unclear. | Decide whether the backend returns a token, session object, or simple authenticated user payload. | High |
+| Event request devices have no direct relationship to `device_logs`. | Event device gate history cannot be queried from the uploaded schema alone. | Decide whether event line items need a gate-log FK, a companion `devices` row, or request-only tracking. | High |
+| Image storage path policy is not specified. | Image paths may break between machines or deployments. | Choose managed frontend storage, shared storage, or backend-uploaded files. | Medium |
+| Railway environment variable names are not specified. | Deployment setup is incomplete. | Define `DATABASE_URL` or JDBC host/user/password variables and backend base URL. | Medium |
+| Backup and restore process is not specified. | Railway data loss recovery is not documented. | Add database backup frequency, owner, and restore procedure. | High |
+| Automatic logout schedule owner is not fully specified. | Runtime behavior may differ between frontend and backend. | Implement automatic logout as a backend scheduled task and document schedule/timezone. | High |
+| Audit viewer permissions are not finalized. | Guard access to logs may be too broad or too narrow. | Keep full audit history admin-only unless explicitly approved. | Medium |
 
-The existing system analysis is a strong starting point and covers many core sections, but it is not yet fully ready as a developer and QA handoff document because it is too broad in one file and leaves some business rules unresolved.
+## Resolved Legacy Conflicts
 
-## Gaps Found
+| Legacy Topic | Resolution |
+| --- | --- |
+| Stored device presence field | Replaced by derived latest-log state and `v_device_campus_status`. |
+| Pending temporary gate entry | Removed; uploaded trigger allows only approved active devices to be logged. |
+| Single event-device table | Replaced by `event_requests` and `event_request_devices`. |
+| Update-style gate logs | Replaced by immutable append-only `device_logs` rows. |
+| Direct desktop-to-database architecture | Replaced by JavaFX -> Spring Boot REST API -> Railway PostgreSQL. |
 
-| Gap | Impact | Resolution in New Docs |
-| --- | --- | --- |
-| Pending device entry rules were unclear. | Developers could implement different behavior than business process expects. | Documented rule: pending devices may have temporary entry while waiting for admin approval. |
-| Pending student handling was unclear. | Guards may not know what to do when a valid student is not encoded. | Confirmed guard-submitted pending student records with required proof and admin review before becoming Official. |
-| Temporary/event equipment was not separated from regular BYOD. | Speakers, projectors, and similar equipment could pollute student BYOD records. | Added Temporary/Event Device requirements, screen, fields, reports, and tests. |
-| Registration status and campus status could be mixed. | Database and UI logic may become inconsistent. | Separated registration, campus, device, and purpose statuses. |
-| User permissions were not detailed enough. | Admin-only and guard-only boundaries could be weak. | Added explicit permission and denial rules. |
-| Report definitions lacked complete filters and columns. | QA and developers could not verify report completeness. | Added report-specific filters, columns, and output expectations. |
-| Use cases had limited alternative/error flows. | Edge cases could be missed in implementation. | Added detailed use cases with alternatives and exceptions. |
-| Validation rules did not cover all invalid scenarios. | Duplicate pending entry, event device, and audit cases could fail. | Added detailed validation rules by domain. |
-| Database fields lacked approval and audit tracking. | Admin decisions and overrides may not be traceable. | Added submitted/approved/rejected fields and audit_logs table. |
-| Traceability was missing. | Hard to prove that rules are implemented and tested. | Added traceability matrix. |
+## Recommended Next Steps
 
-## Needs Team Confirmation
-
-1. Can admins reactivate inactive devices, and what approval evidence is required?
-2. Should report export/printing be required for the current version or treated as optional?
-
-## Recommendations for Current Version
-
-- Keep the current scope desktop-only with JavaFX or Swing and JDBC.
-- Prioritize reliable search, validation, ingress/egress logging, and reports over advanced features.
-- Use soft deactivation instead of deletion for students, devices, and users.
-- Make device logs immutable for normal users.
-- Implement audit logging for sensitive changes if time allows.
-- Use the docs in this folder as the baseline for UI mockups, schema design, backend logic, and QA tests.
-
-## Future Enhancements
-
-- QR code or barcode support.
-- RFID integration.
-- Student self-registration portal.
-- Mobile application.
-- Cloud database synchronization.
-- Email or SMS notifications for pending approvals.
-- PDF/Excel export.
-- Backup and restore module.
-- Multi-gate or multi-campus monitoring.
+1. Create backend implementation tasks for controller/service/DAO/API contracts.
+2. Decide the event device gate-logging model before report implementation.
+3. Define REST DTOs and authentication response shape.
+4. Confirm Railway deployment environment variables and backup policy.
+5. Add implementation tests for database trigger behavior.

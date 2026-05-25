@@ -2,59 +2,60 @@
 
 ## Data Model Scope
 
-The architecture uses a relational database accessed through JDBC. The core tables are `students`, `devices`, `device_logs`, and `users`. Recommended support tables are `event_devices` and `audit_logs`.
+PostgreSQL on Railway is the single source of truth. The current documentation baseline follows the uploaded PostgreSQL schema and the data dictionary in `../system-analysis/06-data-requirements-and-data-dictionary.md`.
 
-## Status Separation
+## Core Tables
 
-| Field | Values |
+| Table | Primary Key | Purpose |
+| --- | --- | --- |
+| `users` | `user_id` | Admin and guard accounts. |
+| `students` | `student_id` | Student registry. |
+| `devices` | `device_id` | Permanent BYOD devices and pending device registrations. |
+| `event_requests` | `event_request_id` | Event access request headers. |
+| `event_request_devices` | `event_device_id` | Device line items under event requests. |
+| `device_logs` | `log_id` | Immutable entry/exit gate events. |
+| `audit_logs` | `audit_id` | Immutable audit trail. |
+
+## Views
+
+| View | Purpose |
 | --- | --- |
-| `registration_status` | Pending, Approved, Rejected |
-| `campus_status` | Inside, Outside |
-| `device_status` | Active, Inactive |
-| `device_purpose` | Academic BYOD, School Event, Organization Activity, Temporary Equipment, Other Approved Purpose |
+| `v_device_campus_status` | Derives inside/outside state for approved active devices from latest log row. |
+| `v_pending_devices` | Pending device registrations joined with student names for admin review. |
+| `v_active_event_requests` | Pending and approved event requests with student names and device counts. |
 
-## Ownership and Keys
+## Integrity Rules
 
-| Table | Primary Key | Main Foreign Keys | Owner |
-| --- | --- | --- | --- |
-| students | student_id | submitted_by, reviewed_by | Admin; Security Guard for pending submission only |
-| devices | device_id | student_id, submitted_by, approved_by, rejected_by | Admin, pending submitter |
-| event_devices | event_device_id | device_id, approval_document_verified_by | Admin or Security Guard |
-| device_logs | log_id | device_id, student_id, logged_in_by, logged_out_by | Monitoring workflow |
-| users | user_id | None | Admin |
-| audit_logs | audit_id | user_id | System |
+- Unique usernames and serial numbers.
+- Check constraints for roles, statuses, device types, event types, document types, and audit action types.
+- Reviewer fields must be populated together.
+- Rejected devices require remarks.
+- Gate logs are allowed only for approved active devices.
+- Manual gate events must alternate between entry and exit.
+- Automatic exits are always exit events with no human handler.
+- Logs and audit rows are immutable.
+- Server-side timestamps prevent backdating of logs and audit records.
 
-## Important Constraints
+## Index Strategy
 
-- `students.student_id` must be unique.
-- Pending student records must include proof type, proof reference or remarks, submitted_by, submitted_at, and `record_status = Pending`.
-- Only administrators can change a pending student record to Official after review.
-- `users.username` must be unique.
-- Device serial number or asset tag should be unique where applicable.
-- A device must not have more than one open ingress log before school-closing auto logout runs.
-- Egress time must not be earlier than ingress time.
-- Approved BYOD devices should reference an official active student.
-- Pending BYOD devices may reference a pending student record while waiting for admin review.
-- Event devices must capture responsible person, event name, and approval document details such as paper approval or signed GPOA.
+Indexes prioritize:
 
-## Data Integrity Approach
+- Student name and status lookup.
+- Device owner, serial number, registration status, and pending queue.
+- Event request student/status/date lookup.
+- Latest log lookup per device.
+- Audit lookup by user, target, and created timestamp.
 
-- Use validation in services before writes.
-- Use database constraints for unique keys and foreign keys.
-- Use transactions for log insertion plus device status update.
-- Use a scheduled automatic logout process at 10:00 PM for devices still Inside.
-- Use status changes/deactivation instead of permanent deletion.
-- Preserve device logs for audit and reporting.
+## Data Lifecycle
 
-## Index Recommendations
-
-- `students(student_id)`
-- `students(last_name, first_name)`
-- `devices(serial_number)`
-- `devices(asset_tag)`
-- `devices(registration_status, campus_status, device_status)`
-- `device_logs(device_id, ingress_time)`
-- `device_logs(egress_time)`
+| Entity | Lifecycle |
+| --- | --- |
+| Users | Created by admin, deactivated instead of unsafe deletion. |
+| Students | Created by admin or pending flow, deactivated instead of unsafe deletion. |
+| Devices | Pending -> approved or rejected; approved devices are decommissioned by setting inactive. |
+| Event requests | Pending -> approved or rejected; approved -> returned. |
+| Device logs | Insert-only. |
+| Audit logs | Insert-only through `fn_write_audit_log()`. |
 
 ## Diagram
 

@@ -1,17 +1,28 @@
 flowchart TB
     User["Admin / Guard"]
-    UI["JavaFX Desktop Client\nFXML, Controllers, TableViews, Forms"]
-    Services["Service Layer\nValidation, Workflows, Role Checks"]
-    DAO["DAO / Repository Layer\nJDBC and SQL"]
-    DB[("Relational Database")]
-    Files[("Local Image Storage")]
-    Utils["Utility Layer\nSession, Date/Time, Hashing, Logging"]
+
+    subgraph Frontend["JavaFX Desktop Frontend"]
+        UI["FXML Views / Controllers"]
+        ApiClient["API Client\nHTTPS JSON"]
+        Session["Session / Token Context"]
+    end
+
+    subgraph Backend["Spring Boot Backend on Railway"]
+        Controllers["@RestController"]
+        Services["@Service\nValidation, Roles, Transactions"]
+        DAOs["DAO Layer\nJDBC / NamedParameterJdbcTemplate"]
+        Scheduler["Automatic Logout Scheduler"]
+    end
+
+    DB[("PostgreSQL on Railway\nTables, Views, Triggers, Functions")]
+    Images[("Image Storage\nPolicy TBD")]
 
     User --> UI
-    UI --> Services
-    Services --> DAO
-    DAO --> DB
-    UI --> Files
-    Services --> Utils
-    DAO --> Utils
-
+    UI --> ApiClient
+    UI --> Session
+    ApiClient -->|"HTTPS JSON"| Controllers
+    Controllers --> Services
+    Scheduler --> Services
+    Services --> DAOs
+    DAOs -->|"JDBC over TLS"| DB
+    UI -. optional .-> Images

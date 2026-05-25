@@ -1,26 +1,21 @@
 # 11 - Requirements Traceability Matrix
 
-## Matrix
-
-| Business Rule | Functional Requirements | Screens | Database Tables | Test Scenarios |
+| Business Rule | Functional Requirements | Screens | Database Objects | Test Scenarios |
 | --- | --- | --- | --- | --- |
-| BR-001 Only valid students may be associated with regular BYOD devices. Pending student proof is required when guards submit a not-yet-encoded student. | FR-007, FR-012, FR-013, FR-014, FR-022 | Student Management, Quick Pending Registration, Pending Approval, Device Management | students, devices, users | TS-006, TS-007, TS-009, TS-010, TS-032 |
-| BR-002 Device must be registered or pending before monitoring. | FR-021, FR-023, FR-027, FR-035, FR-037 | Guard Dashboard, Pending Approval, Ingress/Egress | devices, device_logs | TS-013, TS-017, TS-021 |
-| BR-003 Each normal BYOD device belongs to one student owner. | FR-014, FR-020 | Device Management | students, devices | TS-010, TS-011 |
-| BR-004 A student may register more than one device. | FR-015 | Student Management, Device Management | students, devices | TS-012 |
-| BR-005 Guards visually verify devices before logging. | FR-036, FR-037, FR-043, FR-044 | Guard Dashboard, Ingress/Egress | devices, device_logs | TS-021, TS-025 |
-| BR-006 Ingress/egress use automatic timestamps. | FR-038, FR-039, FR-045, FR-046 | Ingress/Egress, Active Devices | device_logs, users | TS-021, TS-025 |
-| BR-007 Admin approves/rejects pending registrations. | FR-023, FR-024, FR-025, FR-026 | Pending Approval | devices, users, audit_logs | TS-014, TS-015, TS-016 |
-| BR-008 Event equipment is separate from BYOD. | FR-028, FR-029, FR-030, FR-031, FR-032 | Temporary/Event Device, Reports | devices, event_devices, device_logs | TS-018, TS-019, TS-030 |
-| BR-009 Event equipment requires proof of approval before guard accepts entry. | FR-033, FR-034, FR-068 | Temporary/Event Device | event_devices, users, audit_logs | TS-018, TS-020, TS-030 |
-| BR-010 Inactive or rejected devices cannot enter normally. | FR-018, FR-042, FR-054 | Device Management, Guard Dashboard, Ingress/Egress | devices, audit_logs | TS-022, TS-023, TS-024 |
-| BR-011 Device logs must be preserved. | FR-053, FR-068, FR-069 | Active Devices, Reports | device_logs, audit_logs | TS-027, TS-028 |
-| BR-012 Reports are available for admin review. | FR-055 to FR-063 | Reports | students, devices, device_logs, event_devices, users | TS-028, TS-029, TS-030, TS-031 |
-| BR-013 Devices still inside at 10:00 PM are automatically logged out. | FR-049, FR-050, FR-053, FR-055 | Active Devices, Reports | device_logs | TS-027 |
+| BR-001, BR-002 Authentication and active accounts | FR-001 to FR-006 | Login, dashboards | `users`, `audit_logs` | TS-001 to TS-005 |
+| BR-003 Student deactivation and ownership support | FR-007 to FR-012 | Student Management, Quick Pending Registration | `students`, `devices`, `audit_logs` | TS-006 to TS-008, TS-011 |
+| BR-004, BR-005 BYOD device ownership and uniqueness | FR-013 to FR-020 | Device Management | `devices`, `students`, `users`, `audit_logs` | TS-009, TS-010 |
+| BR-006, BR-007 Pending device approval and rejection | FR-021 to FR-026 | Quick Pending Registration, Pending Approval | `devices`, `v_pending_devices`, `audit_logs` | TS-011 to TS-017 |
+| BR-008 Derived campus presence | FR-020, FR-035 to FR-042, FR-049 | Guard Dashboard, Ingress/Egress, Active Devices | `device_logs`, `v_device_campus_status` | TS-021, TS-022, TS-025, TS-026 |
+| BR-009, BR-010 Immutable gate logging and event alternation | FR-037 to FR-042 | Ingress/Egress, Logs | `device_logs`, triggers | TS-021 to TS-028 |
+| BR-011 Automatic logout | FR-043 to FR-045 | Active Devices, Logs, Reports | `device_logs`, `audit_logs` | TS-027 |
+| BR-012 Event request tracking | FR-027 to FR-034 | Event Request, Reports | `event_requests`, `event_request_devices`, `v_active_event_requests` | TS-018 to TS-020, TS-031 |
+| BR-013 Audit immutability | FR-006, FR-055, FR-056 | Logs, Reports | `audit_logs`, `fn_write_audit_log()` | TS-001, TS-003, TS-028, TS-029 |
+| Report rules | FR-046 to FR-049 | Reports | All reporting tables/views | TS-030 to TS-032 |
+| User management rules | FR-050 to FR-054 | User Management | `users`, `audit_logs` | TS-001 to TS-005 |
 
 ## Coverage Notes
 
-- Every business rule has at least one linked functional requirement.
-- Every major workflow has at least one screen and QA scenario.
-- Status separation is covered by FR-020 and the data dictionary.
-- Remaining policy-sensitive behavior is documented as Needs Team Confirmation in the system analysis and gap analysis.
+- Every business rule has at least one functional requirement and test scenario.
+- Event gate logging remains traceable as a documented open schema issue, not an implemented behavior.
+- Derived campus status is intentionally linked to `device_logs` and `v_device_campus_status`, not to a stored device field.
