@@ -1,0 +1,107 @@
+/* Premium Theme Stylesheet for JavaFX BYOD Client */
+
+.root {
+    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+.button {
+    -fx-padding: 6px 12px;
+}
+
+.table-view {
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1px;
+}
+
+/* Dashboard Structural Classes */
+.dashboard-container {
+    -fx-padding: 20px;
+    -fx-background-color: #f8fafc;
+}
+
+.dashboard-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0f172a;
+}
+
+.dashboard-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748b;
+}
+
+.section-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #334155;
+    -fx-padding: 15px 0 10px 0;
+}
+
+/* Premium Card Components */
+.card {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 18px;
+    -fx-min-width: 180px;
+    -fx-pref-width: 200px;
+}
+
+.card-title {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #94a3b8;
+    -fx-text-transform: uppercase;
+}
+
+.card-value {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+    -fx-padding: 8px 0 0 0;
+}
+
+/* Quick Access Action Buttons */
+.quick-btn {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 15px 20px;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #475569;
+    -fx-cursor: hand;
+    -fx-alignment: center-left;
+}
+
+.quick-btn:hover {
+    -fx-background-color: #eff6ff;
+    -fx-border-color: #3b82f6;
+    -fx-text-fill: #2563eb;
+}
+
+.quick-btn:pressed {
+    -fx-background-color: #dbeafe;
+}
+
+/* Refresh Action Button */
+.refresh-btn {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6px;
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+}
+
+.refresh-btn:hover {
+    -fx-background-color: #2563eb;
+}
+
+.refresh-btn:pressed {
+    -fx-background-color: #1d4ed8;
+}

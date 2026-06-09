@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.pup.byod.javafxbyodclient.controller.SecurityGuardSummaryDashboardController"
+      spacing="20.0" styleClass="dashboard-container" VBox.vgrow="ALWAYS">
+      
+    <!-- Header Row -->
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <VBox spacing="2.0">
+            <Label text="Guard Dashboard Overview" styleClass="dashboard-title"/>
+            <Label text="BYOD Campus Security Gate Control" styleClass="dashboard-subtitle"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Refresh Stats" onAction="#refreshStats" styleClass="refresh-btn"/>
+    </HBox>
+    
+    <Separator/>
+    
+    <!-- Cards Row -->
+    <HBox spacing="15.0" alignment="CENTER_LEFT">
+        <!-- Card 1: Devices On Campus -->
+        <VBox styleClass="card">
+            <Label text="Devices On-Campus" styleClass="card-title"/>
+            <Label fx:id="devicesOnCampusLabel" text="0" styleClass="card-value"/>
+        </VBox>
+        
+        <!-- Card 2: Active Events -->
+        <VBox styleClass="card">
+            <Label text="Active Events" styleClass="card-title"/>
+            <Label fx:id="activeEventsLabel" text="0" styleClass="card-value"/>
+        </VBox>
+        
+        <!-- Card 3: Total Registered (Active) Devices -->
+        <VBox styleClass="card">
+            <Label text="Approved Devices" styleClass="card-title"/>
+            <Label fx:id="totalApprovedDevicesLabel" text="0" styleClass="card-value"/>
+        </VBox>
+    </HBox>
+    
+    <Label text="Quick Access Gate Controls" styleClass="section-title"/>
+    
+    <!-- Quick Access Buttons -->
+    <FlowPane hgap="15.0" vgap="15.0" prefWrapLength="800.0">
+        <Button text="⚡ Gate Entry/Exit Scan" onAction="#goToGateScan" prefWidth="180.0" styleClass="quick-btn"/>
+        <Button text="📝 Quick Registration" onAction="#goToQuickRegister" prefWidth="180.0" styleClass="quick-btn"/>
+        <Button text="📅 Event Device Check" onAction="#goToEventScanner" prefWidth="180.0" styleClass="quick-btn"/>
+        <Button text="🔍 On-Campus Devices" onAction="#goToActiveDevices" prefWidth="180.0" styleClass="quick-btn"/>
+    </FlowPane>
+    
+</VBox>

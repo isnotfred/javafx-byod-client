@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.pup.byod.javafxbyodclient.controller.DeviceManagementScreenController"
+      spacing="10.0" VBox.vgrow="ALWAYS">
+    
+    <Label text="Device Registry Management" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+    
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <TextField fx:id="searchField" promptText="Search by Student ID or SN" prefWidth="250.0"/>
+        <Button text="Search" onAction="#handleSearch"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Deactivate Selected" onAction="#handleDeactivate" style="-fx-text-fill: red;"/>
+    </HBox>
+    
+    <TableView fx:id="deviceTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50.0"/>
+            <TableColumn fx:id="colStudentId" text="Student ID" prefWidth="120.0"/>
+            <TableColumn fx:id="colName" text="Device Name" prefWidth="150.0"/>
+            <TableColumn fx:id="colBrand" text="Brand" prefWidth="100.0"/>
+            <TableColumn fx:id="colModel" text="Model" prefWidth="100.0"/>
+            <TableColumn fx:id="colSerialNumber" text="Serial Number" prefWidth="150.0"/>
+            <TableColumn fx:id="colStatus" text="Status" prefWidth="80.0"/>
+        </columns>
+    </TableView>
+</VBox>

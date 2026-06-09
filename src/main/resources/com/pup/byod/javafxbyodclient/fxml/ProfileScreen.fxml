@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.pup.byod.javafxbyodclient.controller.ProfileScreenController"
+      spacing="20.0" alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
+    
+    <padding>
+        <Insets top="30.0" right="30.0" bottom="30.0" left="30.0"/>
+    </padding>
+
+    <Label text="Profile &amp; Credentials Management" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+    
+    <VBox spacing="10.0" maxWidth="450.0" alignment="TOP_LEFT">
+        <Label text="Profile Information" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #34495e;"/>
+        
+        <GridPane hgap="15.0" vgap="12.0"
+                  style="-fx-border-color: #cccccc; -fx-border-width: 1px; -fx-border-radius: 5px; -fx-background-color: #fafafa; -fx-background-radius: 5px;">
+            <padding>
+                <Insets top="15.0" right="15.0" bottom="15.0" left="15.0"/>
+            </padding>
+            
+            <columnConstraints>
+                <ColumnConstraints halignment="RIGHT" minWidth="120.0"/>
+                <ColumnConstraints hgrow="ALWAYS" minWidth="200.0"/>
+            </columnConstraints>
+            
+            <Label text="Username / Email:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <TextField fx:id="usernameField" promptText="Enter username" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            
+            <Label text="System Role:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <Label fx:id="roleLabel" text="-" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50;" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+            <Label text="Full Name:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <Label fx:id="fullNameLabel" text="-" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50;" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        </GridPane>
+        
+        <HBox alignment="CENTER_RIGHT" style="-fx-padding: 5px 0 0 0;">
+            <Button text="Update Username" onAction="#handleUpdateUsername" prefWidth="180.0" style="-fx-font-weight: bold; -fx-background-color: #3498db; -fx-text-fill: white; -fx-cursor: hand;"/>
+        </HBox>
+    </VBox>
+    
+    <Separator maxWidth="450.0"/>
+    
+    <VBox spacing="10.0" maxWidth="450.0" alignment="TOP_LEFT">
+        <Label text="Security &amp; Password" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #34495e;"/>
+        
+        <GridPane hgap="15.0" vgap="12.0"
+                  style="-fx-border-color: #cccccc; -fx-border-width: 1px; -fx-border-radius: 5px; -fx-background-color: #fafafa; -fx-background-radius: 5px;">
+            <padding>
+                <Insets top="15.0" right="15.0" bottom="15.0" left="15.0"/>
+            </padding>
+            
+            <columnConstraints>
+                <ColumnConstraints halignment="RIGHT" minWidth="120.0"/>
+                <ColumnConstraints hgrow="ALWAYS" minWidth="200.0"/>
+            </columnConstraints>
+            
+            <Label text="Current Password:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <PasswordField fx:id="currentPasswordField" promptText="Enter current password" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            
+            <Label text="New Password:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <PasswordField fx:id="newPasswordField" promptText="Enter new password" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            
+            <Label text="Confirm Password:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <PasswordField fx:id="confirmPasswordField" promptText="Confirm new password" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        </GridPane>
+        
+        <HBox alignment="CENTER_RIGHT" style="-fx-padding: 5px 0 0 0;">
+            <Button text="Update Password" onAction="#handleUpdatePassword" prefWidth="180.0" style="-fx-font-weight: bold; -fx-background-color: #2ecc71; -fx-text-fill: white; -fx-cursor: hand;"/>
+        </HBox>
+    </VBox>
+</VBox>

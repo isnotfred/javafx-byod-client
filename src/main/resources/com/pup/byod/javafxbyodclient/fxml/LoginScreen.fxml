@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.pup.byod.javafxbyodclient.controller.LoginScreenController"
+      alignment="CENTER" spacing="15.0">
+    <padding>
+        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0"/>
+    </padding>
+
+    <Label text="BYOD Device Management System" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+    <Label text="Sign in to your account" style="-fx-font-size: 14px;"/>
+
+    <GridPane hgap="10.0" vgap="10.0" alignment="CENTER">
+        <columnConstraints>
+            <ColumnConstraints halignment="RIGHT"/>
+            <ColumnConstraints hgrow="ALWAYS" minWidth="200.0"/>
+        </columnConstraints>
+        
+        <Label text="Username/Email:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <TextField fx:id="usernameField" promptText="Enter email or username" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+        <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <PasswordField fx:id="passwordField" promptText="Enter password" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+    </GridPane>
+
+    <Hyperlink fx:id="forgotPasswordLink" text="Forgot Password?" onAction="#handleForgotPassword" />
+    <Button text="Login" onAction="#handleLogin" prefWidth="120.0" defaultButton="true"/>
+</VBox>

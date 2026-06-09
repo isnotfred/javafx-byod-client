@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.pup.byod.javafxbyodclient.controller.SystemConfigurationScreenController"
+      spacing="15.0" HBox.hgrow="ALWAYS">
+    
+    <!-- Left Side: Settings Table -->
+    <VBox spacing="10.0" HBox.hgrow="ALWAYS" prefWidth="600.0">
+        <Label text="System Settings &amp; Policies" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+        
+        <TableView fx:id="settingsTable" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colKey" text="Setting Key" prefWidth="180.0"/>
+                <TableColumn fx:id="colValue" text="Value" prefWidth="150.0"/>
+                <TableColumn fx:id="colDescription" text="Description" prefWidth="270.0"/>
+            </columns>
+        </TableView>
+    </VBox>
+    
+    <Separator orientation="VERTICAL"/>
+    
+    <!-- Right Side: Edit Setting Form -->
+    <VBox spacing="15.0" prefWidth="300.0">
+        <Label text="Modify System Setting" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+        
+        <VBox spacing="5.0">
+            <Label text="Setting Key:"/>
+            <Label fx:id="keyLabel" text="(Select a setting)" style="-fx-font-weight: bold;"/>
+        </VBox>
+        
+        <VBox spacing="5.0">
+            <Label text="Setting Value:"/>
+            <TextField fx:id="valueField" promptText="Enter value"/>
+        </VBox>
+        
+        <VBox spacing="5.0">
+            <Label text="Description:"/>
+            <Label fx:id="descriptionLabel" wrapText="true" style="-fx-text-fill: #555555;"/>
+        </VBox>
+        
+        <Button fx:id="saveButton" text="Save Changes" onAction="#handleSaveSetting" prefWidth="200.0" style="-fx-font-weight: bold;"/>
+    </VBox>
+</HBox>

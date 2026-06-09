@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.pup.byod.javafxbyodclient.controller.SuperAdminSummaryDashboardController"
+      spacing="20.0" styleClass="dashboard-container" VBox.vgrow="ALWAYS">
+      
+    <!-- Header Row -->
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <VBox spacing="2.0">
+            <Label text="Super Admin Overview" styleClass="dashboard-title"/>
+            <Label text="System Configuration &amp; Operator Accounts Management" styleClass="dashboard-subtitle"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Refresh Stats" onAction="#refreshStats" styleClass="refresh-btn"/>
+    </HBox>
+    
+    <Separator/>
+    
+    <!-- Cards Row -->
+    <HBox spacing="15.0" alignment="CENTER_LEFT">
+        <!-- Card 1: Total Operators -->
+        <VBox styleClass="card">
+            <Label text="Total Operators" styleClass="card-title"/>
+            <Label fx:id="totalOperatorsLabel" text="0" styleClass="card-value"/>
+        </VBox>
+        
+        <!-- Card 2: Active Operators -->
+        <VBox styleClass="card">
+            <Label text="Active Operators" styleClass="card-title"/>
+            <Label fx:id="activeOperatorsLabel" text="0" styleClass="card-value"/>
+        </VBox>
+        
+        <!-- Card 3: Pending Onboarding -->
+        <VBox styleClass="card">
+            <Label text="Pending Accounts" styleClass="card-title"/>
+            <Label fx:id="pendingOperatorsLabel" text="0" styleClass="card-value"/>
+        </VBox>
+    </HBox>
+    
+    <Label text="Quick Access System Panels" styleClass="section-title"/>
+    
+    <!-- Quick Access Buttons -->
+    <FlowPane hgap="15.0" vgap="15.0" prefWrapLength="800.0">
+        <Button text="👥 Operator Directory" onAction="#goToOperators" prefWidth="180.0" styleClass="quick-btn"/>
+        <Button text="⚙️ System Configuration" onAction="#goToConfiguration" prefWidth="180.0" styleClass="quick-btn"/>
+        <Button text="👤 Profile Management" onAction="#goToProfile" prefWidth="180.0" styleClass="quick-btn"/>
+    </FlowPane>
+    
+</VBox>

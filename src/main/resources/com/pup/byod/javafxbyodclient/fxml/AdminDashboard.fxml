@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.pup.byod.javafxbyodclient.controller.AdminDashboardController"
+            prefWidth="1000.0" prefHeight="700.0">
+            
+    <!-- Left Sidebar -->
+    <left>
+        <VBox spacing="10.0" style="-fx-background-color: #f0f0f0; -fx-min-width: 220px;">
+            <padding>
+                <Insets top="20.0" right="10.0" bottom="20.0" left="10.0"/>
+            </padding>
+            
+            <Label text="BYOD Admin Portal" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+            <Label fx:id="welcomeLabel" text="Welcome, User" wrapText="true"/>
+            <Separator/>
+            
+            <Button text="Dashboard Overview" onAction="#showSummaryDashboard" prefWidth="200.0" alignment="BASELINE_LEFT"/>
+            <Button text="Student Registry" onAction="#showStudentManagement" prefWidth="200.0" alignment="BASELINE_LEFT"/>
+            <Button text="Device Registry" onAction="#showDeviceManagement" prefWidth="200.0" alignment="BASELINE_LEFT"/>
+            <Button text="Pending Approvals" onAction="#showPendingApprovals" prefWidth="200.0" alignment="BASELINE_LEFT"/>
+            <Button text="On-Campus Devices" onAction="#showActiveDevices" prefWidth="200.0" alignment="BASELINE_LEFT"/>
+            <Button text="Analytical Reports" onAction="#showReports" prefWidth="200.0" alignment="BASELINE_LEFT"/>
+            <Button text="Profile Management" onAction="#showProfile" prefWidth="200.0" alignment="BASELINE_LEFT"/>
+            
+            <Region VBox.vgrow="ALWAYS"/>
+            <Separator/>
+            <Button text="Logout" onAction="#handleLogout" prefWidth="200.0" alignment="BASELINE_LEFT"/>
+        </VBox>
+    </left>
+    
+    <!-- Right Content Area -->
+    <center>
+        <StackPane fx:id="contentArea">
+            <padding>
+                <Insets top="15.0" right="15.0" bottom="15.0" left="15.0"/>
+            </padding>
+            <Label text="Please select an option from the sidebar."/>
+        </StackPane>
+    </center>
+    
+</BorderPane>

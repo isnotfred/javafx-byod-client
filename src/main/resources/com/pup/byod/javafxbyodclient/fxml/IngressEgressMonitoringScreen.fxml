@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.pup.byod.javafxbyodclient.controller.IngressEgressMonitoringScreenController"
+      spacing="15.0" alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
+    
+    <Label text="Security Gate Scanning &amp; Monitoring" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+    
+    <VBox spacing="10.0" alignment="CENTER" maxWidth="500.0" 
+          style="-fx-border-color: #cccccc; -fx-border-width: 1px; -fx-border-radius: 5px; -fx-background-color: #fafafa;">
+        <padding>
+            <Insets top="15.0" right="15.0" bottom="15.0" left="15.0"/>
+        </padding>
+        <Label fx:id="statusLabel" text="STATUS: READY TO SCAN" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: gray;"/>
+        <Label fx:id="lastScannedLabel" text="Last Scan: None" style="-fx-font-size: 12px;"/>
+    </VBox>
+    
+    <GridPane hgap="15.0" vgap="10.0" alignment="CENTER" maxWidth="500.0">
+        <columnConstraints>
+            <ColumnConstraints halignment="RIGHT" minWidth="120.0"/>
+            <ColumnConstraints hgrow="ALWAYS" minWidth="200.0"/>
+        </columnConstraints>
+        
+        <Label text="Serial Number:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <TextField fx:id="serialNumberField" promptText="Scan barcode or enter serial number" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        
+        <Label text="Entry/Exit Notes:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <TextArea fx:id="notesArea" promptText="Optional scan override / check remarks" prefHeight="80.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+    </GridPane>
+    
+    <HBox spacing="20.0" alignment="CENTER">
+        <Button text="Log Entry (Check-In)" onAction="#handleEntry" prefWidth="180.0" style="-fx-font-weight: bold; -fx-text-fill: green;"/>
+        <Button text="Log Exit (Check-Out)" onAction="#handleExit" prefWidth="180.0" style="-fx-font-weight: bold; -fx-text-fill: blue;"/>
+    </HBox>
+</VBox>

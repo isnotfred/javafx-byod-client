@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.pup.byod.javafxbyodclient.controller.LogsScreenController"
+      spacing="10.0" VBox.vgrow="ALWAYS">
+    
+    <Label text="Security Gate Log Explorer" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+    
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <TextField fx:id="studentIdSearchField" promptText="Enter Student ID (e.g. 2021-10023)" prefWidth="250.0"/>
+        <Button text="Fetch Student Gate Logs" onAction="#handleSearch"/>
+    </HBox>
+    
+    <TableView fx:id="logsTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colLogId" text="Log ID" prefWidth="80.0"/>
+            <TableColumn fx:id="colStudentId" text="Student ID" prefWidth="150.0"/>
+            <TableColumn fx:id="colType" text="Event Type" prefWidth="120.0"/>
+            <TableColumn fx:id="colTime" text="Log Timestamp" prefWidth="200.0"/>
+            <TableColumn fx:id="colNotes" text="Notes" prefWidth="250.0"/>
+        </columns>
+    </TableView>
+</VBox>
