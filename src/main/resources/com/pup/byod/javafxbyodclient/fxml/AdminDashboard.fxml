@@ -22,6 +22,7 @@
             <Button text="Dashboard Overview" onAction="#showSummaryDashboard" prefWidth="200.0" alignment="BASELINE_LEFT"/>
             <Button text="Registry Management" onAction="#showRegistryManagement" prefWidth="200.0" alignment="BASELINE_LEFT"/>
             <Button text="Pending Approvals" onAction="#showPendingApprovals" prefWidth="200.0" alignment="BASELINE_LEFT"/>
+            <Button text="Event Approvals" onAction="#showEventApprovals" prefWidth="200.0" alignment="BASELINE_LEFT"/>
             <Button text="On-Campus Devices" onAction="#showActiveDevices" prefWidth="200.0" alignment="BASELINE_LEFT"/>
             <Button text="Analytical Reports" onAction="#showReports" prefWidth="200.0" alignment="BASELINE_LEFT"/>
             <Button text="Profile Management" onAction="#showProfile" prefWidth="200.0" alignment="BASELINE_LEFT"/>

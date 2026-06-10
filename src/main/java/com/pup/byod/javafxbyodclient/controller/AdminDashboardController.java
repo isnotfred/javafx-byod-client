@@ -44,6 +44,11 @@ public class AdminDashboardController {
     }
 
     @FXML
+    public void showEventApprovals() {
+        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "EventApprovalScreen.fxml");
+    }
+
+    @FXML
     public void showStudentManagement() {
         showRegistryManagement();
     }

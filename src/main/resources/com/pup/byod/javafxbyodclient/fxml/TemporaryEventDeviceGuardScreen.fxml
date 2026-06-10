@@ -4,25 +4,143 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+<HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.pup.byod.javafxbyodclient.controller.TemporaryEventDeviceGuardScreenController"
-      spacing="10.0" VBox.vgrow="ALWAYS">
+      spacing="15.0" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+      
+    <padding>
+        <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
+    </padding>
     
-    <Label text="Temporary Event Device Admission Scanner" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+    <!-- Left Section: Event Logs Table -->
+    <VBox spacing="10.0" minWidth="380.0" prefWidth="450.0" HBox.hgrow="ALWAYS">
+        <Label text="Temporary / Event Logs" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+        <HBox spacing="10.0" alignment="CENTER_LEFT">
+            <TextField fx:id="searchField" promptText="Search Student ID or Event" HBox.hgrow="ALWAYS"/>
+            <Button text="Search" onAction="#handleSearchLogs"/>
+            <Button text="Refresh" onAction="#loadEventLogs"/>
+        </HBox>
+        <TableView fx:id="eventsTable" VBox.vgrow="ALWAYS">
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+            <columns>
+                <TableColumn fx:id="colEventId" text="Req ID" prefWidth="60.0"/>
+                <TableColumn fx:id="colStudentId" text="Student ID" prefWidth="110.0"/>
+                <TableColumn fx:id="colEventName" text="Event Name" prefWidth="130.0"/>
+                <TableColumn fx:id="colEventStatus" text="Status" prefWidth="90.0"/>
+            </columns>
+        </TableView>
+    </VBox>
     
-    <HBox spacing="10.0" alignment="CENTER_LEFT">
-        <TextField fx:id="eventRequestIdField" promptText="Enter Event Request ID" prefWidth="200.0"/>
-        <Button text="Lookup Event Devices" onAction="#handleSearchEvent"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button text="Verify Selected Device" onAction="#handleVerify" style="-fx-text-fill: green; -fx-font-weight: bold;"/>
-    </HBox>
+    <Separator orientation="VERTICAL"/>
     
-    <TableView fx:id="itemsTable" VBox.vgrow="ALWAYS">
-        <columns>
-            <TableColumn fx:id="colItemId" text="Item ID" prefWidth="80.0"/>
-            <TableColumn fx:id="colItemName" text="Device Name" prefWidth="250.0"/>
-            <TableColumn fx:id="colSerialNumber" text="Serial Number" prefWidth="200.0"/>
-            <TableColumn fx:id="colStatus" text="Status" prefWidth="120.0"/>
-        </columns>
-    </TableView>
-</VBox>
+    <!-- Right Section: Event Details and Devices Registration / Verification Form -->
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" HBox.hgrow="ALWAYS" minWidth="450.0" prefWidth="550.0" style="-fx-background-color: transparent; -fx-background: transparent;">
+        <VBox spacing="15.0">
+            <padding>
+                <Insets right="10.0" left="5.0"/>
+            </padding>
+            
+            <VBox spacing="15.0" style="-fx-background-color: white; -fx-padding: 15; -fx-border-color: #cbd5e1; -fx-border-width: 1; -fx-border-radius: 8; -fx-background-radius: 8;">
+                <Label text="Temporary / Event Device Registration" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                <Separator/>
+                
+                <!-- SECTION I: Event Details -->
+                <Label text="Event Details" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #3b82f6;"/>
+                <GridPane hgap="10.0" vgap="10.0">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="35.0"/>
+                        <ColumnConstraints percentWidth="65.0"/>
+                    </columnConstraints>
+                    
+                    <Label text="Student ID:" GridPane.columnIndex="0" GridPane.rowIndex="0" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <TextField fx:id="formStudentIdField" promptText="e.g. 2021-00001" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                    
+                    <Label text="Responsible Person:" GridPane.columnIndex="0" GridPane.rowIndex="1" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <TextField fx:id="responsiblePersonField" promptText="e.g. Prof. Smith" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                    
+                    <Label text="Contact (Phone/Socials):" GridPane.columnIndex="0" GridPane.rowIndex="2" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <TextField fx:id="contactField" promptText="e.g. 0917-1234567 / @charlie" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                    
+                    <Label text="Event Name:" GridPane.columnIndex="0" GridPane.rowIndex="3" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <TextField fx:id="eventNameField" promptText="e.g. IT Fair 2026" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                    
+                    <Label text="Organization / etc.:" GridPane.columnIndex="0" GridPane.rowIndex="4" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <TextField fx:id="organizationField" promptText="e.g. ACM Student Chapter" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                    
+                    <Label text="Purpose:" GridPane.columnIndex="0" GridPane.rowIndex="5" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <ComboBox fx:id="purposeBox" promptText="Select Purpose" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                    
+                    <Label text="Start Date:" GridPane.columnIndex="0" GridPane.rowIndex="6" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <DatePicker fx:id="startDatePicker" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                    
+                    <Label text="End Date:" GridPane.columnIndex="0" GridPane.rowIndex="7" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <DatePicker fx:id="endDatePicker" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                    
+                    <Label text="Approval Doc Type:" GridPane.columnIndex="0" GridPane.rowIndex="8" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <ComboBox fx:id="docTypeBox" promptText="Select Doc Type" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+                    
+                    <Label text="Doc Reference No:" GridPane.columnIndex="0" GridPane.rowIndex="9" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <TextField fx:id="docRefField" promptText="e.g. REF-GPOA-101" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+                </GridPane>
+                
+                <Separator/>
+                
+                <!-- SECTION II: Devices -->
+                <Label text="Devices Listed" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #3b82f6;"/>
+                <TableView fx:id="itemsTable" prefHeight="130.0" minHeight="100.0">
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                    </columnResizePolicy>
+                    <columns>
+                        <TableColumn fx:id="colItemId" text="Item ID" prefWidth="60.0"/>
+                        <TableColumn fx:id="colItemName" text="Device Name" prefWidth="120.0"/>
+                        <TableColumn fx:id="colSerialNumber" text="Serial Number" prefWidth="120.0"/>
+                        <TableColumn fx:id="colType" text="Type" prefWidth="110.0"/>
+                        <TableColumn fx:id="colStatus" text="Status" prefWidth="80.0"/>
+                    </columns>
+                </TableView>
+                
+                <!-- Add Device Fields -->
+                <Label text="Add Temporary Device:" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                <GridPane hgap="10.0" vgap="10.0">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="35.0"/>
+                        <ColumnConstraints percentWidth="65.0"/>
+                    </columnConstraints>
+                    
+                    <Label text="Device Name:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                    <TextField fx:id="deviceNameField" promptText="e.g. RPi 4 Model B" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                    
+                    <Label text="Brand:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                    <TextField fx:id="brandField" promptText="e.g. Raspberry Pi" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                    
+                    <Label text="Model:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                    <TextField fx:id="modelField" promptText="e.g. 4B (8GB)" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                    
+                    <Label text="Serial Number:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                    <TextField fx:id="serialNumberField" promptText="Optional Serial Number" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                    
+                    <Label text="Device Type:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                    <ComboBox fx:id="deviceTypeBox" promptText="Select Device Type" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                </GridPane>
+                
+                <HBox spacing="10.0" alignment="CENTER_RIGHT">
+                    <Button text="Remove Device" onAction="#handleRemoveItem" style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-cursor: hand;"/>
+                    <Button text="Add Device Locally" onAction="#handleAddItem" style="-fx-background-color: #f1f5f9; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                </HBox>
+                
+                <Separator/>
+                
+                <!-- Registration & Verification Actions -->
+                <HBox spacing="10.0" alignment="CENTER_RIGHT">
+                    <Button text="Clear Form" onAction="#handleClearForm" style="-fx-background-color: #f8fafc; -fx-text-fill: #64748b; -fx-border-color: #cbd5e1; -fx-border-radius: 4; -fx-background-radius: 4; -fx-cursor: hand; -fx-padding: 8px 16px;"/>
+                    <Button fx:id="verifyBtn" text="Verify Selected Device" onAction="#handleVerify" style="-fx-background-color: #22c55e; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 8px 16px;" disable="true"/>
+                    <Button text="Submit Event Registration" onAction="#handleSubmitRequest" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 8px 16px;"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </ScrollPane>
+    
+</HBox>
