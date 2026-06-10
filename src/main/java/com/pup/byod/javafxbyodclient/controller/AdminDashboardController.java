@@ -29,8 +29,13 @@ public class AdminDashboardController {
     }
 
     @FXML
+    public void showRegistryManagement() {
+        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "RegistryManagementScreen.fxml");
+    }
+
+    @FXML
     public void showDeviceManagement() {
-        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "DeviceManagementScreen.fxml");
+        showRegistryManagement();
     }
 
     @FXML
@@ -40,7 +45,7 @@ public class AdminDashboardController {
 
     @FXML
     public void showStudentManagement() {
-        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "StudentManagementScreen.fxml");
+        showRegistryManagement();
     }
 
     @FXML

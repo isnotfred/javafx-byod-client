@@ -34,51 +34,66 @@ public class AdminSummaryDashboardController {
         devicesOnCampusLabel.setText("...");
 
         new Thread(() -> {
+            String activeStudentsStr = "Error";
             try {
-                // Fetch students count
                 List<Student> students = studentService.getAllStudents();
                 long activeStudents = students.stream().filter(s -> "active".equalsIgnoreCase(s.getStatus())).count();
-
-                // Fetch devices count
-                List<Device> devices = deviceService.getAllDevices();
-                long registeredDevices = devices.size();
-
-                // Fetch pending approvals
-                List<PendingDevice> pending = deviceService.getPendingDevices();
-                long pendingCount = pending.size();
-
-                // Fetch devices currently on campus (where campusStatus = "entry")
-                List<DeviceCampusStatus> statuses = deviceService.getDeviceCampusStatus();
-                long devicesOnCampus = statuses.stream().filter(s -> "entry".equalsIgnoreCase(s.getCampusStatus())).count();
-
-                Platform.runLater(() -> {
-                    activeStudentsLabel.setText(String.valueOf(activeStudents));
-                    registeredDevicesLabel.setText(String.valueOf(registeredDevices));
-                    pendingApprovalsLabel.setText(String.valueOf(pendingCount));
-                    devicesOnCampusLabel.setText(String.valueOf(devicesOnCampus));
-                });
+                activeStudentsStr = String.valueOf(activeStudents);
             } catch (Exception e) {
                 e.printStackTrace();
-                Platform.runLater(() -> {
-                    activeStudentsLabel.setText("Error");
-                    registeredDevicesLabel.setText("Error");
-                    pendingApprovalsLabel.setText("Error");
-                    devicesOnCampusLabel.setText("Error");
-                });
             }
+
+            String registeredDevicesStr = "Error";
+            try {
+                List<Device> devices = deviceService.getAllDevices();
+                long registeredDevices = devices.size();
+                registeredDevicesStr = String.valueOf(registeredDevices);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            String pendingCountStr = "Error";
+            try {
+                List<PendingDevice> pending = deviceService.getPendingDevices();
+                long pendingCount = pending.size();
+                pendingCountStr = String.valueOf(pendingCount);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            String devicesOnCampusStr = "Error";
+            try {
+                List<DeviceCampusStatus> statuses = deviceService.getDeviceCampusStatus();
+                long devicesOnCampus = statuses.stream().filter(s -> "entry".equalsIgnoreCase(s.getCampusStatus())).count();
+                devicesOnCampusStr = String.valueOf(devicesOnCampus);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            final String fActiveStudents = activeStudentsStr;
+            final String fRegisteredDevices = registeredDevicesStr;
+            final String fPendingCount = pendingCountStr;
+            final String fDevicesOnCampus = devicesOnCampusStr;
+
+            Platform.runLater(() -> {
+                activeStudentsLabel.setText(fActiveStudents);
+                registeredDevicesLabel.setText(fRegisteredDevices);
+                pendingApprovalsLabel.setText(fPendingCount);
+                devicesOnCampusLabel.setText(fDevicesOnCampus);
+            });
         }).start();
     }
 
     @FXML
     public void goToStudents() {
         NavigationManager.getInstance().loadViewIntoContainer(
-            NavigationManager.getInstance().getContentArea(), "StudentManagementScreen.fxml");
+            NavigationManager.getInstance().getContentArea(), "RegistryManagementScreen.fxml");
     }
 
     @FXML
     public void goToDevices() {
         NavigationManager.getInstance().loadViewIntoContainer(
-            NavigationManager.getInstance().getContentArea(), "DeviceManagementScreen.fxml");
+            NavigationManager.getInstance().getContentArea(), "RegistryManagementScreen.fxml");
     }
 
     @FXML

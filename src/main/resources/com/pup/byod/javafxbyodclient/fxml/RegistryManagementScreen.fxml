@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.pup.byod.javafxbyodclient.controller.RegistryManagementScreenController"
+           HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+           
+    <!-- Layer 1 (Bottom): Directory Table & Main Actions -->
+    <VBox spacing="10.0" style="-fx-padding: 15.0;">
+        <Label text="Student Directory" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+        
+        <HBox spacing="10.0" alignment="CENTER_LEFT">
+            <TextField fx:id="searchField" promptText="Search student ID or Name" HBox.hgrow="ALWAYS" prefHeight="35.0"/>
+            <Button text="Search" onAction="#handleSearch" prefHeight="35.0" style="-fx-cursor: hand;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Import CSV" onAction="#handleImportCsv" prefHeight="35.0" style="-fx-font-weight: bold; -fx-background-color: #27ae60; -fx-text-fill: white; -fx-cursor: hand;"/>
+            <Button text="Add Student" onAction="#openAddOverlay" prefHeight="35.0" style="-fx-font-weight: bold; -fx-background-color: #3b82f6; -fx-text-fill: white; -fx-cursor: hand;"/>
+            <Button fx:id="editSelectedBtn" text="Edit Selected" onAction="#openEditOverlay" prefHeight="35.0" style="-fx-font-weight: bold; -fx-background-color: #f1f5f9; -fx-text-fill: #475569; -fx-cursor: hand;" disable="true"/>
+        </HBox>
+        
+        <TableView fx:id="studentTable" VBox.vgrow="ALWAYS">
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+            <columns>
+                <TableColumn fx:id="colStudentId" text="Student ID" prefWidth="150.0"/>
+                <TableColumn fx:id="colStudentName" text="Full Name" prefWidth="250.0"/>
+                <TableColumn fx:id="colStudentCourse" text="Course &amp; Section" prefWidth="180.0"/>
+                <TableColumn fx:id="colStudentStatus" text="Status" prefWidth="100.0"/>
+            </columns>
+        </TableView>
+    </VBox>
+    
+    <!-- Layer 2 (Top): Semi-transparent backdrop and Centered Unified Registry Form Overlay -->
+    <StackPane fx:id="formOverlay" visible="false" style="-fx-background-color: rgba(0, 0, 0, 0.45);" alignment="CENTER">
+        <padding>
+            <Insets top="30.0" right="30.0" bottom="30.0" left="30.0"/>
+        </padding>
+        
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" maxHeight="600.0" maxWidth="650.0" 
+                    style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+            
+            <!-- Unified Registry Form Card -->
+            <VBox spacing="15.0" style="-fx-background-color: white; -fx-padding: 20; -fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-border-radius: 8; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0);">
+                
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="Registry Profile &amp; Device Entry Form" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="✕" onAction="#handleCloseOverlay" style="-fx-background-color: transparent; -fx-text-fill: #64748b; -fx-font-size: 16px; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                </HBox>
+                
+                <Separator/>
+                
+                <!-- SECTION I: Student Details -->
+                <Label text="I. Student Registry Details" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #3b82f6;"/>
+                
+                <GridPane hgap="10.0" vgap="10.0">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="30.0"/>
+                        <ColumnConstraints percentWidth="70.0"/>
+                    </columnConstraints>
+                    
+                    <Label text="Student ID:" GridPane.columnIndex="0" GridPane.rowIndex="0" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <TextField fx:id="studentIdField" promptText="e.g. 2021-10023" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                    
+                    <Label text="First Name:" GridPane.columnIndex="0" GridPane.rowIndex="1" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <TextField fx:id="firstNameField" promptText="e.g. Juan" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                    
+                    <Label text="Last Name:" GridPane.columnIndex="0" GridPane.rowIndex="2" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <TextField fx:id="lastNameField" promptText="e.g. Dela Cruz" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                    
+                    <Label text="Course &amp; Section:" GridPane.columnIndex="0" GridPane.rowIndex="3" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <TextField fx:id="courseYearLevelField" promptText="e.g. BSIT 3-1" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                    
+                    <Label text="Student Status:" GridPane.columnIndex="0" GridPane.rowIndex="4" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <ComboBox fx:id="studentStatusBox" promptText="Select Status" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                </GridPane>
+                
+                <Separator/>
+                
+                <!-- SECTION II: Device Details -->
+                <Label text="II. Linked Device Details" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #3b82f6;"/>
+                
+                <VBox spacing="5.0">
+                    <Label text="Student's Registered Devices:" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <TableView fx:id="deviceTable" prefHeight="120.0" minHeight="90.0">
+                        <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                        </columnResizePolicy>
+                        <columns>
+                            <TableColumn fx:id="colDeviceId" text="ID" prefWidth="40.0"/>
+                            <TableColumn fx:id="colDeviceName" text="Device Name" prefWidth="110.0"/>
+                            <TableColumn fx:id="colDeviceType" text="Type" prefWidth="110.0"/>
+                            <TableColumn fx:id="colDeviceBrand" text="Brand" prefWidth="80.0"/>
+                            <TableColumn fx:id="colDeviceSerialNumber" text="Serial Number" prefWidth="120.0"/>
+                            <TableColumn fx:id="colDeviceRegStatus" text="Registration" prefWidth="80.0"/>
+                            <TableColumn fx:id="colDeviceStatus" text="Status" prefWidth="70.0"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+                
+                <GridPane hgap="10.0" vgap="10.0">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="30.0"/>
+                        <ColumnConstraints percentWidth="70.0"/>
+                    </columnConstraints>
+                    
+                    <Label text="Device Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <TextField fx:id="deviceNameField" promptText="e.g. Dell XPS" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                    
+                    <Label text="Device Brand:" GridPane.columnIndex="0" GridPane.rowIndex="1" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <TextField fx:id="brandField" promptText="e.g. Dell" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                    
+                    <Label text="Device Model:" GridPane.columnIndex="0" GridPane.rowIndex="2" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <TextField fx:id="modelField" promptText="e.g. XPS 15 9520" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                    
+                    <Label text="Device Serial Number:" GridPane.columnIndex="0" GridPane.rowIndex="3" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <TextField fx:id="serialNumberField" promptText="e.g. SN-DELL-12345" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                    
+                    <Label text="Device Type:" GridPane.columnIndex="0" GridPane.rowIndex="4" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <ComboBox fx:id="deviceTypeBox" promptText="Select Device Type" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                    
+                    <Label text="Device Purpose:" GridPane.columnIndex="0" GridPane.rowIndex="5" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <ComboBox fx:id="devicePurposeBox" promptText="Select Device Purpose" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                    
+                    <Label text="Device Status:" GridPane.columnIndex="0" GridPane.rowIndex="6" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <ComboBox fx:id="deviceStatusBox" promptText="Select Status" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                </GridPane>
+                
+                <Separator/>
+                
+                <!-- Unified CRUD Actions inside overlay form -->
+                <HBox spacing="12.0" alignment="CENTER_RIGHT">
+                    <Button text="Cancel / Close" onAction="#handleCloseOverlay" style="-fx-background-color: #f1f5f9; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 8px 16px;"/>
+                    <Button text="Clear Form" onAction="#handleClearForm" style="-fx-background-color: #f8fafc; -fx-text-fill: #64748b; -fx-border-color: #cbd5e1; -fx-border-radius: 4; -fx-background-radius: 4; -fx-cursor: hand; -fx-padding: 8px 16px;"/>
+                    <Button text="Deactivate Record(s)" onAction="#handleDeactivateRecord" style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 8px 16px;"/>
+                    <Button text="Save Record(s)" onAction="#handleSaveRecord" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 8px 16px;"/>
+                </HBox>
+            </VBox>
+        </ScrollPane>
+    </StackPane>
+    
+</StackPane>
