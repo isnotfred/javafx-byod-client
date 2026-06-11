@@ -12,7 +12,7 @@
     <VBox spacing="10.0" HBox.hgrow="ALWAYS" prefWidth="600.0">
         <Label text="System Settings &amp; Policies" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
         
-        <TableView fx:id="settingsTable" VBox.vgrow="ALWAYS">
+        <TableView fx:id="settingsTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
             <columns>
                 <TableColumn fx:id="colKey" text="Setting Key" prefWidth="180.0"/>
                 <TableColumn fx:id="colValue" text="Value" prefWidth="150.0"/>

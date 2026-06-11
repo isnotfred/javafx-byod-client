@@ -15,7 +15,7 @@
         <Button text="Fetch Student Gate Logs" onAction="#handleSearch"/>
     </HBox>
     
-    <TableView fx:id="logsTable" VBox.vgrow="ALWAYS">
+    <TableView fx:id="logsTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
         <columns>
             <TableColumn fx:id="colLogId" text="Log ID" prefWidth="80.0"/>
             <TableColumn fx:id="colStudentId" text="Student ID" prefWidth="150.0"/>

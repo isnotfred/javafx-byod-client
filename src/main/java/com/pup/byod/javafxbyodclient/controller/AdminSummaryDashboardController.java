@@ -10,9 +10,11 @@ import com.pup.byod.javafxbyodclient.util.NavigationManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToggleButton;
 import java.util.List;
 
 public class AdminSummaryDashboardController {
+    @FXML private Label welcomeLabel;
     @FXML private Label activeStudentsLabel;
     @FXML private Label registeredDevicesLabel;
     @FXML private Label pendingApprovalsLabel;
@@ -23,6 +25,13 @@ public class AdminSummaryDashboardController {
 
     @FXML
     public void initialize() {
+        if (com.pup.byod.javafxbyodclient.session.SessionManager.getInstance().getCurrentUser() != null) {
+            String fullName = com.pup.byod.javafxbyodclient.session.SessionManager.getInstance().getCurrentUser().getFullName();
+            String role = com.pup.byod.javafxbyodclient.session.SessionManager.getInstance().getCurrentUser().getRole();
+            welcomeLabel.setText("Welcome back, " + fullName + " (" + role + ")!");
+        } else {
+            welcomeLabel.setText("Welcome back!");
+        }
         refreshStats();
     }
 
@@ -88,23 +97,47 @@ public class AdminSummaryDashboardController {
     public void goToStudents() {
         NavigationManager.getInstance().loadViewIntoContainer(
             NavigationManager.getInstance().getContentArea(), "RegistryManagementScreen.fxml");
+        syncSidebarSelection("Registry Management");
     }
 
     @FXML
     public void goToDevices() {
         NavigationManager.getInstance().loadViewIntoContainer(
             NavigationManager.getInstance().getContentArea(), "RegistryManagementScreen.fxml");
+        syncSidebarSelection("Registry Management");
     }
 
     @FXML
     public void goToApprovals() {
         NavigationManager.getInstance().loadViewIntoContainer(
             NavigationManager.getInstance().getContentArea(), "PendingRegistrationApprovalScreen.fxml");
+        syncSidebarSelection("Pending Approvals");
     }
 
     @FXML
     public void goToReports() {
         NavigationManager.getInstance().loadViewIntoContainer(
             NavigationManager.getInstance().getContentArea(), "ReportsScreen.fxml");
+        syncSidebarSelection("Analytical Reports");
+    }
+
+    private void syncSidebarSelection(String buttonText) {
+        try {
+            javafx.scene.layout.Pane container = NavigationManager.getInstance().getContentArea();
+            if (container != null && container.getScene() != null) {
+                javafx.scene.Scene scene = container.getScene();
+                for (javafx.scene.Node node : scene.getRoot().lookupAll(".toggle-button")) {
+                    if (node instanceof ToggleButton) {
+                        ToggleButton tb = (ToggleButton) node;
+                        if (buttonText.equals(tb.getText())) {
+                            tb.setSelected(true);
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

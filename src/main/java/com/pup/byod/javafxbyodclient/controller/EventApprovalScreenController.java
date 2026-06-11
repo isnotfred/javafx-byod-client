@@ -11,12 +11,16 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.StackPane;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class EventApprovalScreenController {
+    @FXML private StackPane detailsOverlay;
+    @FXML private Button viewDetailsBtn;
+
     // Left side
     @FXML private TextField searchField;
     @FXML private ComboBox<String> statusFilterBox;
@@ -81,8 +85,10 @@ public class EventApprovalScreenController {
         eventsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 showEventRequestDetails(newVal);
+                viewDetailsBtn.setDisable(false);
             } else {
                 clearDetailsPane();
+                viewDetailsBtn.setDisable(true);
             }
         });
 
@@ -98,6 +104,19 @@ public class EventApprovalScreenController {
         } catch (Exception e) {
             AlertHelper.showError("Load Error", "Failed to load event requests", e.getMessage());
         }
+    }
+
+    @FXML
+    public void openDetailsOverlay() {
+        if (eventsTable.getSelectionModel().getSelectedItem() != null) {
+            detailsOverlay.setVisible(true);
+            detailsOverlay.toFront();
+        }
+    }
+
+    @FXML
+    public void closeDetailsOverlay() {
+        detailsOverlay.setVisible(false);
     }
 
     @FXML
@@ -209,6 +228,7 @@ public class EventApprovalScreenController {
             eventRequestService.approveEventRequest(request.getEventRequestId(), reviewerId);
             AlertHelper.showInfo("Success", "Approved", "Event Request ID " + request.getEventRequestId() + " has been approved.");
             loadEventRequests();
+            closeDetailsOverlay();
         } catch (Exception e) {
             AlertHelper.showError("Approval Failed", "Error processing approval", e.getMessage());
         }
@@ -230,6 +250,7 @@ public class EventApprovalScreenController {
             eventRequestService.rejectEventRequest(request.getEventRequestId(), reviewerId, remarks);
             AlertHelper.showInfo("Success", "Rejected", "Event Request ID " + request.getEventRequestId() + " has been rejected.");
             loadEventRequests();
+            closeDetailsOverlay();
         } catch (Exception e) {
             AlertHelper.showError("Rejection Failed", "Error processing rejection", e.getMessage());
         }
@@ -251,6 +272,7 @@ public class EventApprovalScreenController {
             eventRequestService.returnEventRequest(request.getEventRequestId(), reviewerId, remarks);
             AlertHelper.showInfo("Success", "Returned", "Event Request ID " + request.getEventRequestId() + " has been returned to the submitter.");
             loadEventRequests();
+            closeDetailsOverlay();
         } catch (Exception e) {
             AlertHelper.showError("Action Failed", "Error returning request", e.getMessage());
         }

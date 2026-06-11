@@ -2,6 +2,7 @@ package com.pup.byod.javafxbyodclient.util;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.DialogPane;
 
 public class AlertHelper {
     public static void showInfo(String title, String header, String content) {
@@ -21,6 +22,15 @@ public class AlertHelper {
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(content);
+        
+        DialogPane dialogPane = alert.getDialogPane();
+        try {
+            dialogPane.getStylesheets().add(AlertHelper.class.getResource("/com/pup/byod/javafxbyodclient/css/admin_dashboard_styles.css").toExternalForm());
+            dialogPane.getStyleClass().add("module-card");
+        } catch (Exception e) {
+            System.err.println("Could not load alert styles: " + e.getMessage());
+        }
+        
         alert.showAndWait();
     }
 }

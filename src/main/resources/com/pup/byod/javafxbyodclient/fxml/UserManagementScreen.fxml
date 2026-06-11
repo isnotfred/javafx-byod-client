@@ -18,7 +18,7 @@
             <Button text="Deactivate Operator" onAction="#handleDeactivate" style="-fx-text-fill: red;"/>
         </HBox>
         
-        <TableView fx:id="userTable" VBox.vgrow="ALWAYS">
+        <TableView fx:id="userTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
             <columns>
                 <TableColumn fx:id="colId" text="User ID" prefWidth="70.0"/>
                 <TableColumn fx:id="colUsername" text="Username" prefWidth="120.0"/>

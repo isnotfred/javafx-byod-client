@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import java.util.List;
 
 public class SecurityGuardSummaryDashboardController {
+    @FXML private Label welcomeLabel;
     @FXML private Label devicesOnCampusLabel;
     @FXML private Label activeEventsLabel;
     @FXML private Label totalApprovedDevicesLabel;
@@ -20,6 +21,13 @@ public class SecurityGuardSummaryDashboardController {
 
     @FXML
     public void initialize() {
+        if (com.pup.byod.javafxbyodclient.session.SessionManager.getInstance().getCurrentUser() != null) {
+            String fullName = com.pup.byod.javafxbyodclient.session.SessionManager.getInstance().getCurrentUser().getFullName();
+            String role = com.pup.byod.javafxbyodclient.session.SessionManager.getInstance().getCurrentUser().getRole();
+            welcomeLabel.setText("Welcome back, " + fullName + " (" + role + ")!");
+        } else {
+            welcomeLabel.setText("Welcome back!");
+        }
         refreshStats();
     }
 
@@ -60,23 +68,46 @@ public class SecurityGuardSummaryDashboardController {
     public void goToGateScan() {
         NavigationManager.getInstance().loadViewIntoContainer(
             NavigationManager.getInstance().getContentArea(), "IngressEgressMonitoringScreen.fxml");
+        syncSidebarSelection("Gate Scanner");
     }
 
     @FXML
     public void goToQuickRegister() {
         NavigationManager.getInstance().loadViewIntoContainer(
             NavigationManager.getInstance().getContentArea(), "QuickPendingRegistrationScreen.fxml");
+        syncSidebarSelection("Quick Register");
     }
 
     @FXML
     public void goToEventScanner() {
         NavigationManager.getInstance().loadViewIntoContainer(
             NavigationManager.getInstance().getContentArea(), "TemporaryEventDeviceGuardScreen.fxml");
+        syncSidebarSelection("Event Scanner");
     }
 
     @FXML
     public void goToActiveDevices() {
         NavigationManager.getInstance().loadViewIntoContainer(
             NavigationManager.getInstance().getContentArea(), "ActiveDevicesInsideCampusScreen.fxml");
+        syncSidebarSelection("Active Devices");
+    }
+
+    private void syncSidebarSelection(String buttonText) {
+        try {
+            javafx.scene.layout.Pane container = NavigationManager.getInstance().getContentArea();
+            if (container != null && container.getScene() != null) {
+                for (javafx.scene.Node node : container.getScene().getRoot().lookupAll(".sidebar-btn")) {
+                    if (node instanceof javafx.scene.control.ToggleButton) {
+                        javafx.scene.control.ToggleButton btn = (javafx.scene.control.ToggleButton) node;
+                        if (buttonText.equals(btn.getText())) {
+                            btn.setSelected(true);
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

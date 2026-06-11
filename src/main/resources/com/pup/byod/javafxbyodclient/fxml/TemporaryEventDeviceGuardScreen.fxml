@@ -20,7 +20,7 @@
             <Button text="Search" onAction="#handleSearchLogs"/>
             <Button text="Refresh" onAction="#loadEventLogs"/>
         </HBox>
-        <TableView fx:id="eventsTable" VBox.vgrow="ALWAYS">
+        <TableView fx:id="eventsTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
             <columnResizePolicy>
                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
             </columnResizePolicy>
@@ -89,7 +89,7 @@
                 
                 <!-- SECTION II: Devices -->
                 <Label text="Devices Listed" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #3b82f6;"/>
-                <TableView fx:id="itemsTable" prefHeight="130.0" minHeight="100.0">
+                <TableView fx:id="itemsTable" prefHeight="130.0" minHeight="100.0" styleClass="modern-table">
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                     </columnResizePolicy>

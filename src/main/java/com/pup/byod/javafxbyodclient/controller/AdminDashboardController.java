@@ -8,17 +8,11 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 
 public class AdminDashboardController {
-    @FXML private Label welcomeLabel;
     @FXML private StackPane contentArea;
 
     @FXML
     public void initialize() {
         NavigationManager.getInstance().setContentArea(contentArea);
-        if (SessionManager.getInstance().getCurrentUser() != null) {
-            String fullName = SessionManager.getInstance().getCurrentUser().getFullName();
-            String role = SessionManager.getInstance().getCurrentUser().getRole();
-            welcomeLabel.setText("Welcome, " + fullName + " (" + role + ")");
-        }
         // Load default screen
         showSummaryDashboard();
     }

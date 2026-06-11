@@ -14,7 +14,7 @@
         <Button text="Refresh View" onAction="#loadStatus"/>
     </HBox>
     
-    <TableView fx:id="statusTable" VBox.vgrow="ALWAYS">
+    <TableView fx:id="statusTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
         <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
         </columnResizePolicy>

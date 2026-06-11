@@ -17,7 +17,7 @@
         <Button text="Deactivate Selected" onAction="#handleDeactivate" style="-fx-text-fill: red;"/>
     </HBox>
     
-    <TableView fx:id="deviceTable" VBox.vgrow="ALWAYS">
+    <TableView fx:id="deviceTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
         <columns>
             <TableColumn fx:id="colId" text="ID" prefWidth="50.0"/>
             <TableColumn fx:id="colStudentId" text="Student ID" prefWidth="120.0"/>

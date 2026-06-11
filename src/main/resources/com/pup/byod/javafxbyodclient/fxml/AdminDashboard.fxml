@@ -3,33 +3,77 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.SVGPath?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+<BorderPane stylesheets="@../css/admin_dashboard_styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.pup.byod.javafxbyodclient.controller.AdminDashboardController"
             prefWidth="1000.0" prefHeight="700.0">
             
+    <fx:define>
+        <ToggleGroup fx:id="sidebarGroup"/>
+    </fx:define>
+            
     <!-- Left Sidebar -->
     <left>
-        <VBox spacing="10.0" style="-fx-background-color: #f0f0f0; -fx-min-width: 220px;">
-            <padding>
-                <Insets top="20.0" right="10.0" bottom="20.0" left="10.0"/>
-            </padding>
+        <VBox styleClass="sidebar-container" spacing="10.0">
             
-            <Label text="BYOD Admin Portal" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
-            <Label fx:id="welcomeLabel" text="Welcome, User" wrapText="true"/>
-            <Separator/>
+            <!-- BYOD Management Logo Header -->
+            <VBox styleClass="sidebar-logo-container">
+                <Label text="BYOD MANAGEMENT" styleClass="sidebar-title-text" style="-fx-font-size: 16px;"/>
+            </VBox>
             
-            <Button text="Dashboard Overview" onAction="#showSummaryDashboard" prefWidth="200.0" alignment="BASELINE_LEFT"/>
-            <Button text="Registry Management" onAction="#showRegistryManagement" prefWidth="200.0" alignment="BASELINE_LEFT"/>
-            <Button text="Pending Approvals" onAction="#showPendingApprovals" prefWidth="200.0" alignment="BASELINE_LEFT"/>
-            <Button text="Event Approvals" onAction="#showEventApprovals" prefWidth="200.0" alignment="BASELINE_LEFT"/>
-            <Button text="On-Campus Devices" onAction="#showActiveDevices" prefWidth="200.0" alignment="BASELINE_LEFT"/>
-            <Button text="Analytical Reports" onAction="#showReports" prefWidth="200.0" alignment="BASELINE_LEFT"/>
-            <Button text="Profile Management" onAction="#showProfile" prefWidth="200.0" alignment="BASELINE_LEFT"/>
+            <Separator style="-fx-opacity: 0.15;"/>
+            
+            <!-- Sidebar Buttons with Icons -->
+            <ToggleButton text="Dashboard" onAction="#showSummaryDashboard" toggleGroup="$sidebarGroup" selected="true" prefWidth="200.0" styleClass="sidebar-btn">
+                <graphic>
+                    <SVGPath content="M2 2h8v8H2V2zm10 0h8v8h-8V2zM2 12h8v8H2v-8zm10 0h8v8h-8v-8z" styleClass="sidebar-icon"/>
+                </graphic>
+            </ToggleButton>
+            
+            <ToggleButton text="Registry Management" onAction="#showRegistryManagement" toggleGroup="$sidebarGroup" prefWidth="200.0" styleClass="sidebar-btn">
+                <graphic>
+                    <SVGPath content="M12 2C6.48 2 2 4.02 2 6.5v11c0 2.48 4.48 4.5 10 4.5s10-2.02 10-4.5v-11C22 4.02 17.52 2 12 2zm0 16c-4.42 0-8-1.34-8-3V13.5c1.86 1 4.77 1.5 8 1.5s6.14-.5 8-1.5V15c0 1.66-3.58 3-8 3zm0-5c-4.42 0-8-1.34-8-3V8.5c1.86 1 4.77 1.5 8 1.5s6.14-.5 8-1.5V10c0 1.66-3.58 3-8 3zm0-5c-4.42 0-8-1.34-8-3S7.58 2 12 2s8 1.34 8 3-3.58 3-8 3z" styleClass="sidebar-icon"/>
+                </graphic>
+            </ToggleButton>
+            
+            <ToggleButton text="Pending Approvals" onAction="#showPendingApprovals" toggleGroup="$sidebarGroup" prefWidth="200.0" styleClass="sidebar-btn">
+                <graphic>
+                    <SVGPath content="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" styleClass="sidebar-icon"/>
+                </graphic>
+            </ToggleButton>
+            
+            <ToggleButton text="Event Approvals" onAction="#showEventApprovals" toggleGroup="$sidebarGroup" prefWidth="200.0" styleClass="sidebar-btn">
+                <graphic>
+                    <SVGPath content="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z" styleClass="sidebar-icon"/>
+                </graphic>
+            </ToggleButton>
+            
+            <ToggleButton text="On-Campus Devices" onAction="#showActiveDevices" toggleGroup="$sidebarGroup" prefWidth="200.0" styleClass="sidebar-btn">
+                <graphic>
+                    <SVGPath content="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" styleClass="sidebar-icon"/>
+                </graphic>
+            </ToggleButton>
+            
+            <ToggleButton text="Analytical Reports" onAction="#showReports" toggleGroup="$sidebarGroup" prefWidth="200.0" styleClass="sidebar-btn">
+                <graphic>
+                    <SVGPath content="M5 9.2h3V19H5V9.2zM10.6 5h2.8v14h-2.8V5zm5.6 8H19v6h-2.8v-6z" styleClass="sidebar-icon"/>
+                </graphic>
+            </ToggleButton>
+            
+            <ToggleButton text="Profile Management" onAction="#showProfile" toggleGroup="$sidebarGroup" prefWidth="200.0" styleClass="sidebar-btn">
+                <graphic>
+                    <SVGPath content="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" styleClass="sidebar-icon"/>
+                </graphic>
+            </ToggleButton>
             
             <Region VBox.vgrow="ALWAYS"/>
-            <Separator/>
-            <Button text="Logout" onAction="#handleLogout" prefWidth="200.0" alignment="BASELINE_LEFT"/>
+            <Separator style="-fx-opacity: 0.15;"/>
+            <Button text="Logout" onAction="#handleLogout" prefWidth="200.0" styleClass="sidebar-btn">
+                <graphic>
+                    <SVGPath content="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" styleClass="sidebar-icon"/>
+                </graphic>
+            </Button>
         </VBox>
     </left>
     

@@ -59,6 +59,7 @@ public class NavigationManager {
             }
 
             primaryStage.setScene(scene);
+            primaryStage.setMaximized(true);
             primaryStage.show();
         } catch (IOException e) {
             e.printStackTrace();

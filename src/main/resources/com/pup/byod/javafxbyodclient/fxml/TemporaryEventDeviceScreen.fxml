@@ -69,7 +69,7 @@
             <Button text="Add Item" onAction="#handleAddItem" GridPane.columnIndex="3" GridPane.rowIndex="2" prefWidth="120.0"/>
         </GridPane>
         
-        <TableView fx:id="itemTable" VBox.vgrow="ALWAYS">
+        <TableView fx:id="itemTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
             <columns>
                 <TableColumn fx:id="colDevName" text="Device Name" prefWidth="200.0"/>
                 <TableColumn fx:id="colDevSN" text="Serial Number" prefWidth="150.0"/>

@@ -7,16 +7,11 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 
 public class SecurityGuardDashboardController {
-    @FXML private Label welcomeLabel;
     @FXML private StackPane contentArea;
 
     @FXML
     public void initialize() {
         NavigationManager.getInstance().setContentArea(contentArea);
-        if (SessionManager.getInstance().getCurrentUser() != null) {
-            String fullName = SessionManager.getInstance().getCurrentUser().getFullName();
-            welcomeLabel.setText("Guard Duty: " + fullName);
-        }
         // Load default screen
         showSummaryDashboard();
     }

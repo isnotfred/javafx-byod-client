@@ -1,0 +1,503 @@
+/* Premium Institutional Security Grid — Matching Image Design Exactly */
+
+/* Root and Main Container */
+.admin-dashboard-container {
+    -fx-background-color: #F0F4F8; /* Soft blue-grey background */
+    -fx-padding: 24px 32px;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+/* Sidebar Navigation */
+.sidebar-container {
+    -fx-background-color: #102A43; /* Dark navy */
+    -fx-border-color: transparent #0C1E30 transparent transparent;
+    -fx-border-width: 0 1px 0 0;
+    -fx-border-style: solid;
+    -fx-min-width: 240px;
+    -fx-padding: 24px 16px;
+}
+
+/* Sidebar Title and Logo */
+.sidebar-logo-container {
+    -fx-padding: 10px 0 24px 10px;
+    -fx-alignment: center-left;
+}
+
+.sidebar-title-text {
+    -fx-font-family: "Hanken Grotesk", "Segoe UI Bold", "Segoe UI", sans-serif;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+    -fx-text-transform: uppercase;
+    -fx-padding: 0;
+}
+
+/* Sidebar Buttons */
+.sidebar-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #8BA4B9;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 24px; /* Pill shape */
+    -fx-padding: 10px 16px;
+    -fx-cursor: hand;
+    -fx-alignment: center-left;
+    -fx-graphic-text-gap: 12px;
+}
+
+.sidebar-btn .sidebar-icon {
+    -fx-fill: #8BA4B9;
+}
+
+.sidebar-btn:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+    -fx-text-fill: #FFFFFF;
+}
+
+.sidebar-btn:hover .sidebar-icon {
+    -fx-fill: #FFFFFF;
+}
+
+.sidebar-btn:selected {
+    -fx-background-color: #F0B429;
+    -fx-text-fill: #102A43;
+    -fx-font-weight: bold;
+}
+
+.sidebar-btn:selected .sidebar-icon {
+    -fx-fill: #102A43;
+}
+
+/* Welcome Hero Banner */
+.welcome-banner {
+    -fx-background-color: #102A43; /* Match dark navy in banner */
+    -fx-padding: 28px 36px;
+    -fx-background-radius: 16px;
+    -fx-border-radius: 16px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 15, 0, 0, 8);
+}
+
+.welcome-title {
+    -fx-font-family: "Hanken Grotesk", "Segoe UI Bold", "Segoe UI", sans-serif;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+}
+
+.welcome-subtitle {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: #BFDBFE;
+    -fx-padding: 6px 0 0 0;
+}
+
+/* Refresh Stats Button */
+.refresh-btn {
+    -fx-background-color: #F0B429;
+    -fx-text-fill: #102A43;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20px; /* Pill shape */
+    -fx-padding: 10px 20px;
+    -fx-cursor: hand;
+}
+
+.refresh-btn:hover {
+    -fx-background-color: #FDE68A;
+}
+
+/* Stat Cards */
+.stat-card {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 16px;
+    -fx-background-radius: 16px;
+    -fx-padding: 20px;
+    -fx-min-width: 200px;
+    -fx-pref-width: 220px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 10, 0, 0, 4);
+}
+
+/* Gold border highlight for Devices On-Campus */
+.stat-card-gold {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #F0B429;
+    -fx-border-width: 2px;
+    -fx-border-radius: 16px;
+    -fx-background-radius: 16px;
+    -fx-padding: 19px; /* adjust for 2px border */
+    -fx-min-width: 200px;
+    -fx-pref-width: 220px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 10, 0, 0, 4);
+}
+
+.stat-card:hover, .stat-card-gold:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 15, 0, 0, 6);
+}
+
+.stat-title {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #829AB1;
+    -fx-text-transform: uppercase;
+}
+
+.stat-value {
+    -fx-font-family: "Hanken Grotesk", "Segoe UI Bold", "Segoe UI", sans-serif;
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 0 2px 0;
+}
+
+/* Custom colors for stats numbers matching their icons */
+.stat-value-blue {
+    -fx-text-fill: #0284C7;
+}
+
+.stat-value-purple {
+    -fx-text-fill: #7C3AED;
+}
+
+.stat-value-orange {
+    -fx-text-fill: #D97706;
+}
+
+.stat-value-gold {
+    -fx-text-fill: #D97706;
+}
+
+.stat-detail {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 11px;
+    -fx-text-fill: #829AB1;
+}
+
+.stat-detail-green {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #22C55E;
+}
+
+/* Stat Card Icon Containers */
+.stat-icon-container {
+    -fx-background-radius: 8px;
+    -fx-min-width: 32px;
+    -fx-min-height: 32px;
+    -fx-pref-width: 32px;
+    -fx-pref-height: 32px;
+    -fx-alignment: center;
+}
+
+.stat-icon-blue { -fx-background-color: #E0F2FE; }
+.stat-icon-purple { -fx-background-color: #F3E8FF; }
+.stat-icon-yellow { -fx-background-color: #FEF3C7; }
+.stat-icon-light-yellow { -fx-background-color: #FEF08A; } /* Lighter yellow background */
+
+.stat-icon-blue-svg { -fx-fill: #0284C7; }
+.stat-icon-purple-svg { -fx-fill: #7C3AED; }
+.stat-icon-yellow-svg { -fx-fill: #D97706; }
+
+/* Quick Access Section */
+.section-title {
+    -fx-font-family: "Hanken Grotesk", "Segoe UI Bold", "Segoe UI", sans-serif;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #829AB1;
+    -fx-text-transform: uppercase;
+    -fx-padding: 20px 0 4px 0;
+}
+
+/* Horizontal Access Shortcut Cards */
+.shortcut-card-horiz {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-padding: 12px 16px;
+    -fx-min-width: 210px;
+    -fx-pref-width: 220px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 10, 0, 0, 4);
+}
+
+.shortcut-card-horiz:hover {
+    -fx-border-color: #F0B429;
+    -fx-border-width: 2px;
+    -fx-padding: 11px 15px; /* prevents layout shift */
+}
+
+.shortcut-icon-container-small {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-min-width: 40px;
+    -fx-min-height: 40px;
+    -fx-pref-width: 40px;
+    -fx-pref-height: 40px;
+    -fx-alignment: center;
+}
+
+.shortcut-icon-small {
+    -fx-fill: #475569;
+}
+
+.shortcut-title-small {
+    -fx-font-family: "Hanken Grotesk", "Segoe UI Bold", "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #102A43;
+}
+
+.shortcut-desc-small {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 11px;
+    -fx-text-fill: #829AB1;
+}
+
+.shortcut-badge {
+    -fx-background-color: #F0B429;
+    -fx-text-fill: #102A43;
+    -fx-background-radius: 50%;
+    -fx-min-width: 14px;
+    -fx-min-height: 14px;
+    -fx-pref-width: 14px;
+    -fx-pref-height: 14px;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-translate-x: 5px;
+    -fx-translate-y: -5px;
+}
+
+/* 2x2 Stacked Access Shortcut Cards */
+.shortcut-card {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-padding: 20px 24px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 10, 0, 0, 4);
+    -fx-alignment: center-left;
+}
+
+.shortcut-card:hover {
+    -fx-border-color: #F0B429;
+    -fx-border-width: 2px;
+    -fx-padding: 19px 23px; /* prevents layout shift */
+}
+
+.shortcut-icon-container {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-min-width: 56px;
+    -fx-min-height: 56px;
+    -fx-pref-width: 56px;
+    -fx-pref-height: 56px;
+    -fx-alignment: center;
+}
+
+.shortcut-icon {
+    -fx-fill: #102A43;
+}
+
+.shortcut-title {
+    -fx-font-family: "Hanken Grotesk", "Segoe UI Bold", "Segoe UI", sans-serif;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #102A43;
+}
+
+.shortcut-desc {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 11px;
+    -fx-text-fill: #829AB1;
+}
+
+/* ==================================================
+   CENTRALIZED SHARED STYLES FOR ADMIN MODULES
+   ================================================== */
+
+/* Generic Module Container & Card */
+.module-container {
+    -fx-background-color: transparent;
+    -fx-padding: 24px 32px;
+}
+
+.module-card {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-padding: 24px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 10, 0, 0, 4);
+}
+
+/* Headers */
+.module-header {
+    -fx-font-family: "Hanken Grotesk", "Segoe UI Bold", "Segoe UI", sans-serif;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #102A43;
+}
+
+.module-subheader {
+    -fx-font-family: "Hanken Grotesk", "Segoe UI Bold", "Segoe UI", sans-serif;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #102A43;
+}
+
+.form-label {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #475569;
+}
+
+/* Modern Form Controls */
+.modern-textfield, .modern-password-field, .modern-textarea {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 12px;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: #102A43;
+}
+
+.modern-textfield:focused, .modern-password-field:focused, .modern-textarea:focused {
+    -fx-border-color: #3B82F6;
+    -fx-effect: dropshadow(three-pass-box, rgba(59, 130, 246, 0.2), 5, 0, 0, 0);
+}
+
+.read-only-field {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: transparent;
+    -fx-opacity: 0.9;
+}
+.read-only-field:focused {
+    -fx-border-color: transparent;
+    -fx-background-color: #F8FAFC;
+}
+
+.modern-combo-box, .modern-date-picker {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+    -fx-padding: 2px;
+}
+
+.modern-combo-box:focused, .modern-date-picker:focused {
+    -fx-border-color: #3B82F6;
+}
+
+/* Action Buttons */
+.action-btn {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+}
+
+.action-btn-primary {
+    -fx-background-color: #102A43;
+    -fx-text-fill: #FFFFFF;
+}
+.action-btn-primary:hover {
+    -fx-background-color: #243B53;
+}
+
+.action-btn-secondary {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #475569;
+}
+.action-btn-secondary:hover {
+    -fx-background-color: #E2E8F0;
+}
+
+.action-btn-success {
+    -fx-background-color: #10B981;
+    -fx-text-fill: #FFFFFF;
+}
+.action-btn-success:hover {
+    -fx-background-color: #059669;
+}
+
+.action-btn-danger {
+    -fx-background-color: #EF4444;
+    -fx-text-fill: #FFFFFF;
+}
+.action-btn-danger:hover {
+    -fx-background-color: #DC2626;
+}
+
+.action-btn-warning {
+    -fx-background-color: #F0B429;
+    -fx-text-fill: #102A43;
+}
+.action-btn-warning:hover {
+    -fx-background-color: #D9A01C;
+}
+
+/* Modern Tables */
+.modern-table {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+}
+.modern-table .column-header-background {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 8px 8px 0 0;
+    -fx-border-color: transparent transparent #E2E8F0 transparent;
+}
+.modern-table .column-header {
+    -fx-background-color: transparent;
+    -fx-padding: 12px 16px;
+}
+.modern-table .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #64748B;
+    -fx-font-size: 12px;
+}
+.modern-table .table-row-cell {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: transparent transparent #F1F5F9 transparent;
+    -fx-cell-size: 40px;
+}
+.modern-table .table-row-cell:odd {
+    -fx-background-color: #FAFAFA;
+}
+.modern-table .table-row-cell:selected {
+    -fx-background-color: #E0F2FE;
+    -fx-text-fill: #102A43;
+}
+.modern-table .table-cell {
+    -fx-text-fill: #334155;
+    -fx-padding: 0 16px;
+    -fx-alignment: center-left;
+}
+
