@@ -71,6 +71,10 @@ public class ProfileScreenController {
             return;
         }
 
+        if (!AlertHelper.showConfirmation("Update Profile", "Confirm Username Update", "Are you sure you want to update your username?")) {
+            return;
+        }
+
         try {
             authService.updateUsername(currentUser.getUserId(), trimmed);
             AlertHelper.showInfo("Profile Update", "Success", "Your username has been updated successfully.");
@@ -99,6 +103,10 @@ public class ProfileScreenController {
 
         if (!newPassword.equals(confirmPassword)) {
             AlertHelper.showWarning("Profile Update", "Password Mismatch", "Passwords do not match. Please verify.");
+            return;
+        }
+
+        if (!AlertHelper.showConfirmation("Update Profile", "Confirm Password Change", "Are you sure you want to change your login password?")) {
             return;
         }
 

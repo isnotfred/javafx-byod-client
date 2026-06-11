@@ -74,6 +74,10 @@ public class SystemConfigurationScreenController {
             return;
         }
 
+        if (!AlertHelper.showConfirmation("System Config", "Confirm Setting Change", "Are you sure you want to change system configuration parameter " + selected.getSettingKey() + " to: " + newValue + "?")) {
+            return;
+        }
+
         try {
             settingService.updateSetting(selected.getSettingKey(), newValue);
             AlertHelper.showInfo("System Config", "Update Success", "Setting '" + selected.getSettingKey() + "' updated successfully.");

@@ -264,9 +264,11 @@ public class RegistryManagementScreenController {
         } catch (Exception e) {
             AlertHelper.showError("CSV Validation Failed", "Error reading file", e.getMessage());
             return;
+        }        // Proceed to call API
+        if (!AlertHelper.showConfirmation("Import CSV", "Confirm Import", "Are you sure you want to import student records from the selected CSV file?")) {
+            return;
         }
 
-        // Proceed to call API
         try {
             Map<String, Object> result = studentService.importStudentsCsv(selectedFile);
             
@@ -332,7 +334,6 @@ public class RegistryManagementScreenController {
         handleClearStudent();
         handleClearDevice();
     }
-
     @FXML
     public void handleDeactivateRecord() {
         Student selectedStudent = studentTable.getSelectionModel().getSelectedItem();
@@ -340,6 +341,10 @@ public class RegistryManagementScreenController {
 
         if (selectedStudent == null && selectedDevice == null) {
             AlertHelper.showWarning("Deactivation", "No Selection", "Please select a student or device to deactivate.");
+            return;
+        }
+
+        if (!AlertHelper.showConfirmation("Deactivation", "Confirm Deactivation", "Are you sure you want to deactivate the selected student/device record? This action is soft-destructive.")) {
             return;
         }
 
@@ -391,6 +396,10 @@ public class RegistryManagementScreenController {
         s.setLastName(last);
         s.setCourseYearLevel(course);
         s.setStatus(studentStatus);
+
+        if (!AlertHelper.showConfirmation("Save Registry Record", "Confirm Save", "Are you sure you want to save the registry changes for student ID: " + studentId + "?")) {
+            return;
+        }
 
         try {
             if (isStudentEditMode) {

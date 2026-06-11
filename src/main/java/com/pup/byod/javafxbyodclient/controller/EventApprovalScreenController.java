@@ -223,6 +223,10 @@ public class EventApprovalScreenController {
         EventRequest request = eventsTable.getSelectionModel().getSelectedItem();
         if (request == null) return;
 
+        if (!AlertHelper.showConfirmation("Approve Event", "Confirm Approval", "Are you sure you want to approve event request ID: " + request.getEventRequestId() + "?")) {
+            return;
+        }
+
         try {
             int reviewerId = SessionManager.getInstance().getCurrentUser().getUserId();
             eventRequestService.approveEventRequest(request.getEventRequestId(), reviewerId);
@@ -245,6 +249,10 @@ public class EventApprovalScreenController {
             return;
         }
 
+        if (!AlertHelper.showConfirmation("Reject Event", "Confirm Rejection", "Are you sure you want to reject event request ID: " + request.getEventRequestId() + "?")) {
+            return;
+        }
+
         try {
             int reviewerId = SessionManager.getInstance().getCurrentUser().getUserId();
             eventRequestService.rejectEventRequest(request.getEventRequestId(), reviewerId, remarks);
@@ -264,6 +272,10 @@ public class EventApprovalScreenController {
         String remarks = remarksArea.getText();
         if (ValidationHelper.isEmpty(remarks)) {
             AlertHelper.showWarning("Remarks Required", "Missing Remarks", "Please provide remarks detailing what needs revision.");
+            return;
+        }
+
+        if (!AlertHelper.showConfirmation("Return Event", "Confirm Return", "Are you sure you want to return event request ID: " + request.getEventRequestId() + " for revision?")) {
             return;
         }
 

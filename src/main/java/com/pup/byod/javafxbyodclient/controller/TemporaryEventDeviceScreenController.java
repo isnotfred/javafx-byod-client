@@ -110,6 +110,10 @@ public class TemporaryEventDeviceScreenController {
         request.setIsAccommodated(true);
         request.setLineItems(new ArrayList<>(lineItems));
 
+        if (!AlertHelper.showConfirmation("Submit Request", "Confirm Submission", "Are you sure you want to submit this temporary event registration request?")) {
+            return;
+        }
+
         try {
             eventRequestService.createEventRequest(request);
             AlertHelper.showInfo("Event Request Submitted", "Success", "Your event request with bypass items has been sent for review.");

@@ -54,6 +54,9 @@ public class PendingRegistrationApprovalScreenController {
             AlertHelper.showWarning("Approval", "No Selection", "Please select a pending device.");
             return;
         }
+        if (!AlertHelper.showConfirmation("Approve Device", "Confirm Approval", "Are you sure you want to approve this device registration request?")) {
+            return;
+        }
         try {
             int reviewerId = SessionManager.getInstance().getCurrentUser().getUserId();
             deviceService.approveDevice(selected.getDeviceId(), reviewerId);
@@ -74,6 +77,9 @@ public class PendingRegistrationApprovalScreenController {
         String remarks = remarksArea.getText();
         if (remarks == null || remarks.trim().isEmpty()) {
             AlertHelper.showWarning("Rejection", "Remarks Required", "Please provide a reason/remarks for rejection.");
+            return;
+        }
+        if (!AlertHelper.showConfirmation("Reject Device", "Confirm Rejection", "Are you sure you want to reject this device registration request?")) {
             return;
         }
         try {

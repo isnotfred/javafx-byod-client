@@ -82,6 +82,10 @@ public class UserManagementScreenController {
             return;
         }
 
+        if (!AlertHelper.showConfirmation("Onboard Operator", "Confirm Onboard", "Are you sure you want to onboard " + email + " as a new operator?")) {
+            return;
+        }
+
         try {
             int actingUserId = SessionManager.getInstance().getCurrentUser().getUserId();
             superAdminService.onboardUser(actingUserId, name, email, role);
@@ -106,6 +110,10 @@ public class UserManagementScreenController {
 
         if (ValidationHelper.isEmpty(name) || status == null) {
             AlertHelper.showWarning("Form Validation", "Missing fields", "Please fill in name and status.");
+            return;
+        }
+
+        if (!AlertHelper.showConfirmation("Update Operator", "Confirm Update", "Are you sure you want to save updates to operator " + selected.getUsername() + "'s profile?")) {
             return;
         }
 
@@ -134,6 +142,10 @@ public class UserManagementScreenController {
             return;
         }
 
+        if (!AlertHelper.showConfirmation("Change Role", "Confirm Role Change", "Are you sure you want to change the role of operator " + selected.getUsername() + " to " + role + "?")) {
+            return;
+        }
+
         try {
             int actingUserId = SessionManager.getInstance().getCurrentUser().getUserId();
             superAdminService.changeRole(selected.getUserId(), actingUserId, role);
@@ -150,6 +162,9 @@ public class UserManagementScreenController {
         User selected = userTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
             AlertHelper.showWarning("User update", "No Selection", "Please select a user.");
+            return;
+        }
+        if (!AlertHelper.showConfirmation("Deactivate Operator", "Confirm Deactivation", "Are you sure you want to deactivate operator " + selected.getUsername() + "? They will lose access to the system.")) {
             return;
         }
         try {

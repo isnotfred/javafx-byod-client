@@ -33,4 +33,22 @@ public class AlertHelper {
         
         alert.showAndWait();
     }
+
+    public static boolean showConfirmation(String title, String header, String content) {
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        
+        DialogPane dialogPane = alert.getDialogPane();
+        try {
+            dialogPane.getStylesheets().add(AlertHelper.class.getResource("/com/pup/byod/javafxbyodclient/css/admin_dashboard_styles.css").toExternalForm());
+            dialogPane.getStyleClass().add("module-card");
+        } catch (Exception e) {
+            System.err.println("Could not load alert styles: " + e.getMessage());
+        }
+        
+        java.util.Optional<javafx.scene.control.ButtonType> result = alert.showAndWait();
+        return result.isPresent() && result.get() == javafx.scene.control.ButtonType.OK;
+    }
 }

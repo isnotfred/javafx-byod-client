@@ -363,6 +363,10 @@ public class TemporaryEventDeviceGuardScreenController {
 
         request.setLineItems(new ArrayList<>(deviceList));
 
+        if (!AlertHelper.showConfirmation("Submit Request", "Confirm Submission", "Are you sure you want to submit this temporary event registration request?")) {
+            return;
+        }
+
         try {
             eventRequestService.createEventRequest(request);
             AlertHelper.showInfo("Success", "Submitted", "Event request submitted successfully.");

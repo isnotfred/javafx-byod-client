@@ -7,6 +7,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 
+import com.pup.byod.javafxbyodclient.util.AlertHelper;
+
 public class AdminDashboardController {
     @FXML private StackPane contentArea;
 
@@ -64,7 +66,9 @@ public class AdminDashboardController {
 
     @FXML
     public void handleLogout() {
-        SessionManager.getInstance().logout();
-        NavigationManager.getInstance().switchRootScene("LoginScreen.fxml");
+        if (AlertHelper.showConfirmation("Logout", "Confirm Logout", "Are you sure you want to log out of the system?")) {
+            SessionManager.getInstance().logout();
+            NavigationManager.getInstance().switchRootScene("LoginScreen.fxml");
+        }
     }
 }
