@@ -6,25 +6,46 @@
 
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.pup.byod.javafxbyodclient.controller.ActiveDevicesInsideCampusScreenController"
-      spacing="10.0" VBox.vgrow="ALWAYS">
+      spacing="15.0" VBox.vgrow="ALWAYS"
+      stylesheets="@../css/admin_dashboard_styles.css">
+      
+    <padding>
+        <Insets top="5.0" right="5.0" bottom="5.0" left="5.0"/>
+    </padding>
     
-    <HBox spacing="10.0" alignment="CENTER_LEFT">
-        <Label text="Devices Currently on Campus" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button text="Refresh View" onAction="#loadStatus"/>
-    </HBox>
+    <!-- Hero Header Banner -->
+    <VBox styleClass="welcome-banner" spacing="4.0" alignment="CENTER_LEFT" maxWidth="Infinity">
+        <Label text="Devices Currently on Campus" styleClass="welcome-title"/>
+        <Label text="Real-time monitoring directory of all registered devices and their current campus presence status." styleClass="welcome-subtitle"/>
+    </VBox>
     
-    <TableView fx:id="statusTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
-        <columnResizePolicy>
-            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-        </columnResizePolicy>
-        <columns>
-            <TableColumn fx:id="colId" text="Device ID" prefWidth="70.0"/>
-            <TableColumn fx:id="colStudentId" text="Student ID" prefWidth="120.0"/>
-            <TableColumn fx:id="colName" text="Device Name" prefWidth="150.0"/>
-            <TableColumn fx:id="colSerialNumber" text="Serial Number" prefWidth="150.0"/>
-            <TableColumn fx:id="colStatus" text="Campus Status" prefWidth="100.0"/>
-            <TableColumn fx:id="colLastTime" text="Last Log Timestamp" prefWidth="180.0"/>
-        </columns>
-    </TableView>
+    <!-- Registry Card Container -->
+    <VBox spacing="12.0" VBox.vgrow="ALWAYS"
+          style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 16px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 8, 0, 0, 2);">
+        
+        <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <VBox spacing="2.0">
+                <Label text="Campus Presence Registry" style="-fx-font-family: 'Hanken Grotesk', 'Segoe UI Bold', 'Segoe UI', sans-serif; -fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #102A43;"/>
+                <Label text="Showing live entry, exit, and outside states for all registered user hardware" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 12px; -fx-text-fill: #64748B;"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Refresh View" onAction="#loadStatus" styleClass="action-btn, action-btn-warning" prefHeight="35.0"/>
+        </HBox>
+        
+        <TableView fx:id="statusTable" VBox.vgrow="ALWAYS" styleClass="modern-table" minHeight="300.0">
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+            <columns>
+                <TableColumn fx:id="colId" text="Device ID" prefWidth="80.0"/>
+                <TableColumn fx:id="colStudentId" text="Student ID" prefWidth="150.0"/>
+                <TableColumn fx:id="colName" text="Device Name" prefWidth="180.0"/>
+                <TableColumn fx:id="colSerialNumber" text="Serial Number" prefWidth="180.0"/>
+                <TableColumn fx:id="colStatus" text="Campus Status" prefWidth="120.0"/>
+                <TableColumn fx:id="colLastTime" text="Last Log Timestamp" prefWidth="200.0"/>
+            </columns>
+        </TableView>
+        
+    </VBox>
+    
 </VBox>

@@ -50,17 +50,35 @@ public class NavigationManager {
                 throw new IllegalArgumentException("Cannot find FXML file: " + fxmlFileName);
             }
             Parent root = FXMLLoader.load(url);
-            Scene scene = new Scene(root);
+            Scene scene = primaryStage.getScene();
+            if (scene == null) {
+                scene = new Scene(root);
+                primaryStage.setScene(scene);
+            } else {
+                scene.setRoot(root);
+            }
             
             // Add style sheet if it exists
             URL cssUrl = getClass().getResource("/com/pup/byod/javafxbyodclient/css/styles.css");
             if (cssUrl != null) {
-                scene.getStylesheets().add(cssUrl.toExternalForm());
+                String cssPath = cssUrl.toExternalForm();
+                if (!scene.getStylesheets().contains(cssPath)) {
+                    scene.getStylesheets().add(cssPath);
+                }
             }
 
-            primaryStage.setScene(scene);
-            primaryStage.setMaximized(true);
-            primaryStage.show();
+            if (!primaryStage.isShowing()) {
+                primaryStage.show();
+            }
+
+            if ("LoginScreen.fxml".equals(fxmlFileName)) {
+                primaryStage.setMaximized(false);
+                primaryStage.setWidth(750);
+                primaryStage.setHeight(600);
+                primaryStage.centerOnScreen();
+            } else {
+                primaryStage.setMaximized(true);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             AlertHelper.showError("Navigation Error", "Failed to switch screen", e.getMessage());

@@ -68,28 +68,28 @@ public class SecurityGuardSummaryDashboardController {
     public void goToGateScan() {
         NavigationManager.getInstance().loadViewIntoContainer(
             NavigationManager.getInstance().getContentArea(), "IngressEgressMonitoringScreen.fxml");
-        syncSidebarSelection("Gate Scanner");
+        syncSidebarSelection("Gate Entry/Exit Scan");
     }
 
     @FXML
     public void goToQuickRegister() {
         NavigationManager.getInstance().loadViewIntoContainer(
             NavigationManager.getInstance().getContentArea(), "QuickPendingRegistrationScreen.fxml");
-        syncSidebarSelection("Quick Register");
+        syncSidebarSelection("Quick Registration");
     }
 
     @FXML
     public void goToEventScanner() {
         NavigationManager.getInstance().loadViewIntoContainer(
             NavigationManager.getInstance().getContentArea(), "TemporaryEventDeviceGuardScreen.fxml");
-        syncSidebarSelection("Event Scanner");
+        syncSidebarSelection("Event Device Verification");
     }
 
     @FXML
     public void goToActiveDevices() {
         NavigationManager.getInstance().loadViewIntoContainer(
             NavigationManager.getInstance().getContentArea(), "ActiveDevicesInsideCampusScreen.fxml");
-        syncSidebarSelection("Active Devices");
+        syncSidebarSelection("On-Campus Devices");
     }
 
     private void syncSidebarSelection(String buttonText) {

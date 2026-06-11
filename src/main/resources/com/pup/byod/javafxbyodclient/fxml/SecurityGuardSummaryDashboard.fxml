@@ -4,100 +4,133 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.shape.SVGPath?>
-<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.pup.byod.javafxbyodclient.controller.SecurityGuardSummaryDashboardController"
-      spacing="20.0" styleClass="dashboard-container" VBox.vgrow="ALWAYS">
-      
-    <!-- Hero Welcome Banner -->
-    <HBox styleClass="hero-banner" alignment="CENTER_LEFT" spacing="15.0">
-        <VBox spacing="4.0" HBox.hgrow="ALWAYS">
-            <Label fx:id="welcomeLabel" text="Welcome back, Guard!" styleClass="hero-welcome"/>
-            <Label text="BYOD Campus Security Gate Control — Verify registered student and temporary event devices." styleClass="hero-subtitle"/>
-        </VBox>
-        <Button text="Refresh Stats" onAction="#refreshStats" styleClass="refresh-btn" style="-fx-background-color: white; -fx-text-fill: #1e3a8a; -fx-cursor: hand;"/>
-    </HBox>
-    
-    <!-- Cards Row -->
-    <HBox spacing="15.0" alignment="CENTER_LEFT">
-        <!-- Card 1: Devices On Campus -->
-        <VBox styleClass="card">
-            <Label text="Devices On-Campus" styleClass="card-title"/>
-            <Label fx:id="devicesOnCampusLabel" text="0" styleClass="card-value"/>
-        </VBox>
+
+<ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" 
+            style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" 
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.pup.byod.javafxbyodclient.controller.SecurityGuardSummaryDashboardController">
+            
+    <VBox spacing="24.0" styleClass="admin-dashboard-container" VBox.vgrow="ALWAYS">
         
-        <!-- Card 2: Active Events -->
-        <VBox styleClass="card">
-            <Label text="Active Events" styleClass="card-title"/>
-            <Label fx:id="activeEventsLabel" text="0" styleClass="card-value"/>
-        </VBox>
+        <!-- Hero Welcome Banner -->
+        <HBox styleClass="welcome-banner" alignment="CENTER_LEFT" spacing="15.0">
+            <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                <Label fx:id="welcomeLabel" text="Welcome back, Guard!" styleClass="welcome-title"/>
+                <Label text="BYOD Campus Security Gate Control — Verify registered student and temporary event devices." styleClass="welcome-subtitle"/>
+            </VBox>
+            <Button text="Refresh Stats" onAction="#refreshStats" styleClass="refresh-btn"/>
+        </HBox>
         
-        <!-- Card 3: Total Registered (Active) Devices -->
-        <VBox styleClass="card">
-            <Label text="Approved Devices" styleClass="card-title"/>
-            <Label fx:id="totalApprovedDevicesLabel" text="0" styleClass="card-value"/>
-        </VBox>
-    </HBox>
-    
-    <Label text="Quick Access Gate Controls" styleClass="section-title"/>
-    
-    <!-- Quick Access Buttons -->
-    <FlowPane hgap="15.0" vgap="15.0" prefWrapLength="800.0">
-        <Button onAction="#goToGateScan" prefWidth="380.0" styleClass="shortcut-card">
-            <graphic>
-                <HBox spacing="15.0" alignment="CENTER_LEFT">
-                    <StackPane styleClass="shortcut-icon-container">
-                        <!-- Gate/Scan Icon -->
-                        <SVGPath content="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z" styleClass="shortcut-icon"/>
+        <!-- Cards Row -->
+        <HBox spacing="24.0" alignment="CENTER_LEFT">
+            <!-- Card 1: Devices On Campus (Gold) -->
+            <VBox styleClass="stat-card-gold" spacing="12.0">
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="Devices On-Campus" styleClass="stat-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <StackPane styleClass="stat-icon-container, stat-icon-light-yellow">
+                        <SVGPath content="M3 17h2v3H3zm4-7h2v10H7zm4-5h2v15h-2zm4 8h2v7h-2zm4-4h2v11h-2z" 
+                                 styleClass="stat-icon-yellow-svg"/>
                     </StackPane>
-                    <VBox alignment="CENTER_LEFT" spacing="2.0">
-                        <Label text="Gate Entry/Exit Scan" styleClass="shortcut-title"/>
-                        <Label text="Log student devices entering and exiting campus" styleClass="shortcut-desc"/>
-                    </VBox>
                 </HBox>
-            </graphic>
-        </Button>
-        <Button onAction="#goToQuickRegister" prefWidth="380.0" styleClass="shortcut-card">
-            <graphic>
-                <HBox spacing="15.0" alignment="CENTER_LEFT">
-                    <StackPane styleClass="shortcut-icon-container">
-                        <!-- Register Icon -->
-                        <SVGPath content="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" styleClass="shortcut-icon"/>
+                <Label fx:id="devicesOnCampusLabel" text="0" styleClass="stat-value, stat-value-gold"/>
+            </VBox>
+            
+            <!-- Card 2: Active Events -->
+            <VBox styleClass="stat-card" spacing="12.0">
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="Active Events" styleClass="stat-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <StackPane styleClass="stat-icon-container, stat-icon-blue">
+                        <SVGPath content="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z" 
+                                 styleClass="stat-icon-blue-svg"/>
                     </StackPane>
-                    <VBox alignment="CENTER_LEFT" spacing="2.0">
-                        <Label text="Quick Registration" styleClass="shortcut-title"/>
-                        <Label text="Quickly register incoming temporary devices" styleClass="shortcut-desc"/>
-                    </VBox>
                 </HBox>
-            </graphic>
-        </Button>
-        <Button onAction="#goToEventScanner" prefWidth="380.0" styleClass="shortcut-card">
-            <graphic>
-                <HBox spacing="15.0" alignment="CENTER_LEFT">
-                    <StackPane styleClass="shortcut-icon-container">
-                        <!-- Event Icon -->
-                        <SVGPath content="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z" styleClass="shortcut-icon"/>
+                <Label fx:id="activeEventsLabel" text="0" styleClass="stat-value, stat-value-blue"/>
+            </VBox>
+            
+            <!-- Card 3: Approved Devices -->
+            <VBox styleClass="stat-card" spacing="12.0">
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="Approved Devices" styleClass="stat-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <StackPane styleClass="stat-icon-container, stat-icon-purple">
+                        <SVGPath content="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z" 
+                                 styleClass="stat-icon-purple-svg"/>
                     </StackPane>
-                    <VBox alignment="CENTER_LEFT" spacing="2.0">
-                        <Label text="Event Device Check" styleClass="shortcut-title"/>
-                        <Label text="Verify devices for specific campus events" styleClass="shortcut-desc"/>
-                    </VBox>
                 </HBox>
-            </graphic>
-        </Button>
-        <Button onAction="#goToActiveDevices" prefWidth="380.0" styleClass="shortcut-card">
-            <graphic>
-                <HBox spacing="15.0" alignment="CENTER_LEFT">
-                    <StackPane styleClass="shortcut-icon-container">
-                        <!-- Search Icon -->
-                        <SVGPath content="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" styleClass="shortcut-icon"/>
-                    </StackPane>
-                    <VBox alignment="CENTER_LEFT" spacing="2.0">
-                        <Label text="On-Campus Devices" styleClass="shortcut-title"/>
-                        <Label text="View all active devices currently in the campus" styleClass="shortcut-desc"/>
-                    </VBox>
-                </HBox>
-            </graphic>
-        </Button>
-    </FlowPane>
-    
-</VBox>
+                <Label fx:id="totalApprovedDevicesLabel" text="0" styleClass="stat-value, stat-value-purple"/>
+            </VBox>
+        </HBox>
+        
+        <Label text="Quick Access Gate Controls" styleClass="section-title"/>
+        
+        <!-- Quick Access Buttons (2x2 Stack Layout) -->
+        <FlowPane hgap="24.0" vgap="24.0" prefWrapLength="800.0">
+            <!-- Gate Entry/Exit Scan -->
+            <Button onAction="#goToGateScan" prefWidth="380.0" styleClass="shortcut-card">
+                <graphic>
+                    <HBox spacing="16.0" alignment="CENTER_LEFT">
+                        <StackPane styleClass="shortcut-icon-container">
+                            <SVGPath content="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z" 
+                                     styleClass="shortcut-icon"/>
+                        </StackPane>
+                        <VBox spacing="4.0" alignment="CENTER_LEFT">
+                            <Label text="Gate Entry/Exit Scan" styleClass="shortcut-title"/>
+                            <Label text="Log student devices entering and exiting campus" styleClass="shortcut-desc"/>
+                        </VBox>
+                    </HBox>
+                </graphic>
+            </Button>
+            
+            <!-- Quick Registration -->
+            <Button onAction="#goToQuickRegister" prefWidth="380.0" styleClass="shortcut-card">
+                <graphic>
+                    <HBox spacing="16.0" alignment="CENTER_LEFT">
+                        <StackPane styleClass="shortcut-icon-container">
+                            <SVGPath content="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" 
+                                     styleClass="shortcut-icon"/>
+                        </StackPane>
+                        <VBox spacing="4.0" alignment="CENTER_LEFT">
+                            <Label text="Quick Registration" styleClass="shortcut-title"/>
+                            <Label text="Quickly register incoming temporary devices" styleClass="shortcut-desc"/>
+                        </VBox>
+                    </HBox>
+                </graphic>
+            </Button>
+            
+            <!-- Event Device Verification -->
+            <Button onAction="#goToEventScanner" prefWidth="380.0" styleClass="shortcut-card">
+                <graphic>
+                    <HBox spacing="16.0" alignment="CENTER_LEFT">
+                        <StackPane styleClass="shortcut-icon-container">
+                            <SVGPath content="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z" 
+                                     styleClass="shortcut-icon"/>
+                        </StackPane>
+                        <VBox spacing="4.0" alignment="CENTER_LEFT">
+                            <Label text="Event Device Verification" styleClass="shortcut-title"/>
+                            <Label text="Verify devices for specific campus events" styleClass="shortcut-desc"/>
+                        </VBox>
+                    </HBox>
+                </graphic>
+            </Button>
+            
+            <!-- On-Campus Devices -->
+            <Button onAction="#goToActiveDevices" prefWidth="380.0" styleClass="shortcut-card">
+                <graphic>
+                    <HBox spacing="16.0" alignment="CENTER_LEFT">
+                        <StackPane styleClass="shortcut-icon-container">
+                            <SVGPath content="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" 
+                                     styleClass="shortcut-icon"/>
+                        </StackPane>
+                        <VBox spacing="4.0" alignment="CENTER_LEFT">
+                            <Label text="On-Campus Devices" styleClass="shortcut-title"/>
+                            <Label text="View all active devices currently in the campus" styleClass="shortcut-desc"/>
+                        </VBox>
+                    </HBox>
+                </graphic>
+            </Button>
+        </FlowPane>
+        
+    </VBox>
+</ScrollPane>

@@ -62,14 +62,14 @@ public class SuperAdminSummaryDashboardController {
     public void goToOperators() {
         NavigationManager.getInstance().loadViewIntoContainer(
             NavigationManager.getInstance().getContentArea(), "UserManagementScreen.fxml");
-        syncSidebarSelection("User Management");
+        syncSidebarSelection("Operator Management");
     }
 
     @FXML
     public void goToConfiguration() {
         NavigationManager.getInstance().loadViewIntoContainer(
             NavigationManager.getInstance().getContentArea(), "SystemConfigurationScreen.fxml");
-        syncSidebarSelection("System Config");
+        syncSidebarSelection("System Configuration");
     }
 
     @FXML

@@ -57,7 +57,7 @@
             
             <ToggleButton text="Analytical Reports" onAction="#showReports" toggleGroup="$sidebarGroup" prefWidth="200.0" styleClass="sidebar-btn">
                 <graphic>
-                    <SVGPath content="M5 9.2h3V19H5V9.2zM10.6 5h2.8v14h-2.8V5zm5.6 8H19v6h-2.8v-6z" styleClass="sidebar-icon"/>
+                    <SVGPath content="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z" styleClass="sidebar-icon"/>
                 </graphic>
             </ToggleButton>
             
