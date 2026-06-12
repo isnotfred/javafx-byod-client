@@ -61,6 +61,9 @@
             </StackPane>
         </VBox>
         
+        <!-- Error Message Label -->
+        <Label fx:id="errorLabel" visible="false" managed="false" styleClass="login-error-label"/>
+        
         <Region prefHeight="2.0"/>
         
         <!-- Login Button -->

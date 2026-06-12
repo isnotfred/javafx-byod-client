@@ -35,6 +35,32 @@ public class ActiveDevicesInsideCampusScreenController {
         colLastTime.setCellValueFactory(new PropertyValueFactory<>("lastEventTime"));
 
         statusTable.setItems(statusList);
+
+        // Restrict sorting strictly to Device ID
+        colId.setSortable(true);
+        colStudentId.setSortable(false);
+        colName.setSortable(false);
+        colSerialNumber.setSortable(false);
+        colStatus.setSortable(false);
+        colLastTime.setSortable(false);
+
+        // Apply right-aligned arrow CSS class
+        colId.getStyleClass().add("right-arrow-header");
+
+        // Set default sort to Device ID
+        colId.setSortType(TableColumn.SortType.ASCENDING);
+        statusTable.getSortOrder().add(colId);
+
+        // Prevent the "no arrow" state by defaulting back to colId
+        statusTable.setOnSort(event -> {
+            if (statusTable.getSortOrder().isEmpty()) {
+                colId.setSortType(TableColumn.SortType.ASCENDING);
+                javafx.application.Platform.runLater(() -> {
+                    statusTable.getSortOrder().add(colId);
+                });
+            }
+        });
+
         loadStatus();
     }
 

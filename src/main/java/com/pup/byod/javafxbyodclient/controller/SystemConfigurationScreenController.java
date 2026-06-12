@@ -36,6 +36,23 @@ public class SystemConfigurationScreenController {
 
         settingsTable.setItems(settingList);
 
+        // Restrict sorting strictly to the Description column with a 2-state sort (ASCENDING <-> DESCENDING)
+        colKey.setSortable(false);
+        colValue.setSortable(false);
+        colDescription.setSortable(true);
+
+        colDescription.setSortType(TableColumn.SortType.ASCENDING);
+        settingsTable.getSortOrder().add(colDescription);
+        
+        settingsTable.setOnSort(event -> {
+            if (settingsTable.getSortOrder().isEmpty()) {
+                colDescription.setSortType(TableColumn.SortType.ASCENDING);
+                javafx.application.Platform.runLater(() -> {
+                    settingsTable.getSortOrder().add(colDescription);
+                });
+            }
+        });
+
         // Selection listener
         settingsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {

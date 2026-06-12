@@ -81,3 +81,21 @@
 .svg-icon-black {
     -fx-fill: #64748B; /* Original soft slate grey */
 }
+
+/* Error states for Login */
+.login-textfield-error {
+    -fx-border-color: #EF4444; /* Error Red border */
+    -fx-border-width: 1.5px;
+}
+
+.login-textfield-error:focused {
+    -fx-border-color: #DC2626; /* Darker red on focus */
+}
+
+.login-error-label {
+    -fx-text-fill: #EF4444;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-wrap-text: true;
+    -fx-alignment: center-left;
+}

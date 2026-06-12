@@ -46,6 +46,27 @@ public class UserManagementScreenController {
         roleBox.getItems().addAll("super_admin", "admin", "guard");
         statusBox.getItems().addAll("active", "pending", "deactivated");
         userTable.setItems(userList);
+        colId.getStyleClass().add("right-arrow-header");
+
+        // Restrict sorting strictly to the User ID column with a 2-state sort (ASCENDING <-> DESCENDING)
+        colId.setSortable(true);
+        colUsername.setSortable(false);
+        colEmail.setSortable(false);
+        colName.setSortable(false);
+        colRole.setSortable(false);
+        colStatus.setSortable(false);
+
+        colId.setSortType(TableColumn.SortType.ASCENDING);
+        userTable.getSortOrder().add(colId);
+
+        userTable.setOnSort(event -> {
+            if (userTable.getSortOrder().isEmpty()) {
+                colId.setSortType(TableColumn.SortType.ASCENDING);
+                javafx.application.Platform.runLater(() -> {
+                    userTable.getSortOrder().add(colId);
+                });
+            }
+        });
         
         // Table selection listener
         userTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {

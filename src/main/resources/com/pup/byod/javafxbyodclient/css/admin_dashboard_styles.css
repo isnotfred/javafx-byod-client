@@ -674,3 +674,32 @@
 .default-color6.chart-pie { -fx-pie-color: #2563EB; } /* Blue */
 .default-color7.chart-pie { -fx-pie-color: #16A34A; } /* Green */
 
+.overlay-close-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #64748b;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-min-width: 28px;
+    -fx-min-height: 28px;
+    -fx-max-width: 28px;
+    -fx-max-height: 28px;
+    -fx-pref-width: 28px;
+    -fx-pref-height: 28px;
+    -fx-padding: 0;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-alignment: center;
+}
+
+.overlay-close-btn:hover {
+    -fx-background-color: #EF4444; /* Container turns red */
+    -fx-text-fill: #FFFFFF; /* Close sign turns white */
+}
+
+/* Push sort arrow to the right edge */
+.right-arrow-header.column-header .label {
+    -fx-max-width: Infinity;
+    -fx-alignment: center-left;
+}
+

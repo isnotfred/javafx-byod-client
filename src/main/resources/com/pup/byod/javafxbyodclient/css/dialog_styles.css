@@ -1,0 +1,123 @@
+/* Sleek Institutional Dialog Stylesheet for JavaFX BYOD Client */
+
+.custom-dialog-pane {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-padding: 20px 24px;
+    -fx-effect: dropshadow(three-pass-box, rgba(16, 42, 67, 0.05), 10, 0, 0, 4);
+}
+
+/* Header panel styling */
+.custom-dialog-pane > .header-panel {
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 6px 0;
+}
+
+.custom-dialog-pane > .header-panel > .label {
+    -fx-font-family: "Hanken Grotesk", "Segoe UI", sans-serif;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #102A43; /* System primary navy */
+}
+
+/* Content area styling */
+.custom-dialog-pane > .content {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: #486581; /* System secondary slate */
+    -fx-padding: 2px 0 12px 0;
+    -fx-wrap-text: true;
+}
+
+
+/* Graphic Container alignment */
+.custom-dialog-pane .dialog-graphic-container {
+    -fx-padding: 2px 14px 0 0;
+    -fx-alignment: top-left;
+}
+
+/* Flat SVG Icon sizing */
+.custom-dialog-pane .dialog-svg-icon {
+    -fx-min-width: 28px;
+    -fx-min-height: 28px;
+    -fx-max-width: 28px;
+    -fx-max-height: 28px;
+}
+
+/* Graphic SVG colors matching the system themes */
+.custom-dialog-pane .dialog-svg-confirm {
+    -fx-fill: #10B981; /* Success Green */
+}
+
+.custom-dialog-pane .dialog-svg-info {
+    -fx-fill: #0284C7; /* Sky Blue */
+}
+
+.custom-dialog-pane .dialog-svg-warning {
+    -fx-fill: #F0B429; /* Gold */
+}
+
+.custom-dialog-pane .dialog-svg-error {
+    -fx-fill: #EF4444; /* Red */
+}
+
+/* Button Bar Styling */
+.custom-dialog-pane > .button-bar {
+    -fx-padding: 12px 0 0 0;
+    -fx-border-color: #E2E8F0 transparent transparent transparent;
+    -fx-border-width: 1px 0 0 0;
+}
+
+.custom-dialog-pane > .button-bar > .container {
+    -fx-alignment: center-right;
+    -fx-spacing: 8px;
+}
+
+/* Action Buttons (rounded rectangles matching system's .action-btn design) */
+.dialog-btn {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-background-radius: 8px; /* 8px rounded corners to match system */
+    -fx-padding: 8px 18px;
+    -fx-cursor: hand;
+    -fx-min-width: 90px;
+    -fx-alignment: center;
+    -fx-border-color: transparent;
+}
+
+.dialog-confirm-btn {
+    -fx-background-color: #F0B429; /* System Gold/Yellow */
+    -fx-text-fill: #102A43; /* Dark Navy text for readability */
+}
+
+.dialog-confirm-btn:hover {
+    -fx-background-color: #D9A01C; /* Darker gold */
+}
+
+.dialog-cancel-btn {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-text-fill: #475569; /* System Slate text */
+}
+
+.dialog-cancel-btn:hover {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #94A3B8;
+    -fx-text-fill: #1E293B;
+}
+
+.dialog-primary-btn {
+    -fx-background-color: #102A43; /* System primary navy */
+    -fx-text-fill: #FFFFFF;
+}
+
+.dialog-primary-btn:hover {
+    -fx-background-color: #243B53;
+}

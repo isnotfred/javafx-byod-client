@@ -29,7 +29,7 @@
             <!-- Filter Bar -->
             <HBox spacing="10.0" alignment="CENTER_LEFT" style="-fx-padding: 5px 0 5px 0;">
                 <Label text="Operator Search:" styleClass="form-label"/>
-                <TextField fx:id="usernameFilterField" promptText="Search operator..." styleClass="modern-textfield" prefHeight="38.0" prefWidth="160.0"/>
+                <TextField fx:id="usernameFilterField" promptText="Search name..." styleClass="modern-textfield" prefHeight="38.0" prefWidth="160.0"/>
                 
                 <Label text="Action Type:" styleClass="form-label"/>
                 <ComboBox fx:id="actionTypeBox" promptText="All Action Types" styleClass="modern-combo-box" prefHeight="38.0" prefWidth="180.0"/>
@@ -45,6 +45,9 @@
             </HBox>
             
             <TableView fx:id="auditLogsTable" VBox.vgrow="ALWAYS" styleClass="modern-table" minHeight="400.0">
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                </columnResizePolicy>
                 <columns>
                     <TableColumn fx:id="colAuditId" text="Audit ID" prefWidth="90.0" styleClass="centered-column"/>
                     <TableColumn fx:id="colPerformedBy" text="Performed By" prefWidth="130.0"/>

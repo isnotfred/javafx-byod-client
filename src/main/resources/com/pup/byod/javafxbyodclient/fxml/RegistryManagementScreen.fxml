@@ -55,104 +55,113 @@
             <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
         </padding>
         
-        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" maxHeight="620.0" maxWidth="650.0" 
-                    style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+        <!-- Unified Registry Form Card -->
+        <VBox spacing="0.0" maxHeight="620.0" maxWidth="650.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 15, 0, 0, 8);">
             
-            <!-- Unified Registry Form Card -->
-            <VBox spacing="15.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 20px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 15, 0, 0, 8);">
-                
+            <!-- Sticky Header Section -->
+            <VBox spacing="10.0" style="-fx-padding: 20px 20px 10px 20px;">
                 <HBox alignment="CENTER_LEFT">
                     <Label text="Registry Profile &amp; Device Entry Form" styleClass="module-subheader" style="-fx-font-family: 'Hanken Grotesk', 'Segoe UI Bold', 'Segoe UI', sans-serif; -fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #102A43;"/>
                     <Region HBox.hgrow="ALWAYS"/>
-                    <Button text="✕" onAction="#handleCloseOverlay" style="-fx-background-color: transparent; -fx-text-fill: #64748b; -fx-font-size: 16px; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                    <Button text="✕" onAction="#handleCloseOverlay" styleClass="overlay-close-btn"/>
                 </HBox>
-                
                 <Separator/>
-                
-                <!-- SECTION I: Student Details -->
-                <Label text="I. Student Registry Details" styleClass="form-label" style="-fx-text-fill: #0284C7; -fx-font-size: 13px;"/>
-                
-                <GridPane hgap="10.0" vgap="10.0">
-                    <columnConstraints>
-                        <ColumnConstraints percentWidth="30.0" halignment="RIGHT"/>
-                        <ColumnConstraints percentWidth="70.0"/>
-                    </columnConstraints>
-                    
-                    <Label text="Student ID:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="form-label"/>
-                    <TextField fx:id="studentIdField" promptText="e.g. 2021-10023" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-                    
-                    <Label text="First Name:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="form-label"/>
-                    <TextField fx:id="firstNameField" promptText="e.g. Juan" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                    
-                    <Label text="Last Name:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="form-label"/>
-                    <TextField fx:id="lastNameField" promptText="e.g. Dela Cruz" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                    
-                    <Label text="Course &amp; Section:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="form-label"/>
-                    <TextField fx:id="courseYearLevelField" promptText="e.g. BSIT 3-1" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                    
-                    <Label text="Student Status:" GridPane.columnIndex="0" GridPane.rowIndex="4" styleClass="form-label"/>
-                    <ComboBox fx:id="studentStatusBox" promptText="Select Status" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                </GridPane>
-                
-                <Separator/>
-                
-                <!-- SECTION II: Device Details -->
-                <Label text="II. Linked Device Details" styleClass="form-label" style="-fx-text-fill: #0284C7; -fx-font-size: 13px;"/>
-                
-                <VBox spacing="5.0">
-                    <Label text="Student's Registered Devices:" styleClass="form-label"/>
-                    <TableView fx:id="deviceTable" prefHeight="120.0" minHeight="90.0" styleClass="modern-table">
-                        <columns>
-                            <TableColumn fx:id="colDeviceId" text="ID" prefWidth="40.0"/>
-                            <TableColumn fx:id="colDeviceName" text="Device Name" prefWidth="110.0"/>
-                            <TableColumn fx:id="colDeviceType" text="Type" prefWidth="110.0"/>
-                            <TableColumn fx:id="colDeviceBrand" text="Brand" prefWidth="80.0"/>
-                            <TableColumn fx:id="colDeviceSerialNumber" text="Serial Number" prefWidth="120.0"/>
-                            <TableColumn fx:id="colDeviceRegStatus" text="Registration" prefWidth="80.0"/>
-                            <TableColumn fx:id="colDeviceStatus" text="Status" prefWidth="70.0"/>
-                        </columns>
-                    </TableView>
-                </VBox>
-                
-                <GridPane hgap="10.0" vgap="10.0">
-                    <columnConstraints>
-                        <ColumnConstraints percentWidth="30.0" halignment="RIGHT"/>
-                        <ColumnConstraints percentWidth="70.0"/>
-                    </columnConstraints>
-                    
-                    <Label text="Device Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="form-label"/>
-                    <TextField fx:id="deviceNameField" promptText="e.g. Dell XPS" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-                    
-                    <Label text="Device Brand:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="form-label"/>
-                    <TextField fx:id="brandField" promptText="e.g. Dell" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                    
-                    <Label text="Device Model:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="form-label"/>
-                    <TextField fx:id="modelField" promptText="e.g. XPS 15 9520" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                    
-                    <Label text="Device Serial Number:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="form-label"/>
-                    <TextField fx:id="serialNumberField" promptText="e.g. SN-DELL-12345" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                    
-                    <Label text="Device Type:" GridPane.columnIndex="0" GridPane.rowIndex="4" styleClass="form-label"/>
-                    <ComboBox fx:id="deviceTypeBox" promptText="Select Device Type" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                    
-                    <Label text="Device Purpose:" GridPane.columnIndex="0" GridPane.rowIndex="5" styleClass="form-label"/>
-                    <ComboBox fx:id="devicePurposeBox" promptText="Select Device Purpose" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
-                    
-                    <Label text="Device Status:" GridPane.columnIndex="0" GridPane.rowIndex="6" styleClass="form-label"/>
-                    <ComboBox fx:id="deviceStatusBox" promptText="Select Status" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
-                </GridPane>
-                
-                <Separator/>
-                
-                <!-- Unified CRUD Actions inside overlay form -->
-                <HBox spacing="12.0" alignment="CENTER_RIGHT">
-                    <Button text="Cancel / Close" onAction="#handleCloseOverlay" styleClass="action-btn, action-btn-secondary" prefHeight="38.0"/>
-                    <Button text="Clear Form" onAction="#handleClearForm" styleClass="action-btn" prefHeight="38.0" style="-fx-background-color: #f1f5f9; -fx-border-color: #cbd5e1; -fx-border-radius: 8; -fx-text-fill: #475569;"/>
-                    <Button text="Deactivate Record" onAction="#handleDeactivateRecord" styleClass="action-btn, action-btn-danger" prefHeight="38.0"/>
-                    <Button text="Save Record" onAction="#handleSaveRecord" styleClass="action-btn, action-btn-primary" prefHeight="38.0"/>
-                </HBox>
             </VBox>
-        </ScrollPane>
+            
+            <!-- Scrollable Content Section -->
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS"
+                        style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+                
+                <VBox spacing="15.0" style="-fx-padding: 0px 20px 20px 20px; -fx-background-color: transparent;">
+                    
+                    <!-- SECTION I: Student Details -->
+                    <Label text="I. Student Registry Details" styleClass="form-label" style="-fx-text-fill: #0284C7; -fx-font-size: 13px;"/>
+                    
+                    <GridPane hgap="10.0" vgap="10.0">
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="30.0" halignment="RIGHT"/>
+                            <ColumnConstraints percentWidth="70.0"/>
+                        </columnConstraints>
+                        
+                        <Label text="Student ID:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="form-label"/>
+                        <TextField fx:id="studentIdField" promptText="e.g. 2021-10023" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                        
+                        <Label text="First Name:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="form-label"/>
+                        <TextField fx:id="firstNameField" promptText="e.g. Juan" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                        
+                        <Label text="Last Name:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="form-label"/>
+                        <TextField fx:id="lastNameField" promptText="e.g. Dela Cruz" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                        
+                        <Label text="Course &amp; Section:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="form-label"/>
+                        <TextField fx:id="courseYearLevelField" promptText="e.g. BSIT 3-1" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                        
+                        <Label text="Student Status:" GridPane.columnIndex="0" GridPane.rowIndex="4" styleClass="form-label"/>
+                        <ComboBox fx:id="studentStatusBox" promptText="Select Status" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                    </GridPane>
+                    
+                    <Separator/>
+                    
+                    <!-- SECTION II: Device Details -->
+                    <Label text="II. Linked Device Details" styleClass="form-label" style="-fx-text-fill: #0284C7; -fx-font-size: 13px;"/>
+                    
+                    <VBox spacing="5.0">
+                        <Label text="Student's Registered Devices:" styleClass="form-label"/>
+                        <TableView fx:id="deviceTable" prefHeight="120.0" minHeight="90.0" styleClass="modern-table">
+                            <columnResizePolicy>
+                                <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY" />
+                            </columnResizePolicy>
+                            <columns>
+                                <TableColumn fx:id="colDeviceId" text="ID" prefWidth="50.0" minWidth="50.0"/>
+                                <TableColumn fx:id="colDeviceName" text="Device Name" prefWidth="120.0" minWidth="120.0"/>
+                                <TableColumn fx:id="colDeviceType" text="Type" prefWidth="120.0" minWidth="120.0"/>
+                                <TableColumn fx:id="colDeviceBrand" text="Brand" prefWidth="100.0" minWidth="100.0"/>
+                                <TableColumn fx:id="colDeviceSerialNumber" text="Serial Number" prefWidth="140.0" minWidth="140.0"/>
+                                <TableColumn fx:id="colDeviceRegStatus" text="Registration" prefWidth="110.0" minWidth="110.0"/>
+                                <TableColumn fx:id="colDeviceStatus" text="Status" prefWidth="90.0" minWidth="90.0"/>
+                            </columns>
+                        </TableView>
+                    </VBox>
+                    
+                    <GridPane hgap="10.0" vgap="10.0">
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="30.0" halignment="RIGHT"/>
+                            <ColumnConstraints percentWidth="70.0"/>
+                        </columnConstraints>
+                        
+                        <Label text="Device Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="form-label"/>
+                        <TextField fx:id="deviceNameField" promptText="e.g. Dell XPS" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                        
+                        <Label text="Device Brand:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="form-label"/>
+                        <TextField fx:id="brandField" promptText="e.g. Dell" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                        
+                        <Label text="Device Model:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="form-label"/>
+                        <TextField fx:id="modelField" promptText="e.g. XPS 15 9520" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                        
+                        <Label text="Device Serial Number:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="form-label"/>
+                        <TextField fx:id="serialNumberField" promptText="e.g. SN-DELL-12345" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                        
+                        <Label text="Device Type:" GridPane.columnIndex="0" GridPane.rowIndex="4" styleClass="form-label"/>
+                        <ComboBox fx:id="deviceTypeBox" promptText="Select Device Type" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                        
+                        <Label text="Device Purpose:" GridPane.columnIndex="0" GridPane.rowIndex="5" styleClass="form-label"/>
+                        <ComboBox fx:id="devicePurposeBox" promptText="Select Device Purpose" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                        
+                        <Label text="Device Status:" GridPane.columnIndex="0" GridPane.rowIndex="6" styleClass="form-label"/>
+                        <ComboBox fx:id="deviceStatusBox" promptText="Select Status" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                    </GridPane>
+                    
+                    <Separator/>
+                    
+                    <!-- Unified CRUD Actions inside overlay form -->
+                    <HBox spacing="12.0" alignment="CENTER_RIGHT">
+                        <Button text="Cancel / Close" onAction="#handleCloseOverlay" styleClass="action-btn, action-btn-secondary" prefHeight="38.0"/>
+                        <Button text="Clear Form" onAction="#handleClearForm" styleClass="action-btn" prefHeight="38.0" style="-fx-background-color: #f1f5f9; -fx-border-color: #cbd5e1; -fx-border-radius: 8; -fx-text-fill: #475569;"/>
+                        <Button text="Deactivate Record" onAction="#handleDeactivateRecord" styleClass="action-btn, action-btn-danger" prefHeight="38.0"/>
+                        <Button text="Save Record" onAction="#handleSaveRecord" styleClass="action-btn, action-btn-primary" prefHeight="38.0"/>
+                    </HBox>
+                </VBox>
+            </ScrollPane>
+        </VBox>
     </StackPane>
     
 </StackPane>
