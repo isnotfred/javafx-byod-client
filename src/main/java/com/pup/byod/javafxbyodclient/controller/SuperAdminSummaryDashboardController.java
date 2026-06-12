@@ -20,8 +20,7 @@ public class SuperAdminSummaryDashboardController {
     public void initialize() {
         if (com.pup.byod.javafxbyodclient.session.SessionManager.getInstance().getCurrentUser() != null) {
             String fullName = com.pup.byod.javafxbyodclient.session.SessionManager.getInstance().getCurrentUser().getFullName();
-            String role = com.pup.byod.javafxbyodclient.session.SessionManager.getInstance().getCurrentUser().getRole();
-            welcomeLabel.setText("Welcome back, " + fullName + " (" + role + ")!");
+            welcomeLabel.setText("Welcome back, " + fullName + "!");
         } else {
             welcomeLabel.setText("Welcome back!");
         }

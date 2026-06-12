@@ -6,6 +6,7 @@ import com.pup.byod.javafxbyodclient.service.DeviceService;
 import com.pup.byod.javafxbyodclient.service.StudentService;
 import com.pup.byod.javafxbyodclient.util.AlertHelper;
 import com.pup.byod.javafxbyodclient.util.ValidationHelper;
+import com.pup.byod.javafxbyodclient.util.CsvExportHelper;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -301,6 +302,163 @@ public class RegistryManagementScreenController {
         } catch (Exception e) {
             AlertHelper.showError("Import Failed", "API Request Failed", e.getMessage());
         }
+    }
+
+    @FXML
+    public void handleImportDevicesCsv() {
+        javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+        fileChooser.setTitle("Import Devices CSV");
+        fileChooser.getExtensionFilters().add(
+            new javafx.stage.FileChooser.ExtensionFilter("CSV Files (*.csv)", "*.csv")
+        );
+        
+        javafx.stage.Window window = studentTable.getScene().getWindow();
+        File selectedFile = fileChooser.showOpenDialog(window);
+        
+        if (selectedFile == null) {
+            return;
+        }
+
+        // Validate CSV headers first
+        List<String[]> rows = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(selectedFile))) {
+            String headerLine = br.readLine();
+            if (headerLine == null || headerLine.trim().isEmpty()) {
+                AlertHelper.showError("CSV Validation Failed", "Empty File", "The selected CSV file is empty.");
+                return;
+            }
+            
+            String[] headers = headerLine.split(",");
+            List<String> headersList = new ArrayList<>();
+            for (String h : headers) {
+                headersList.add(h.trim().toLowerCase());
+            }
+            
+            List<String> requiredHeaders = List.of("student_id", "device_name", "serial_number", "device_type");
+            List<String> missingHeaders = new ArrayList<>();
+            for (String req : requiredHeaders) {
+                if (!headersList.contains(req)) {
+                    missingHeaders.add(req);
+                }
+            }
+            
+            if (!missingHeaders.isEmpty()) {
+                AlertHelper.showError(
+                    "CSV Validation Failed",
+                    "Missing Headers",
+                    "The selected CSV file is missing required headers: " + String.join(", ", missingHeaders) +
+                    "\n\nExpected headers: student_id,device_name,serial_number,device_type"
+                );
+                return;
+            }
+
+            // Find indexes of headers
+            int studentIdIdx = headersList.indexOf("student_id");
+            int deviceNameIdx = headersList.indexOf("device_name");
+            int serialNumberIdx = headersList.indexOf("serial_number");
+            int deviceTypeIdx = headersList.indexOf("device_type");
+
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+                String[] values = line.split(",");
+                // Ensure array has enough elements or fill with empty
+                String[] parsedRow = new String[4];
+                parsedRow[0] = values.length > studentIdIdx ? values[studentIdIdx].trim() : "";
+                parsedRow[1] = values.length > deviceNameIdx ? values[deviceNameIdx].trim() : "";
+                parsedRow[2] = values.length > serialNumberIdx ? values[serialNumberIdx].trim() : "";
+                parsedRow[3] = values.length > deviceTypeIdx ? values[deviceTypeIdx].trim() : "";
+                rows.add(parsedRow);
+            }
+        } catch (Exception e) {
+            AlertHelper.showError("CSV Validation Failed", "Error reading file", e.getMessage());
+            return;
+        }
+
+        if (rows.isEmpty()) {
+            AlertHelper.showWarning("Import Warning", "No Data", "No data rows found in the selected CSV file.");
+            return;
+        }
+
+        if (!AlertHelper.showConfirmation("Import CSV", "Confirm Import", 
+                "Are you sure you want to import " + rows.size() + " device records from the selected CSV file?")) {
+            return;
+        }
+
+        // Run client-side sequential import in a background thread to prevent UI freezing
+        new Thread(() -> {
+            int inserted = 0;
+            int failed = 0;
+            List<String> errors = new ArrayList<>();
+
+            for (int i = 0; i < rows.size(); i++) {
+                String[] row = rows.get(i);
+                String studentId = row[0];
+                String deviceName = row[1];
+                String serialNumber = row[2];
+                String deviceType = row[3];
+
+                int rowNum = i + 2; // row 1 is header
+
+                if (studentId.isEmpty() || deviceName.isEmpty() || serialNumber.isEmpty() || deviceType.isEmpty()) {
+                    failed++;
+                    errors.add("Row " + rowNum + ": Missing required fields.");
+                    continue;
+                }
+
+                try {
+                    Device d = new Device();
+                    d.setStudentId(studentId);
+                    d.setDeviceName(deviceName);
+                    d.setSerialNumber(serialNumber);
+                    d.setDeviceType(deviceType);
+                    // Default fields for CSV import
+                    d.setBrand("Unknown");
+                    d.setModel("Unknown");
+                    d.setDevicePurpose("Academic BYOD");
+                    d.setDeviceStatus("active");
+
+                    deviceService.registerDevice(d);
+                    inserted++;
+                } catch (Exception e) {
+                    failed++;
+                    errors.add("Row " + rowNum + " (SN: " + serialNumber + "): " + e.getMessage());
+                }
+            }
+
+            final int successCount = inserted;
+            final int failCount = failed;
+            final List<String> errorList = errors;
+
+            Platform.runLater(() -> {
+                StringBuilder summary = new StringBuilder();
+                summary.append("Import completed:\n");
+                summary.append("- Successfully registered: ").append(successCount).append("\n");
+                summary.append("- Failed: ").append(failCount).append("\n");
+
+                if (!errorList.isEmpty()) {
+                    summary.append("\nErrors:\n");
+                    for (String err : errorList) {
+                        summary.append("• ").append(err).append("\n");
+                    }
+                    AlertHelper.showWarning("Import Complete with Errors", "Bulk Upload Summary", summary.toString());
+                } else {
+                    AlertHelper.showInfo("Import Successful", "Bulk Upload Summary", summary.toString());
+                }
+
+                loadStudents(); // refresh student table to show linked devices if any
+            });
+        }).start();
+    }
+
+    @FXML
+    public void handleExportStudents() {
+        if (studentTable.getItems().isEmpty()) {
+            AlertHelper.showWarning("Export Warning", "No Data", "There is no student registry data to export.");
+            return;
+        }
+        javafx.stage.Window window = studentTable.getScene().getWindow();
+        CsvExportHelper.exportToCsv(studentTable, window, "student_registry.csv");
     }
 
     private void onDeviceSelected(Device device) {

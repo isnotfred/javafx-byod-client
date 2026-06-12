@@ -10,6 +10,7 @@ import com.pup.byod.javafxbyodclient.service.StudentService;
 import com.pup.byod.javafxbyodclient.session.SessionManager;
 import com.pup.byod.javafxbyodclient.util.AlertHelper;
 import com.pup.byod.javafxbyodclient.util.ValidationHelper;
+import com.pup.byod.javafxbyodclient.util.CsvExportHelper;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
@@ -71,6 +72,37 @@ public class IngressEgressMonitoringScreenController {
         deviceTable.setItems(deviceList);
         deviceTable.setEditable(true);
 
+        deviceTable.setRowFactory(tv -> new TableRow<DeviceSelection>() {
+            @Override
+            protected void updateItem(DeviceSelection item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setStyle("");
+                    getStyleClass().removeAll("warning-row", "overstay-row");
+                } else {
+                    Device d = item.getDevice();
+                    boolean isFlagged = !"approved".equalsIgnoreCase(d.getRegistrationStatus()) 
+                                        || "inactive".equalsIgnoreCase(d.getDeviceStatus());
+                    if (isFlagged) {
+                        setStyle("-fx-background-color: #FEE2E2;"); // light red/rose background
+                        getStyleClass().remove("overstay-row");
+                        if (!getStyleClass().contains("warning-row")) {
+                            getStyleClass().add("warning-row");
+                        }
+                    } else if (item.isOverstay()) {
+                        setStyle("-fx-background-color: #FEF3C7;"); // light amber/orange background
+                        getStyleClass().remove("warning-row");
+                        if (!getStyleClass().contains("overstay-row")) {
+                            getStyleClass().add("overstay-row");
+                        }
+                    } else {
+                        setStyle("");
+                        getStyleClass().removeAll("warning-row", "overstay-row");
+                    }
+                }
+            }
+        });
+
         // Initialize Log Columns
         colLogId.setCellValueFactory(new PropertyValueFactory<>("logId"));
         colLogType.setCellValueFactory(new PropertyValueFactory<>("eventType"));
@@ -89,6 +121,10 @@ public class IngressEgressMonitoringScreenController {
         studentNameLabel.setText("Student: No Selection");
         studentCourseLabel.setText("Course & Year: -");
         statusLabel.setText("STATUS: READY TO LOOKUP");
+        statusLabel.setStyle("-fx-text-fill: #64748B; -fx-font-weight: bold;");
+        if (studentCard != null) {
+            studentCard.setStyle("-fx-background-color: #F8FAFC; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 16px;");
+        }
         deviceList.clear();
         logsList.clear();
         notesArea.clear();
@@ -122,7 +158,16 @@ public class IngressEgressMonitoringScreenController {
             currentStudent = found;
             studentNameLabel.setText("Student: " + found.getFullName());
             studentCourseLabel.setText("Course & Year: " + found.getCourseYearLevel());
-            statusLabel.setText("STATUS: STUDENT FOUND");
+            
+            if ("inactive".equalsIgnoreCase(found.getStatus())) {
+                statusLabel.setText("STATUS: STUDENT INACTIVE / DEACTIVATED!");
+                statusLabel.setStyle("-fx-text-fill: #DC2626; -fx-font-weight: bold;");
+                studentCard.setStyle("-fx-background-color: #FEF2F2; -fx-border-color: #F87171; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 16px;");
+            } else {
+                statusLabel.setText("STATUS: STUDENT FOUND");
+                statusLabel.setStyle("-fx-text-fill: #64748B; -fx-font-weight: bold;");
+                studentCard.setStyle("-fx-background-color: #F8FAFC; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 16px;");
+            }
 
             // Load student's devices and their campus status
             loadStudentDevicesAndStatus(found.getStudentId());
@@ -142,21 +187,27 @@ public class IngressEgressMonitoringScreenController {
             List<Device> devices = deviceService.getDevicesByStudentId(studentId);
             List<DeviceCampusStatus> statuses = deviceService.getDeviceCampusStatus();
             
-            Map<String, String> statusMap = new HashMap<>();
+            Map<String, DeviceCampusStatus> statusMap = new HashMap<>();
             for (DeviceCampusStatus s : statuses) {
                 if (s.getStudentId().equalsIgnoreCase(studentId)) {
-                    statusMap.put(s.getSerialNumber(), s.getCampusStatus());
+                    statusMap.put(s.getSerialNumber(), s);
                 }
             }
 
             deviceList.clear();
             for (Device d : devices) {
-                // Ignore inactive devices
-                if ("inactive".equalsIgnoreCase(d.getDeviceStatus())) {
-                    continue;
+                DeviceCampusStatus cs = statusMap.get(d.getSerialNumber());
+                String campusStatus = cs != null ? cs.getCampusStatus() : "outside";
+                String lastTime = cs != null ? cs.getLastEventTime() : null;
+
+                DeviceSelection selection = new DeviceSelection(d, campusStatus, lastTime);
+                
+                // Deselect automatically if inactive or not approved
+                if ("inactive".equalsIgnoreCase(d.getDeviceStatus()) || !"approved".equalsIgnoreCase(d.getRegistrationStatus())) {
+                    selection.setSelected(false);
                 }
-                String campusStatus = statusMap.getOrDefault(d.getSerialNumber(), "outside");
-                deviceList.add(new DeviceSelection(d, campusStatus));
+                
+                deviceList.add(selection);
             }
         } catch (Exception e) {
             System.err.println("Error loading devices/statuses: " + e.getMessage());
@@ -250,15 +301,28 @@ public class IngressEgressMonitoringScreenController {
         }
     }
 
+    @FXML
+    public void handleExportLogs() {
+        if (logsTable.getItems().isEmpty()) {
+            AlertHelper.showWarning("Export Warning", "No Data", "There is no scan log history to export.");
+            return;
+        }
+        javafx.stage.Window window = logsTable.getScene().getWindow();
+        String defaultName = currentStudent != null ? "gate_logs_" + currentStudent.getStudentId() + ".csv" : "gate_logs.csv";
+        CsvExportHelper.exportToCsv(logsTable, window, defaultName);
+    }
+
     // Helper Wrapper class for Device selection with Checkboxes
     public static class DeviceSelection {
         private final BooleanProperty selected = new SimpleBooleanProperty(true);
         private final Device device;
         private final String campusStatus;
+        private final String lastEventTime;
 
-        public DeviceSelection(Device device, String campusStatus) {
+        public DeviceSelection(Device device, String campusStatus, String lastEventTime) {
             this.device = device;
             this.campusStatus = campusStatus;
+            this.lastEventTime = lastEventTime;
         }
 
         public BooleanProperty selectedProperty() { return selected; }
@@ -273,5 +337,27 @@ public class IngressEgressMonitoringScreenController {
         public String getModel() { return device.getModel(); }
         public String getSerialNumber() { return device.getSerialNumber(); }
         public String getCampusStatus() { return campusStatus; }
+        public String getLastEventTime() { return lastEventTime; }
+
+        public boolean isOverstay() {
+            if (!"entry".equalsIgnoreCase(campusStatus) && !"inside".equalsIgnoreCase(campusStatus)) {
+                return false;
+            }
+            if (lastEventTime == null || lastEventTime.trim().isEmpty()) {
+                return false;
+            }
+            try {
+                java.time.Instant lastInstant;
+                if (lastEventTime.contains("Z") || lastEventTime.contains("+") || (lastEventTime.lastIndexOf("-") > 10)) {
+                    lastInstant = java.time.OffsetDateTime.parse(lastEventTime).toInstant();
+                } else {
+                    lastInstant = java.time.LocalDateTime.parse(lastEventTime).atZone(java.time.ZoneId.systemDefault()).toInstant();
+                }
+                long hours = java.time.Duration.between(lastInstant, java.time.Instant.now()).toHours();
+                return hours >= 18;
+            } catch (Exception e) {
+                return false;
+            }
+        }
     }
 }

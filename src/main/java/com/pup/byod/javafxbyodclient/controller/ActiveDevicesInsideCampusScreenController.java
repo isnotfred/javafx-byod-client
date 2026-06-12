@@ -8,6 +8,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import com.pup.byod.javafxbyodclient.util.CsvExportHelper;
+import com.pup.byod.javafxbyodclient.util.AlertHelper;
 
 import java.util.List;
 
@@ -44,5 +46,15 @@ public class ActiveDevicesInsideCampusScreenController {
         } catch (Exception e) {
             System.err.println("Could not load campus device status: " + e.getMessage());
         }
+    }
+
+    @FXML
+    public void handleExportPresence() {
+        if (statusTable.getItems().isEmpty()) {
+            AlertHelper.showWarning("Export Warning", "No Data", "There is no presence data to export.");
+            return;
+        }
+        javafx.stage.Window window = statusTable.getScene().getWindow();
+        CsvExportHelper.exportToCsv(statusTable, window, "campus_presence.csv");
     }
 }

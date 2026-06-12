@@ -16,20 +16,45 @@
     -fx-min-width: 240px;
     -fx-padding: 24px 16px;
 }
-
 /* Sidebar Title and Logo */
 .sidebar-logo-container {
-    -fx-padding: 10px 0 24px 10px;
+    -fx-padding: 10px 0 20px 8px;
     -fx-alignment: center-left;
 }
 
 .sidebar-title-text {
-    -fx-font-family: "Hanken Grotesk", "Segoe UI Bold", "Segoe UI", sans-serif;
-    -fx-font-size: 18px;
+    -fx-font-family: "Inter", "Hanken Grotesk", "Segoe UI Bold", "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
     -fx-font-weight: bold;
     -fx-text-fill: #FFFFFF;
-    -fx-text-transform: uppercase;
     -fx-padding: 0;
+}
+
+/* Role capsule badge */
+.role-badge {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 10px;
+    -fx-padding: 3px 8px;
+    -fx-background-radius: 12px;
+    -fx-alignment: center;
+    -fx-max-height: 20px;
+    -fx-display: inline-block;
+}
+
+.role-badge-admin {
+    -fx-background-color: #F0B429; /* Gold */
+    -fx-text-fill: #102A43;
+}
+
+.role-badge-guard {
+    -fx-background-color: #38BDF8; /* Sky blue */
+    -fx-text-fill: #0F172A;
+}
+
+.role-badge-super-admin {
+    -fx-background-color: #E2E8F0; /* Silver / Soft Grey */
+    -fx-text-fill: #0F172A;
 }
 
 /* Sidebar Buttons */
@@ -141,7 +166,7 @@
     -fx-font-family: "Inter", "Segoe UI", sans-serif;
     -fx-font-size: 11px;
     -fx-font-weight: bold;
-    -fx-text-fill: #829AB1;
+    -fx-text-fill: #627D98;
     -fx-text-transform: uppercase;
 }
 
@@ -172,7 +197,7 @@
 .stat-detail {
     -fx-font-family: "Inter", "Segoe UI", sans-serif;
     -fx-font-size: 11px;
-    -fx-text-fill: #829AB1;
+    -fx-text-fill: #627D98;
 }
 
 .stat-detail-green {
@@ -206,7 +231,7 @@
     -fx-font-family: "Hanken Grotesk", "Segoe UI Bold", "Segoe UI", sans-serif;
     -fx-font-size: 12px;
     -fx-font-weight: bold;
-    -fx-text-fill: #829AB1;
+    -fx-text-fill: #486581;
     -fx-text-transform: uppercase;
     -fx-padding: 20px 0 4px 0;
 }
@@ -258,7 +283,7 @@
 .shortcut-desc-small {
     -fx-font-family: "Inter", "Segoe UI", sans-serif;
     -fx-font-size: 11px;
-    -fx-text-fill: #829AB1;
+    -fx-text-fill: #486581;
 }
 
 .shortcut-badge {
@@ -314,7 +339,7 @@
 
 .shortcut-title {
     -fx-font-family: "Hanken Grotesk", "Segoe UI Bold", "Segoe UI", sans-serif;
-    -fx-font-size: 16px;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-text-fill: #102A43;
 }
@@ -322,7 +347,7 @@
 .shortcut-desc {
     -fx-font-family: "Inter", "Segoe UI", sans-serif;
     -fx-font-size: 11px;
-    -fx-text-fill: #829AB1;
+    -fx-text-fill: #486581;
 }
 
 /* ==================================================
@@ -500,4 +525,152 @@
     -fx-padding: 0 16px;
     -fx-alignment: center-left;
 }
+.modern-table .centered-column {
+    -fx-alignment: center;
+}
+
+/* TabPane and Tabs Styles */
+.modern-tab-pane {
+    -fx-tab-min-width: 125px;
+    -fx-tab-max-width: 200px;
+    -fx-tab-min-height: 36px;
+    -fx-tab-max-height: 36px;
+}
+.modern-tab-pane > .tab-content-area {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 15px 0 0 0;
+}
+.modern-tab-pane .tab-header-area {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+.modern-tab-pane .tab-header-background {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #E2E8F0 transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+.modern-tab-pane .tab {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 6px 6px 0 0;
+    -fx-border-color: #E2E8F0 #E2E8F0 transparent #E2E8F0;
+    -fx-border-width: 1px 1px 0 1px;
+    -fx-padding: 6px 20px;
+    -fx-cursor: hand;
+    -fx-background-insets: 0;
+}
+.modern-tab-pane .tab:hover {
+    -fx-background-color: #F1F5F9;
+}
+.modern-tab-pane .tab:selected {
+    -fx-background-color: #102A43; /* Navy */
+    -fx-border-color: #102A43 #102A43 transparent #102A43;
+}
+.modern-tab-pane .tab .tab-label {
+    -fx-text-fill: #64748B;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+.modern-tab-pane .tab:selected .tab-label {
+    -fx-text-fill: #FFFFFF;
+}
+/* Disable focus ring border on tabs */
+.modern-tab-pane .tab:focused {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+.modern-tab-pane:focused {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* JavaFX Chart Custom Styles */
+.chart {
+    -fx-padding: 10px;
+    -fx-background-color: transparent;
+}
+.chart-content {
+    -fx-padding: 10px;
+}
+.chart-title {
+    -fx-text-fill: #102A43;
+    -fx-font-family: "Hanken Grotesk", "Segoe UI Bold", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-padding: 0 0 10px 0;
+}
+.chart-plot-background {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 8px;
+}
+.chart-alternative-row-fill {
+    -fx-fill: transparent;
+}
+.chart-alternative-column-fill {
+    -fx-fill: transparent;
+}
+.chart-horizontal-grid-lines {
+    -fx-stroke: #E2E8F0;
+    -fx-stroke-width: 1px;
+}
+.chart-vertical-grid-lines {
+    -fx-stroke: #E2E8F0;
+    -fx-stroke-width: 1px;
+}
+.axis {
+    -fx-tick-label-fill: #64748B;
+    -fx-tick-label-font-family: "Inter", sans-serif;
+    -fx-tick-label-font-size: 11px;
+}
+.axis-label {
+    -fx-text-fill: #475569;
+    -fx-font-family: "Inter", sans-serif;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+.chart-legend {
+    -fx-background-color: transparent;
+    -fx-padding: 10px 0 0 0;
+}
+.chart-legend-item {
+    -fx-text-fill: #475569;
+    -fx-font-family: "Inter", sans-serif;
+    -fx-font-size: 12px;
+}
+.chart-legend-item-symbol {
+    -fx-background-radius: 4px;
+}
+
+/* Grouped Bar Chart Colors (Navy & Gold) */
+.bar-chart {
+    -fx-bar-gap: 5px;
+    -fx-category-gap: 150px;
+}
+.default-color0.chart-bar {
+    -fx-background-color: linear-gradient(to top, #102A43, #243B53); /* Premium dark navy gradient */
+    -fx-background-radius: 6px 6px 0 0;
+}
+.default-color1.chart-bar {
+    -fx-background-color: linear-gradient(to top, #D97706, #F0B429); /* Gold/orange gradient */
+    -fx-background-radius: 6px 6px 0 0;
+}
+.default-color0.chart-legend-item-symbol {
+    -fx-background-color: #102A43;
+    -fx-background-radius: 4px;
+}
+.default-color1.chart-legend-item-symbol {
+    -fx-background-color: #F0B429;
+    -fx-background-radius: 4px;
+}
+
+/* Pie Chart Palette (Navy, Gold, Sky Blue, Purple, Teal, etc.) */
+.default-color0.chart-pie { -fx-pie-color: #102A43; } /* Navy */
+.default-color1.chart-pie { -fx-pie-color: #F0B429; } /* Gold */
+.default-color2.chart-pie { -fx-pie-color: #38BDF8; } /* Sky Blue */
+.default-color3.chart-pie { -fx-pie-color: #7C3AED; } /* Purple */
+.default-color4.chart-pie { -fx-pie-color: #0D9488; } /* Teal */
+.default-color5.chart-pie { -fx-pie-color: #E11D48; } /* Rose */
+.default-color6.chart-pie { -fx-pie-color: #2563EB; } /* Blue */
+.default-color7.chart-pie { -fx-pie-color: #16A34A; } /* Green */
 

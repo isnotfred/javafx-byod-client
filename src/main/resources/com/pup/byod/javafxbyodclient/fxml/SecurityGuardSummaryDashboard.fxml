@@ -108,7 +108,7 @@
                                      styleClass="shortcut-icon"/>
                         </StackPane>
                         <VBox spacing="4.0" alignment="CENTER_LEFT">
-                            <Label text="Event Device Verification" styleClass="shortcut-title"/>
+                            <Label text="Event Devices" styleClass="shortcut-title"/>
                             <Label text="Verify devices for specific campus events" styleClass="shortcut-desc"/>
                         </VBox>
                     </HBox>

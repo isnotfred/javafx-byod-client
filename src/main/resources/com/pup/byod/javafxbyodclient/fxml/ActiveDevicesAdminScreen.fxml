@@ -30,6 +30,7 @@
             </VBox>
             <Region HBox.hgrow="ALWAYS"/>
             <Button text="Refresh View" onAction="#loadStatus" styleClass="action-btn, action-btn-warning" prefHeight="35.0"/>
+            <Button text="Export Presence" onAction="#handleExportPresence" styleClass="action-btn" prefHeight="35.0" style="-fx-background-color: #f1f5f9; -fx-border-color: #cbd5e1; -fx-border-radius: 8; -fx-text-fill: #475569;"/>
         </HBox>
         
         <TableView fx:id="statusTable" VBox.vgrow="ALWAYS" styleClass="modern-table" minHeight="300.0">

@@ -44,9 +44,24 @@
             <Button text="Generate Report" onAction="#handleGenerateReport" styleClass="action-btn, action-btn-primary" prefHeight="38.0" prefWidth="180.0"/>
         </HBox>
         
-        <TableView fx:id="reportsTable" VBox.vgrow="ALWAYS" styleClass="modern-table" minHeight="300.0">
-            <!-- Columns are generated dynamically in the controller -->
-        </TableView>
+        <TabPane fx:id="reportsTabPane" VBox.vgrow="ALWAYS" tabClosingPolicy="UNAVAILABLE" styleClass="modern-tab-pane" minHeight="300.0">
+            <tabs>
+                <Tab text="Data Table">
+                    <content>
+                        <TableView fx:id="reportsTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+                            <!-- Columns are generated dynamically in the controller -->
+                        </TableView>
+                    </content>
+                </Tab>
+                <Tab text="Visual Analytics">
+                    <content>
+                        <StackPane fx:id="chartContainer" VBox.vgrow="ALWAYS" style="-fx-padding: 16px;">
+                            <Label text="Generate a report to view analytics" style="-fx-text-fill: #7284A8; -fx-font-size: 14px; -fx-font-family: 'Inter', sans-serif;"/>
+                        </StackPane>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
         
     </VBox>
     

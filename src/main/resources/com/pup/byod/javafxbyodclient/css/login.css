@@ -1,23 +1,23 @@
 .login-root {
     -fx-background-color: #102A43;
-    -fx-font-family: "Segoe UI", "Inter", sans-serif;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
 }
 
 .login-header {
-    -fx-font-size: 24px;
+    -fx-font-size: 20px;
     -fx-font-weight: bold;
     -fx-text-fill: white;
 }
 
 .login-subheader {
-    -fx-font-size: 14px;
+    -fx-font-size: 12px;
     -fx-text-fill: #CBD5E1;
 }
 
 .login-card {
     -fx-background-color: white;
-    -fx-background-radius: 20px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 15, 0, 0, 5);
+    -fx-background-radius: 16px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.08), 15, 0, 0, 5);
 }
 
 .login-label {
@@ -28,21 +28,21 @@
 
 .login-textfield {
     -fx-background-color: #F8FAFC;
-    -fx-border-color: #E2E8F0;
-    -fx-border-radius: 12px;
-    -fx-background-radius: 12px;
-    -fx-padding: 12px 15px;
-    -fx-font-size: 13px;
-    -fx-text-fill: #334155;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 10px 12px;
+    -fx-font-size: 12px;
+    -fx-text-fill: #102A43;
     -fx-prompt-text-fill: #94A3B8;
 }
 
 .login-textfield:focused {
-    -fx-border-color: #EAB308;
+    -fx-border-color: #3B82F6; /* Original blue focus ring */
 }
 
 .forgot-password-link {
-    -fx-text-fill: #CA8A04;
+    -fx-text-fill: #F0B429;
     -fx-font-weight: bold;
     -fx-font-size: 12px;
     -fx-underline: false;
@@ -51,24 +51,33 @@
 }
 
 .forgot-password-link:hover {
+    -fx-text-fill: #D9A01C;
     -fx-underline: true;
 }
 
 .login-btn {
-    -fx-background-color: #F59E0B;
-    -fx-text-fill: #1E293B;
-    -fx-font-weight: bold;
-    -fx-font-size: 14px;
-    -fx-background-radius: 25px;
-    -fx-padding: 12px 0;
+    -fx-background-color: #F0B429; /* Original Gold */
+    -fx-background-radius: 8px;
+    -fx-padding: 10px 0;
     -fx-cursor: hand;
     -fx-alignment: center;
+    -fx-border-width: 0;
 }
 
 .login-btn:hover {
-    -fx-background-color: #D97706;
+    -fx-background-color: #D9A01C;
+}
+
+.login-btn-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #102A43;
+}
+
+.svg-icon-btn {
+    -fx-fill: #102A43;
 }
 
 .svg-icon-black {
-    -fx-fill: #1E293B;
+    -fx-fill: #64748B; /* Original soft slate grey */
 }

@@ -4,6 +4,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 
 <BorderPane stylesheets="@../css/admin_dashboard_styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.pup.byod.javafxbyodclient.controller.SecurityGuardDashboardController"
@@ -17,10 +19,17 @@
     <left>
         <VBox styleClass="sidebar-container" spacing="10.0">
             
-            <!-- Logo Header -->
-            <VBox styleClass="sidebar-logo-container">
-                <Label text="BYOD MANAGEMENT" styleClass="sidebar-title-text" style="-fx-font-size: 16px;"/>
-            </VBox>
+            <HBox styleClass="sidebar-logo-container" spacing="12.0" alignment="CENTER_LEFT">
+                <ImageView fitHeight="32.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/BYOD_Logo.png"/>
+                    </image>
+                </ImageView>
+                <VBox spacing="3.0" alignment="CENTER_LEFT">
+                    <Label text="BYOD MANAGEMENT" styleClass="sidebar-title-text" style="-fx-font-size: 13px;"/>
+                    <Label fx:id="roleBadge" styleClass="role-badge" text="ROLE"/>
+                </VBox>
+            </HBox>
             
             <Separator style="-fx-opacity: 0.15;"/>
             
@@ -49,7 +58,7 @@
                 </graphic>
             </ToggleButton>
             
-            <ToggleButton text="Event Device Verification" onAction="#showEventScanner" toggleGroup="$sidebarGroup" prefWidth="200.0" styleClass="sidebar-btn">
+            <ToggleButton text="Event Devices" onAction="#showEventScanner" toggleGroup="$sidebarGroup" prefWidth="200.0" styleClass="sidebar-btn">
                 <graphic>
                     <SVGPath content="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z" styleClass="sidebar-icon"/>
                 </graphic>

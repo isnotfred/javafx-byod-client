@@ -18,6 +18,7 @@ public class AdminSummaryDashboardController {
     @FXML private Label activeStudentsLabel;
     @FXML private Label registeredDevicesLabel;
     @FXML private Label pendingApprovalsLabel;
+    @FXML private Label pendingApprovalsBadge;
     @FXML private Label devicesOnCampusLabel;
 
     private final StudentService studentService = new StudentService();
@@ -27,8 +28,7 @@ public class AdminSummaryDashboardController {
     public void initialize() {
         if (com.pup.byod.javafxbyodclient.session.SessionManager.getInstance().getCurrentUser() != null) {
             String fullName = com.pup.byod.javafxbyodclient.session.SessionManager.getInstance().getCurrentUser().getFullName();
-            String role = com.pup.byod.javafxbyodclient.session.SessionManager.getInstance().getCurrentUser().getRole();
-            welcomeLabel.setText("Welcome back, " + fullName + " (" + role + ")!");
+            welcomeLabel.setText("Welcome back, " + fullName + "!");
         } else {
             welcomeLabel.setText("Welcome back!");
         }
@@ -89,6 +89,14 @@ public class AdminSummaryDashboardController {
                 registeredDevicesLabel.setText(fRegisteredDevices);
                 pendingApprovalsLabel.setText(fPendingCount);
                 devicesOnCampusLabel.setText(fDevicesOnCampus);
+                if (pendingApprovalsBadge != null) {
+                    pendingApprovalsBadge.setText(fPendingCount);
+                    if ("0".equals(fPendingCount) || "Error".equals(fPendingCount)) {
+                        pendingApprovalsBadge.setVisible(false);
+                    } else {
+                        pendingApprovalsBadge.setVisible(true);
+                    }
+                }
             });
         }).start();
     }

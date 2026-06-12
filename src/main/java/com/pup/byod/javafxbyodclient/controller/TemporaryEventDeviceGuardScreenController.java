@@ -57,6 +57,41 @@ public class TemporaryEventDeviceGuardScreenController {
     // Actions
     @FXML private Button verifyBtn;
 
+    private static class DraftEventRequest {
+        String studentId = "";
+        String eventName = "";
+        String org = "";
+        String responsible = "";
+        String contact = "";
+        String purpose = null;
+        String docRef = "";
+        String docType = null;
+        LocalDate start = null;
+        LocalDate end = null;
+        final List<EventRequestDevice> devices = new ArrayList<>();
+        int tempCounter = 1;
+        boolean hasDraft = false;
+
+        void clear() {
+            studentId = "";
+            eventName = "";
+            org = "";
+            responsible = "";
+            contact = "";
+            purpose = null;
+            docRef = "";
+            docType = null;
+            start = null;
+            end = null;
+            devices.clear();
+            tempCounter = 1;
+            hasDraft = false;
+        }
+    }
+
+    private static final DraftEventRequest draft = new DraftEventRequest();
+    private int tempDeviceIdCounter = 1;
+
     private final EventRequestService eventRequestService = new EventRequestService();
     private final ObservableList<EventRequest> eventsList = FXCollections.observableArrayList();
     private final ObservableList<EventRequestDevice> deviceList = FXCollections.observableArrayList();
@@ -90,6 +125,27 @@ public class TemporaryEventDeviceGuardScreenController {
         docTypeBox.getItems().addAll("Signed GPOA", "Paper Approval", "Other");
         deviceTypeBox.getItems().addAll("laptop", "tablet", "phone", "camera", "projector", "other");
 
+        // Load draft if exists
+        if (draft.hasDraft) {
+            formStudentIdField.setText(draft.studentId);
+            eventNameField.setText(draft.eventName);
+            organizationField.setText(draft.org);
+            responsiblePersonField.setText(draft.responsible);
+            contactField.setText(draft.contact);
+            purposeBox.setValue(draft.purpose);
+            docRefField.setText(draft.docRef);
+            docTypeBox.setValue(draft.docType);
+            startDatePicker.setValue(draft.start);
+            endDatePicker.setValue(draft.end);
+            deviceList.setAll(draft.devices);
+            tempDeviceIdCounter = draft.tempCounter;
+        } else {
+            tempDeviceIdCounter = 1;
+        }
+
+        // Setup real-time input listeners to update draft
+        setupDraftListeners();
+
         // Event Logs Selection Listener
         eventsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
@@ -99,6 +155,49 @@ public class TemporaryEventDeviceGuardScreenController {
 
         // Load logs initially
         loadEventLogs();
+    }
+
+    private void setupDraftListeners() {
+        formStudentIdField.textProperty().addListener((obs, oldVal, newVal) -> {
+            draft.studentId = newVal;
+            draft.hasDraft = true;
+        });
+        eventNameField.textProperty().addListener((obs, oldVal, newVal) -> {
+            draft.eventName = newVal;
+            draft.hasDraft = true;
+        });
+        organizationField.textProperty().addListener((obs, oldVal, newVal) -> {
+            draft.org = newVal;
+            draft.hasDraft = true;
+        });
+        responsiblePersonField.textProperty().addListener((obs, oldVal, newVal) -> {
+            draft.responsible = newVal;
+            draft.hasDraft = true;
+        });
+        contactField.textProperty().addListener((obs, oldVal, newVal) -> {
+            draft.contact = newVal;
+            draft.hasDraft = true;
+        });
+        purposeBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+            draft.purpose = newVal;
+            draft.hasDraft = true;
+        });
+        docRefField.textProperty().addListener((obs, oldVal, newVal) -> {
+            draft.docRef = newVal;
+            draft.hasDraft = true;
+        });
+        docTypeBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+            draft.docType = newVal;
+            draft.hasDraft = true;
+        });
+        startDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> {
+            draft.start = newVal;
+            draft.hasDraft = true;
+        });
+        endDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> {
+            draft.end = newVal;
+            draft.hasDraft = true;
+        });
     }
 
     @FXML
@@ -223,6 +322,7 @@ public class TemporaryEventDeviceGuardScreenController {
         }
 
         EventRequestDevice item = new EventRequestDevice();
+        item.setEventDeviceId(tempDeviceIdCounter++);
         item.setDeviceName(name);
         item.setBrand(brand);
         item.setModel(model);
@@ -232,6 +332,9 @@ public class TemporaryEventDeviceGuardScreenController {
         item.setDeviceStatus("pending"); // Default local status
 
         deviceList.add(item);
+        draft.devices.add(item);
+        draft.tempCounter = tempDeviceIdCounter;
+        draft.hasDraft = true;
 
         // Clear local inputs
         deviceNameField.clear();
@@ -254,6 +357,8 @@ public class TemporaryEventDeviceGuardScreenController {
             return;
         }
         deviceList.remove(selected);
+        draft.devices.remove(selected);
+        draft.hasDraft = true;
     }
 
     @FXML
@@ -281,6 +386,10 @@ public class TemporaryEventDeviceGuardScreenController {
 
         // Clear lists
         deviceList.clear();
+
+        // Clear draft
+        draft.clear();
+        tempDeviceIdCounter = 1;
 
         // Enable inputs
         setInputFieldsDisabled(false);
