@@ -295,26 +295,8 @@ public class IngressEgressMonitoringScreenController {
                 deviceList.add(selection);
             }
             
-            // Append pending devices (from Quick Registration)
-            List<PendingDevice> pendingDevices = deviceService.getPendingDevices();
-            for (PendingDevice pd : pendingDevices) {
-                if (studentId.equalsIgnoreCase(pd.getStudentId())) {
-                    Device d = new Device();
-                    d.setDeviceId(0);
-                    d.setStudentId(pd.getStudentId());
-                    d.setDeviceName(pd.getDeviceName());
-                    d.setSerialNumber(pd.getSerialNumber());
-                    d.setDeviceType(pd.getDeviceType());
-                    d.setBrand(pd.getBrand());
-                    d.setModel(pd.getModel());
-                    d.setRegistrationStatus("pending");
-                    d.setDeviceStatus("active");
-                    
-                    DeviceSelection selection = new DeviceSelection(d, "exit", null);
-                    selection.setSelected(true); // Checked by default for pending
-                    deviceList.add(selection);
-                }
-            }
+            // Devices are already returned by getDevicesByStudentId including pending ones
+
             
             updateActionButtonsVisibility();
         } catch (Exception e) {
