@@ -197,7 +197,7 @@ public class IngressEgressMonitoringScreenController {
             deviceList.clear();
             for (Device d : devices) {
                 DeviceCampusStatus cs = statusMap.get(d.getSerialNumber());
-                String campusStatus = cs != null ? cs.getCampusStatus() : "outside";
+                String campusStatus = cs != null ? cs.getCampusStatus() : "exit";
                 String lastTime = cs != null ? cs.getLastEventTime() : null;
 
                 DeviceSelection selection = new DeviceSelection(d, campusStatus, lastTime);

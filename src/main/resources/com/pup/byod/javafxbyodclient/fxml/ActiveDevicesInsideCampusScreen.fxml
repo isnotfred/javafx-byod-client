@@ -26,7 +26,7 @@
         <HBox alignment="CENTER_LEFT" spacing="10.0">
             <VBox spacing="2.0">
                 <Label text="Campus Presence Registry" style="-fx-font-family: 'Hanken Grotesk', 'Segoe UI Bold', 'Segoe UI', sans-serif; -fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #102A43;"/>
-                <Label text="Showing live entry, exit, and outside states for all registered user hardware" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 12px; -fx-text-fill: #64748B;"/>
+                <Label text="Showing live entry and exit states for all registered user hardware" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 12px; -fx-text-fill: #64748B;"/>
             </VBox>
             <Region HBox.hgrow="ALWAYS"/>
             <Button text="Refresh View" onAction="#loadStatus" styleClass="action-btn, action-btn-warning" prefHeight="35.0"/>
