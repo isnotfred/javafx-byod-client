@@ -27,18 +27,26 @@
               style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 16px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 8, 0, 0, 2);">
             
             <!-- Filter Bar -->
-            <HBox spacing="10.0" alignment="CENTER_LEFT" style="-fx-padding: 5px 0 5px 0;">
-                <Label text="Operator Search:" styleClass="form-label"/>
-                <TextField fx:id="usernameFilterField" promptText="Search name..." styleClass="modern-textfield" prefHeight="38.0" prefWidth="160.0"/>
+            <HBox spacing="15.0" alignment="BOTTOM_LEFT" style="-fx-padding: 5px 0 5px 0;">
+                <VBox spacing="5.0">
+                    <Label text="Operator Search:" styleClass="form-label"/>
+                    <TextField fx:id="usernameFilterField" promptText="Search name..." styleClass="modern-textfield" prefHeight="38.0" prefWidth="160.0"/>
+                </VBox>
                 
-                <Label text="Action Type:" styleClass="form-label"/>
-                <ComboBox fx:id="actionTypeBox" promptText="All Action Types" styleClass="modern-combo-box" prefHeight="38.0" prefWidth="180.0"/>
+                <VBox spacing="5.0">
+                    <Label text="Action Type:" styleClass="form-label"/>
+                    <ComboBox fx:id="actionTypeBox" promptText="All Action Types" styleClass="modern-combo-box" prefHeight="38.0" prefWidth="180.0"/>
+                </VBox>
                 
-                <Label text="Start Date:" styleClass="form-label"/>
-                <DatePicker fx:id="startDatePicker" styleClass="modern-date-picker" prefHeight="38.0" prefWidth="120.0"/>
+                <VBox spacing="5.0">
+                    <Label text="Start Date:" styleClass="form-label"/>
+                    <DatePicker fx:id="startDatePicker" styleClass="modern-date-picker" prefHeight="38.0" prefWidth="140.0"/>
+                </VBox>
                 
-                <Label text="End Date:" styleClass="form-label"/>
-                <DatePicker fx:id="endDatePicker" styleClass="modern-date-picker" prefHeight="38.0" prefWidth="120.0"/>
+                <VBox spacing="5.0">
+                    <Label text="End Date:" styleClass="form-label"/>
+                    <DatePicker fx:id="endDatePicker" styleClass="modern-date-picker" prefHeight="38.0" prefWidth="140.0"/>
+                </VBox>
                 
                 <Region HBox.hgrow="ALWAYS"/>
                 <Button text="Reset Filters" onAction="#handleResetFilters" styleClass="action-btn, action-btn-secondary" prefHeight="38.0"/>

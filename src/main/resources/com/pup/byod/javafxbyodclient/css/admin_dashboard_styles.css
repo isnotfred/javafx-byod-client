@@ -703,3 +703,32 @@
     -fx-alignment: center-left;
 }
 
+/* Custom Table CheckBox Styling */
+.table-view .check-box .box {
+    -fx-background-color: white;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+}
+.table-view .check-box:selected .mark {
+    -fx-background-color: black;
+}
+.table-view .check-box:selected .box {
+    -fx-background-color: white;
+}
+
+/* Custom ContextMenu styling for autocomplete */
+.context-menu {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 8;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);
+    -fx-padding: 4 0 4 0;
+}
+.context-menu .menu-item:hover, .context-menu .menu-item:focused {
+    -fx-background-color: #f8fafc;
+}
+.context-menu .menu-item:hover, .context-menu .menu-item:focused, .context-menu .menu-item:hover .label, .context-menu .menu-item:focused .label {
+    -fx-text-fill: black;
+}

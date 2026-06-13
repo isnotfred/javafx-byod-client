@@ -28,7 +28,6 @@
                 <TextField fx:id="searchField" promptText="Search student ID or Name..." HBox.hgrow="ALWAYS" styleClass="modern-textfield" prefHeight="38.0" maxWidth="300.0"/>
                 <Button text="Search" onAction="#handleSearch" styleClass="action-btn, action-btn-primary" prefHeight="38.0"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Button text="Import Students" onAction="#handleImportCsv" styleClass="action-btn, action-btn-success" prefHeight="38.0"/>
                 <Button text="Import Devices" onAction="#handleImportDevicesCsv" styleClass="action-btn, action-btn-success" prefHeight="38.0"/>
                 <Button text="Export Students" onAction="#handleExportStudents" styleClass="action-btn" prefHeight="38.0" style="-fx-background-color: #f1f5f9; -fx-border-color: #cbd5e1; -fx-border-radius: 8; -fx-text-fill: #475569;"/>
                 <Button text="Add Student" onAction="#openAddOverlay" styleClass="action-btn, action-btn-warning" prefHeight="38.0"/>
@@ -149,6 +148,11 @@
                         <Label text="Device Status:" GridPane.columnIndex="0" GridPane.rowIndex="6" styleClass="form-label"/>
                         <ComboBox fx:id="deviceStatusBox" promptText="Select Status" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
                     </GridPane>
+                    
+                    <HBox alignment="CENTER_RIGHT" spacing="10.0" style="-fx-padding: 5px 0 0 0;">
+                        <Button text="Clear Device Entry" onAction="#handleClearDevice" styleClass="action-btn" prefHeight="32.0" style="-fx-background-color: #f1f5f9; -fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-text-fill: #475569; -fx-font-size: 12px;"/>
+                        <Button fx:id="stageDeviceBtn" text="+ Add Device to List" onAction="#handleStageDevice" styleClass="action-btn, action-btn-success" prefHeight="32.0" style="-fx-font-size: 12px;"/>
+                    </HBox>
                     
                     <Separator/>
                     

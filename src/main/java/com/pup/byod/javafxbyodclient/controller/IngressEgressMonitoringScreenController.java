@@ -1,6 +1,7 @@
 package com.pup.byod.javafxbyodclient.controller;
 
 import com.pup.byod.javafxbyodclient.model.Device;
+import com.pup.byod.javafxbyodclient.model.PendingDevice;
 import com.pup.byod.javafxbyodclient.model.DeviceCampusStatus;
 import com.pup.byod.javafxbyodclient.model.DeviceLog;
 import com.pup.byod.javafxbyodclient.model.Student;
@@ -11,6 +12,7 @@ import com.pup.byod.javafxbyodclient.session.SessionManager;
 import com.pup.byod.javafxbyodclient.util.AlertHelper;
 import com.pup.byod.javafxbyodclient.util.ValidationHelper;
 import com.pup.byod.javafxbyodclient.util.CsvExportHelper;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
@@ -41,6 +43,8 @@ public class IngressEgressMonitoringScreenController {
     @FXML private TableColumn<DeviceSelection, String> colStatus;
 
     @FXML private TextArea notesArea;
+    @FXML private Button btnLogIngress;
+    @FXML private Button btnLogEgress;
 
     @FXML private TableView<DeviceLog> logsTable;
     @FXML private TableColumn<DeviceLog, Integer> colLogId;
@@ -60,7 +64,57 @@ public class IngressEgressMonitoringScreenController {
 
     @FXML
     public void initialize() {
+        // Setup Student ID Autocomplete
+        ContextMenu studentAutoCompleteMenu = new ContextMenu();
+        studentIdField.textProperty().addListener((observable, oldValue, newValue) -> {
+            String currentText = newValue.trim();
+            if (currentText.length() >= 3) {
+                new Thread(() -> {
+                    try {
+                        List<Student> matches = studentService.searchStudents(currentText);
+                        Platform.runLater(() -> {
+                            if (!studentIdField.getText().trim().equals(currentText)) return;
+                            
+                            studentAutoCompleteMenu.getItems().clear();
+                            if (!matches.isEmpty()) {
+                                for (Student s : matches) {
+                                    MenuItem item = new MenuItem(s.getStudentId() + " - " + s.getFirstName() + " " + s.getLastName());
+                                    item.setOnAction(e -> {
+                                        studentIdField.setText(s.getStudentId());
+                                        handleStudentSearch();
+                                    });
+                                    studentAutoCompleteMenu.getItems().add(item);
+                                }
+                                if (studentIdField.isFocused() && studentIdField.getScene() != null && studentIdField.getScene().getWindow() != null) {
+                                    studentAutoCompleteMenu.show(studentIdField, javafx.geometry.Side.BOTTOM, 0, 0);
+                                }
+                            } else {
+                                studentAutoCompleteMenu.hide();
+                            }
+                        });
+                    } catch (Exception e) {
+                        Platform.runLater(studentAutoCompleteMenu::hide);
+                    }
+                }).start();
+            } else {
+                studentAutoCompleteMenu.hide();
+            }
+        });
+        
+        studentIdField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) {
+                studentAutoCompleteMenu.hide();
+            }
+        });
+
         // Initialize Device Columns
+        // Prevent native JavaFX row selection to avoid conflicting with our custom highlight colors
+        deviceTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                Platform.runLater(() -> deviceTable.getSelectionModel().clearSelection());
+            }
+        });
+
         colSelect.setCellValueFactory(f -> f.getValue().selectedProperty());
         colSelect.setCellFactory(CheckBoxTableCell.forTableColumn(colSelect));
         colDeviceName.setCellValueFactory(new PropertyValueFactory<>("deviceName"));
@@ -72,35 +126,66 @@ public class IngressEgressMonitoringScreenController {
         deviceTable.setItems(deviceList);
         deviceTable.setEditable(true);
 
-        deviceTable.setRowFactory(tv -> new TableRow<DeviceSelection>() {
-            @Override
-            protected void updateItem(DeviceSelection item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setStyle("");
-                    getStyleClass().removeAll("warning-row", "overstay-row");
-                } else {
-                    Device d = item.getDevice();
-                    boolean isFlagged = !"approved".equalsIgnoreCase(d.getRegistrationStatus()) 
-                                        || "inactive".equalsIgnoreCase(d.getDeviceStatus());
-                    if (isFlagged) {
-                        setStyle("-fx-background-color: #FEE2E2;"); // light red/rose background
-                        getStyleClass().remove("overstay-row");
-                        if (!getStyleClass().contains("warning-row")) {
-                            getStyleClass().add("warning-row");
-                        }
-                    } else if (item.isOverstay()) {
-                        setStyle("-fx-background-color: #FEF3C7;"); // light amber/orange background
-                        getStyleClass().remove("warning-row");
-                        if (!getStyleClass().contains("overstay-row")) {
-                            getStyleClass().add("overstay-row");
-                        }
-                    } else {
+        deviceTable.setRowFactory(tv -> {
+            TableRow<DeviceSelection> row = new TableRow<DeviceSelection>() {
+                @Override
+                protected void updateItem(DeviceSelection item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
                         setStyle("");
-                        getStyleClass().removeAll("warning-row", "overstay-row");
+                        getStyleClass().removeAll("warning-row", "overstay-row", "pending-row", "selected-row");
+                    } else {
+                        Device d = item.getDevice();
+                        boolean isPending = "pending".equalsIgnoreCase(d.getRegistrationStatus());
+                        boolean isInactive = "inactive".equalsIgnoreCase(d.getDeviceStatus());
+                        boolean isRejected = "rejected".equalsIgnoreCase(d.getRegistrationStatus());
+                        
+                        getStyleClass().removeAll("warning-row", "overstay-row", "pending-row", "selected-row");
+                        
+                        if (isInactive || isRejected) {
+                            setStyle("-fx-background-color: #FEE2E2; -fx-text-fill: black;");
+                            getStyleClass().add("warning-row");
+                        } else {
+                            if (item.isSelected()) {
+                                if (isPending) {
+                                    setStyle("-fx-background-color: #FFF9C4; -fx-text-fill: black;"); // Lighter yellow for pending
+                                    getStyleClass().add("pending-row");
+                                } else {
+                                    setStyle("-fx-background-color: #E1F5FE; -fx-text-fill: black;"); // User's requested light pastel blue
+                                    getStyleClass().add("selected-row");
+                                }
+                            } else if (item.isOverstay()) {
+                                setStyle("-fx-background-color: #FEF3C7; -fx-text-fill: black;");
+                                getStyleClass().add("overstay-row");
+                            } else {
+                                setStyle("");
+                            }
+                        }
                     }
                 }
-            }
+            };
+            
+            row.setOnMouseClicked(event -> {
+                if (!row.isEmpty() && event.getClickCount() == 1) {
+                    DeviceSelection item = row.getItem();
+                    Device d = item.getDevice();
+                    if (!"inactive".equalsIgnoreCase(d.getDeviceStatus()) && !"rejected".equalsIgnoreCase(d.getRegistrationStatus())) {
+                        item.setSelected(!item.isSelected());
+                        deviceTable.refresh();
+                        updateActionButtonsVisibility();
+                    }
+                }
+            });
+
+            row.itemProperty().addListener((obs, oldItem, newItem) -> {
+                if (newItem != null) {
+                    newItem.selectedProperty().addListener((o, oldVal, newVal) -> {
+                        deviceTable.refresh();
+                        updateActionButtonsVisibility();
+                    });
+                }
+            });
+            return row;
         });
 
         // Initialize Log Columns
@@ -202,13 +287,36 @@ public class IngressEgressMonitoringScreenController {
 
                 DeviceSelection selection = new DeviceSelection(d, campusStatus, lastTime);
                 
-                // Deselect automatically if inactive or not approved
-                if ("inactive".equalsIgnoreCase(d.getDeviceStatus()) || !"approved".equalsIgnoreCase(d.getRegistrationStatus())) {
+                // Deselect automatically if inactive or not approved (excluding pending which defaults to true below)
+                if ("inactive".equalsIgnoreCase(d.getDeviceStatus()) || "rejected".equalsIgnoreCase(d.getRegistrationStatus())) {
                     selection.setSelected(false);
                 }
                 
                 deviceList.add(selection);
             }
+            
+            // Append pending devices (from Quick Registration)
+            List<PendingDevice> pendingDevices = deviceService.getPendingDevices();
+            for (PendingDevice pd : pendingDevices) {
+                if (studentId.equalsIgnoreCase(pd.getStudentId())) {
+                    Device d = new Device();
+                    d.setDeviceId(0);
+                    d.setStudentId(pd.getStudentId());
+                    d.setDeviceName(pd.getDeviceName());
+                    d.setSerialNumber(pd.getSerialNumber());
+                    d.setDeviceType(pd.getDeviceType());
+                    d.setBrand(pd.getBrand());
+                    d.setModel(pd.getModel());
+                    d.setRegistrationStatus("pending");
+                    d.setDeviceStatus("active");
+                    
+                    DeviceSelection selection = new DeviceSelection(d, "exit", null);
+                    selection.setSelected(true); // Checked by default for pending
+                    deviceList.add(selection);
+                }
+            }
+            
+            updateActionButtonsVisibility();
         } catch (Exception e) {
             System.err.println("Error loading devices/statuses: " + e.getMessage());
         }
@@ -310,6 +418,37 @@ public class IngressEgressMonitoringScreenController {
         javafx.stage.Window window = logsTable.getScene().getWindow();
         String defaultName = currentStudent != null ? "gate_logs_" + currentStudent.getStudentId() + ".csv" : "gate_logs.csv";
         CsvExportHelper.exportToCsv(logsTable, window, defaultName);
+    }
+
+    private void updateActionButtonsVisibility() {
+        if (btnLogIngress == null || btnLogEgress == null) return;
+        
+        boolean hasExit = false;
+        boolean hasEntry = false;
+        
+        for (DeviceSelection item : deviceList) {
+            if (item.isSelected()) {
+                String status = item.getCampusStatus();
+                if ("pending".equalsIgnoreCase(item.getDevice().getRegistrationStatus())) {
+                    hasExit = true; 
+                } else if ("exit".equalsIgnoreCase(status)) {
+                    hasExit = true;
+                } else if ("entry".equalsIgnoreCase(status) || "inside".equalsIgnoreCase(status)) {
+                    hasEntry = true;
+                }
+            }
+        }
+        
+        if (hasExit && !hasEntry) {
+            btnLogIngress.setDisable(false);
+            btnLogEgress.setDisable(true);
+        } else if (hasEntry && !hasExit) {
+            btnLogIngress.setDisable(true);
+            btnLogEgress.setDisable(false);
+        } else {
+            btnLogIngress.setDisable(true);
+            btnLogEgress.setDisable(true);
+        }
     }
 
     // Helper Wrapper class for Device selection with Checkboxes

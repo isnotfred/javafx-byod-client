@@ -21,6 +21,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import com.pup.byod.javafxbyodclient.session.SessionManager;
 
 public class RegistryManagementScreenController {
     // Student directory controls
@@ -59,6 +60,7 @@ public class RegistryManagementScreenController {
     @FXML private ComboBox<String> deviceTypeBox;
     @FXML private ComboBox<String> devicePurposeBox;
     @FXML private ComboBox<String> deviceStatusBox;
+    @FXML private Button stageDeviceBtn;
 
     private final StudentService studentService = new StudentService();
     private final DeviceService deviceService = new DeviceService();
@@ -215,100 +217,12 @@ public class RegistryManagementScreenController {
         }
     }
 
-    @FXML
-    @SuppressWarnings("unchecked")
-    public void handleImportCsv() {
-        javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
-        fileChooser.setTitle("Import Students CSV");
-        fileChooser.getExtensionFilters().add(
-            new javafx.stage.FileChooser.ExtensionFilter("CSV Files (*.csv)", "*.csv")
-        );
-        
-        javafx.stage.Window window = studentTable.getScene().getWindow();
-        File selectedFile = fileChooser.showOpenDialog(window);
-        
-        if (selectedFile == null) {
-            return;
-        }
-
-        // Validate CSV headers first
-        try (BufferedReader br = new BufferedReader(new FileReader(selectedFile))) {
-            String headerLine = br.readLine();
-            if (headerLine == null || headerLine.trim().isEmpty()) {
-                AlertHelper.showError("CSV Validation Failed", "Empty File", "The selected CSV file is empty.");
-                return;
-            }
-            
-            String[] headers = headerLine.split(",");
-            List<String> headersList = new ArrayList<>();
-            for (String h : headers) {
-                headersList.add(h.trim().toLowerCase());
-            }
-            
-            List<String> requiredHeaders = List.of("student_id", "first_name", "last_name", "course_year_level");
-            List<String> missingHeaders = new ArrayList<>();
-            for (String req : requiredHeaders) {
-                if (!headersList.contains(req)) {
-                    missingHeaders.add(req);
-                }
-            }
-            
-            if (!missingHeaders.isEmpty()) {
-                AlertHelper.showError(
-                    "CSV Validation Failed",
-                    "Missing Headers",
-                    "The selected CSV file is missing required headers: " + String.join(", ", missingHeaders) +
-                    "\n\nExpected headers: student_id,first_name,last_name,course_year_level"
-                );
-                return;
-            }
-        } catch (Exception e) {
-            AlertHelper.showError("CSV Validation Failed", "Error reading file", e.getMessage());
-            return;
-        }        // Proceed to call API
-        if (!AlertHelper.showConfirmation("Import CSV", "Confirm Import", "Are you sure you want to import student records from the selected CSV file?")) {
-            return;
-        }
-
-        try {
-            Map<String, Object> result = studentService.importStudentsCsv(selectedFile);
-            
-            int inserted = result.containsKey("inserted") ? (int) result.get("inserted") : 0;
-            int skipped = result.containsKey("skipped") ? (int) result.get("skipped") : 0;
-            List<Map<String, Object>> errors = result.containsKey("errors") ? (List<Map<String, Object>>) result.get("errors") : new ArrayList<>();
-
-            StringBuilder summary = new StringBuilder();
-            summary.append("Import completed:\n");
-            summary.append("- Successfully inserted: ").append(inserted).append("\n");
-            summary.append("- Skipped (duplicates): ").append(skipped).append("\n");
-            summary.append("- Failed (errors): ").append(errors.size()).append("\n");
-
-            if (!errors.isEmpty()) {
-                summary.append("\nErrors:\n");
-                for (Map<String, Object> error : errors) {
-                    int row = error.containsKey("row") ? (int) error.get("row") : 0;
-                    String id = error.containsKey("studentId") ? (String) error.get("studentId") : "unknown";
-                    List<String> reasons = error.containsKey("reasons") ? (List<String>) error.get("reasons") : new ArrayList<>();
-                    summary.append("• Row ").append(row)
-                           .append(" (ID: ").append(id).append("): ")
-                           .append(String.join(", ", reasons)).append("\n");
-                }
-                AlertHelper.showWarning("Import Complete with Errors", "Bulk Upload Summary", summary.toString());
-            } else {
-                AlertHelper.showInfo("Import Successful", "Bulk Upload Summary", summary.toString());
-            }
-            
-            loadStudents();
-        } catch (Exception e) {
-            AlertHelper.showError("Import Failed", "API Request Failed", e.getMessage());
-        }
-    }
+    // Removed old handleImportCsv
 
     @FXML
-    @SuppressWarnings("unchecked")
     public void handleImportDevicesCsv() {
         javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
-        fileChooser.setTitle("Import Devices CSV");
+        fileChooser.setTitle("Import Unified Registry CSV");
         fileChooser.getExtensionFilters().add(
             new javafx.stage.FileChooser.ExtensionFilter("CSV Files (*.csv)", "*.csv")
         );
@@ -334,7 +248,7 @@ public class RegistryManagementScreenController {
                 headersList.add(h.trim().toLowerCase());
             }
             
-            List<String> requiredHeaders = List.of("student_id", "device_name", "serial_number", "device_type", "device_purpose");
+            List<String> requiredHeaders = List.of("student_id", "first_name", "last_name", "course_year_level", "device_name", "serial_number", "device_type", "device_purpose");
             List<String> missingHeaders = new ArrayList<>();
             for (String req : requiredHeaders) {
                 if (!headersList.contains(req)) {
@@ -347,7 +261,7 @@ public class RegistryManagementScreenController {
                     "CSV Validation Failed",
                     "Missing Headers",
                     "The selected CSV file is missing required headers: " + String.join(", ", missingHeaders) +
-                    "\n\nExpected headers: student_id,device_name,serial_number,device_type,device_purpose"
+                    "\n\nExpected headers: student_id, first_name, last_name, course_year_level, device_name, serial_number, device_type, device_purpose"
                 );
                 return;
             }
@@ -357,46 +271,110 @@ public class RegistryManagementScreenController {
         }
 
         if (!AlertHelper.showConfirmation("Import CSV", "Confirm Import", 
-                "Are you sure you want to import device records from the selected CSV file?")) {
+                "Are you sure you want to import student and device records from the selected CSV file?")) {
             return;
         }
 
-        // Run client-side multipart upload to backend import in a background thread to prevent UI freezing
-        new Thread(() -> {
-            try {
-                Map<String, Object> result = deviceService.importDevicesCsv(selectedFile);
-                
-                int inserted = result.containsKey("inserted") ? (int) result.get("inserted") : 0;
-                int skipped = result.containsKey("skipped") ? (int) result.get("skipped") : 0;
-                List<Map<String, Object>> errors = result.containsKey("errors") ? (List<Map<String, Object>>) result.get("errors") : new ArrayList<>();
+        int currentAdminId = SessionManager.getInstance().getCurrentUser().getUserId();
 
+        new Thread(() -> {
+            int inserted = 0;
+            int errorsCount = 0;
+            List<String> errorsList = new ArrayList<>();
+            
+            try (BufferedReader br = new BufferedReader(new FileReader(selectedFile))) {
+                String headerLine = br.readLine();
+                String[] headers = headerLine.split(",");
+                int sIdx=-1, fIdx=-1, lIdx=-1, cIdx=-1, dnIdx=-1, snIdx=-1, dtIdx=-1, dpIdx=-1;
+                for(int i=0; i<headers.length; i++){
+                    String h = headers[i].trim().toLowerCase();
+                    if(h.equals("student_id")) sIdx = i;
+                    if(h.equals("first_name")) fIdx = i;
+                    if(h.equals("last_name")) lIdx = i;
+                    if(h.equals("course_year_level")) cIdx = i;
+                    if(h.equals("device_name")) dnIdx = i;
+                    if(h.equals("serial_number")) snIdx = i;
+                    if(h.equals("device_type")) dtIdx = i;
+                    if(h.equals("device_purpose")) dpIdx = i;
+                }
+                
+                String line;
+                int rowNum = 1;
+                while ((line = br.readLine()) != null) {
+                    rowNum++;
+                    String[] cols = line.split(",", -1);
+                    if(cols.length < headers.length) continue;
+                    
+                    String sId = cols[sIdx].trim();
+                    String fName = cols[fIdx].trim();
+                    String lName = cols[lIdx].trim();
+                    String cYear = cols[cIdx].trim();
+                    
+                    String dName = cols[dnIdx].trim();
+                    String sNum = cols[snIdx].trim();
+                    String dType = cols[dtIdx].trim();
+                    String dPurp = cols[dpIdx].trim();
+                    
+                    if(sId.isEmpty()) continue;
+                    
+                    try {
+                        // Create student silently if not exists
+                        Student s = new Student();
+                        s.setStudentId(sId);
+                        s.setFirstName(fName);
+                        s.setLastName(lName);
+                        s.setCourseYearLevel(cYear);
+                        s.setStatus("active");
+                        try {
+                            studentService.createStudent(s);
+                        } catch(Exception ignored) { }
+                        
+                        if(!sNum.isEmpty() && !dName.isEmpty()) {
+                            Device d = new Device();
+                            d.setStudentId(sId);
+                            d.setDeviceName(dName);
+                            d.setSerialNumber(sNum);
+                            d.setDeviceType(dType);
+                            d.setDevicePurpose(dPurp);
+                            d.setDeviceStatus("active");
+                            
+                            Device registered = deviceService.registerDevice(d);
+                            // Auto-approve instantly
+                            deviceService.approveDevice(registered.getDeviceId(), currentAdminId);
+                            inserted++;
+                        }
+                    } catch(Exception e) {
+                        errorsCount++;
+                        errorsList.add("Row " + rowNum + " (SN: " + sNum + "): " + e.getMessage());
+                    }
+                }
+                
+                final int finalInserted = inserted;
+                final int finalErrorsCount = errorsCount;
+                final List<String> finalErrorsList = new ArrayList<>(errorsList);
+                
                 Platform.runLater(() -> {
                     StringBuilder summary = new StringBuilder();
                     summary.append("Import completed:\n");
-                    summary.append("- Successfully registered: ").append(inserted).append("\n");
-                    summary.append("- Skipped (duplicates): ").append(skipped).append("\n");
-                    summary.append("- Failed (errors): ").append(errors.size()).append("\n");
+                    summary.append("- Successfully registered & approved devices: ").append(finalInserted).append("\n");
+                    summary.append("- Failed (errors): ").append(finalErrorsCount).append("\n");
 
-                    if (!errors.isEmpty()) {
+                    if (!finalErrorsList.isEmpty()) {
                         summary.append("\nErrors:\n");
-                        for (Map<String, Object> error : errors) {
-                            int row = error.containsKey("row") ? (int) error.get("row") : 0;
-                            String serialNumber = error.containsKey("serialNumber") ? (String) error.get("serialNumber") : "unknown";
-                            List<String> reasons = error.containsKey("reasons") ? (List<String>) error.get("reasons") : new ArrayList<>();
-                            summary.append("• Row ").append(row)
-                                   .append(" (SN: ").append(serialNumber).append("): ")
-                                   .append(String.join(", ", reasons)).append("\n");
+                        for (int i=0; i<Math.min(10, finalErrorsList.size()); i++) {
+                            summary.append("• ").append(finalErrorsList.get(i)).append("\n");
                         }
+                        if(finalErrorsList.size() > 10) summary.append("...and more.");
                         AlertHelper.showWarning("Import Complete with Errors", "Bulk Upload Summary", summary.toString());
                     } else {
                         AlertHelper.showInfo("Import Successful", "Bulk Upload Summary", summary.toString());
                     }
 
-                    loadStudents(); // refresh student table to show linked devices if any
+                    loadStudents();
                 });
             } catch (Exception e) {
                 Platform.runLater(() -> {
-                    AlertHelper.showError("Import Failed", "API Request Failed", e.getMessage());
+                    AlertHelper.showError("Import Failed", "File Reading Failed", e.getMessage());
                 });
             }
         }).start();
@@ -414,15 +392,7 @@ public class RegistryManagementScreenController {
 
     private void onDeviceSelected(Device device) {
         if (device == null) {
-            isDeviceEditMode = false;
-            deviceNameField.clear();
-            brandField.clear();
-            modelField.clear();
-            serialNumberField.clear();
-            serialNumberField.setDisable(false);
-            deviceTypeBox.setValue(null);
-            devicePurposeBox.setValue(null);
-            deviceStatusBox.setValue("active");
+            handleClearDevice();
         } else {
             isDeviceEditMode = true;
             deviceNameField.setText(device.getDeviceName());
@@ -433,6 +403,14 @@ public class RegistryManagementScreenController {
             deviceTypeBox.setValue(device.getDeviceType());
             devicePurposeBox.setValue(device.getDevicePurpose());
             deviceStatusBox.setValue(device.getDeviceStatus());
+            
+            if (stageDeviceBtn != null) {
+                stageDeviceBtn.setText("Update Device in List");
+                stageDeviceBtn.getStyleClass().remove("action-btn-success");
+                if (!stageDeviceBtn.getStyleClass().contains("action-btn-primary")) {
+                    stageDeviceBtn.getStyleClass().add("action-btn-primary");
+                }
+            }
         }
     }
 
@@ -485,6 +463,79 @@ public class RegistryManagementScreenController {
     }
 
     @FXML
+    public void handleStageDevice() {
+        String deviceName = deviceNameField.getText();
+        String sn = serialNumberField.getText();
+        String brand = brandField.getText();
+        String model = modelField.getText();
+        String type = deviceTypeBox.getValue();
+        String purpose = devicePurposeBox.getValue();
+        String deviceStatusVal = deviceStatusBox.getValue();
+
+        if (ValidationHelper.isEmpty(deviceName) || ValidationHelper.isEmpty(sn) || 
+            type == null || purpose == null || deviceStatusVal == null) {
+            AlertHelper.showWarning("Device Warning", "Missing Device Fields", 
+                "Please complete all device fields (Name, Serial Number, Type, Purpose, Status) before proceeding.");
+            return;
+        }
+
+        if (isDeviceEditMode) {
+            Device selectedDevice = deviceTable.getSelectionModel().getSelectedItem();
+            if (selectedDevice != null) {
+                selectedDevice.setDeviceName(deviceName);
+                selectedDevice.setBrand(brand);
+                selectedDevice.setModel(model);
+                selectedDevice.setDeviceType(type);
+                selectedDevice.setDevicePurpose(purpose);
+                selectedDevice.setDeviceStatus(deviceStatusVal);
+                
+                deviceTable.refresh();
+                AlertHelper.showInfo("Update Successful", "Device Updated", "The device record has been successfully updated in the list.");
+                
+                deviceTable.getSelectionModel().clearSelection();
+                handleClearDevice();
+            }
+        } else {
+            Device d = new Device();
+            d.setDeviceName(deviceName);
+            d.setBrand(brand);
+            d.setModel(model);
+            d.setSerialNumber(sn);
+            d.setDeviceType(type);
+            d.setDevicePurpose(purpose);
+            d.setDeviceStatus(deviceStatusVal);
+            d.setRegistrationStatus("Staged"); 
+            d.setDeviceId(0); 
+
+            deviceList.add(d);
+            handleClearDevice();
+        }
+    }
+
+    @FXML
+    public void handleClearDevice() {
+        deviceNameField.clear();
+        brandField.clear();
+        modelField.clear();
+        serialNumberField.clear();
+        serialNumberField.setDisable(false);
+        deviceTypeBox.setValue(null);
+        devicePurposeBox.setValue(null);
+        deviceStatusBox.setValue("active");
+        isDeviceEditMode = false;
+        
+        deviceTable.getSelectionModel().clearSelection();
+        
+        if (stageDeviceBtn != null) {
+            stageDeviceBtn.setText("+ Add Device to List");
+            stageDeviceBtn.getStyleClass().remove("action-btn-primary");
+            if (!stageDeviceBtn.getStyleClass().contains("action-btn-success")) {
+                stageDeviceBtn.getStyleClass().add("action-btn-success");
+            }
+        }
+    }
+
+    @FXML
     public void handleSaveRecord() {
         // 1. Validate & Save Student details
         String studentId = studentIdField.getText();
@@ -517,48 +568,32 @@ public class RegistryManagementScreenController {
                 studentService.createStudent(s);
             }
             
-            // 2. Validate & Save Device details (if serial number or name is typed)
-            String deviceName = deviceNameField.getText();
-            String sn = serialNumberField.getText();
+            // 2. Register and auto-approve all staged devices
+            int devicesSaved = 0;
+            int currentAdminId = SessionManager.getInstance().getCurrentUser().getUserId();
             
-            boolean deviceSaved = false;
-            if (!ValidationHelper.isEmpty(sn) || !ValidationHelper.isEmpty(deviceName)) {
-                String brand = brandField.getText();
-                String model = modelField.getText();
-                String type = deviceTypeBox.getValue();
-                String purpose = devicePurposeBox.getValue();
-                String deviceStatusVal = deviceStatusBox.getValue();
+            // Note: If they typed something but forgot to click "+ Add to List", let's be nice and add it
+            String typedSn = serialNumberField.getText();
+            String typedName = deviceNameField.getText();
+            if (!ValidationHelper.isEmpty(typedSn) && !ValidationHelper.isEmpty(typedName) && deviceTypeBox.getValue() != null) {
+                handleStageDevice();
+            }
 
-                if (ValidationHelper.isEmpty(deviceName) || ValidationHelper.isEmpty(sn) || 
-                    type == null || purpose == null || deviceStatusVal == null) {
-                    AlertHelper.showWarning("Device Warning", "Missing Device Fields", 
-                        "You started entering device details. Please complete all device fields (Name, Serial Number, Type, Purpose, Status).");
-                    return;
-                }
-
-                Device d = new Device();
-                d.setStudentId(studentId);
-                d.setDeviceName(deviceName);
-                d.setBrand(brand);
-                d.setModel(model);
-                d.setSerialNumber(sn);
-                d.setDeviceType(type);
-                d.setDevicePurpose(purpose);
-                d.setDeviceStatus(deviceStatusVal);
-
-                if (isDeviceEditMode) {
-                    Device selectedDevice = deviceTable.getSelectionModel().getSelectedItem();
-                    if (selectedDevice != null) {
-                        deviceService.updateDevice(selectedDevice.getDeviceId(), d);
-                        deviceSaved = true;
-                    }
-                } else {
-                    deviceService.registerDevice(d);
-                    deviceSaved = true;
+            for (Device stagedDevice : deviceList) {
+                if (stagedDevice.getDeviceId() == 0 || "Staged".equals(stagedDevice.getRegistrationStatus())) {
+                    stagedDevice.setStudentId(studentId);
+                    stagedDevice.setRegistrationStatus("pending"); // Fix: Reset to valid enum before API call
+                    Device registered = deviceService.registerDevice(stagedDevice);
+                    deviceService.approveDevice(registered.getDeviceId(), currentAdminId);
+                    devicesSaved++;
+                } else if (isDeviceEditMode) {
+                    // Update existing device if modified
+                    deviceService.updateDevice(stagedDevice.getDeviceId(), stagedDevice);
+                    devicesSaved++;
                 }
             }
 
-            String msg = "Student record saved successfully." + (deviceSaved ? "\nDevice record registered/saved successfully." : "");
+            String msg = "Student record saved successfully." + (devicesSaved > 0 ? "\n" + devicesSaved + " Device(s) registered and auto-approved successfully." : "");
             AlertHelper.showInfo("Registry Saved", "Success", msg);
 
             formOverlay.setVisible(false); // Close overlay after successful save
@@ -579,15 +614,4 @@ public class RegistryManagementScreenController {
         isStudentEditMode = false;
     }
 
-    private void handleClearDevice() {
-        deviceNameField.clear();
-        brandField.clear();
-        modelField.clear();
-        serialNumberField.clear();
-        serialNumberField.setDisable(false);
-        deviceTypeBox.setValue(null);
-        devicePurposeBox.setValue(null);
-        deviceStatusBox.setValue("active");
-        isDeviceEditMode = false;
-    }
 }

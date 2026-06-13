@@ -40,7 +40,7 @@
                 </graphic>
             </ToggleButton>
             
-            <ToggleButton text="Gate Entry/Exit Scan" onAction="#showGateScan" toggleGroup="$sidebarGroup" prefWidth="200.0" styleClass="sidebar-btn">
+            <ToggleButton text="Ingress/Egress" onAction="#showGateScan" toggleGroup="$sidebarGroup" prefWidth="200.0" styleClass="sidebar-btn">
                 <graphic>
                     <SVGPath content="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z" styleClass="sidebar-icon"/>
                 </graphic>

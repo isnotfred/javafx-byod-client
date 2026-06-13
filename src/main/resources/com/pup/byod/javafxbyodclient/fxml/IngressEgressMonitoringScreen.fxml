@@ -18,8 +18,8 @@
     
     <!-- Hero Header Banner -->
     <VBox styleClass="welcome-banner" spacing="4.0" alignment="CENTER_LEFT" maxWidth="Infinity">
-        <Label text="Security Gate Scanning &amp; Monitoring" styleClass="welcome-title"/>
-        <Label text="Log and monitor student device check-ins and check-outs at the campus gates." styleClass="welcome-subtitle"/>
+        <Label text="Ingress/Egress Monitoring" styleClass="welcome-title"/>
+        <Label text="Log and monitor student device ingress and egress at the campus gates." styleClass="welcome-subtitle"/>
     </VBox>
     
     <!-- Main Content Split Layout -->
@@ -61,8 +61,8 @@
                 </VBox>
                 
                 <VBox spacing="10.0" alignment="CENTER" style="-fx-padding: 8px 0 0 0;">
-                    <Button text="Log Entry (Check-In)" onAction="#handleEntry" maxWidth="Infinity" prefHeight="40.0" styleClass="action-btn, action-btn-success"/>
-                    <Button text="Log Exit (Check-Out)" onAction="#handleExit" maxWidth="Infinity" prefHeight="40.0" styleClass="action-btn, action-btn-primary"/>
+                    <Button fx:id="btnLogIngress" text="Log Ingress" onAction="#handleEntry" maxWidth="Infinity" prefHeight="40.0" styleClass="action-btn, action-btn-success"/>
+                    <Button fx:id="btnLogEgress" text="Log Egress" onAction="#handleExit" maxWidth="Infinity" prefHeight="40.0" styleClass="action-btn, action-btn-primary"/>
                 </VBox>
             </VBox>
             

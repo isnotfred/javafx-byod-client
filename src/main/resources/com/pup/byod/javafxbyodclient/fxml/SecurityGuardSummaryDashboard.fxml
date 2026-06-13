@@ -67,7 +67,7 @@
         
         <!-- Quick Access Buttons (2x2 Stack Layout) -->
         <FlowPane hgap="24.0" vgap="24.0" prefWrapLength="800.0">
-            <!-- Gate Entry/Exit Scan -->
+            <!-- Ingress/Egress -->
             <Button onAction="#goToGateScan" prefWidth="380.0" styleClass="shortcut-card">
                 <graphic>
                     <HBox spacing="16.0" alignment="CENTER_LEFT">
@@ -76,7 +76,7 @@
                                      styleClass="shortcut-icon"/>
                         </StackPane>
                         <VBox spacing="4.0" alignment="CENTER_LEFT">
-                            <Label text="Gate Entry/Exit Scan" styleClass="shortcut-title"/>
+                            <Label text="Ingress/Egress" styleClass="shortcut-title"/>
                             <Label text="Log student devices entering and exiting campus" styleClass="shortcut-desc"/>
                         </VBox>
                     </HBox>
