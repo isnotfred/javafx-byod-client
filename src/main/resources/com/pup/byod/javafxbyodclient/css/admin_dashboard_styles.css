@@ -3,7 +3,7 @@
 /* Root and Main Container */
 .admin-dashboard-container {
     -fx-background-color: #F0F4F8; /* Soft blue-grey background */
-    -fx-padding: 24px 32px;
+    -fx-padding: 5px;
     -fx-font-family: "Inter", "Segoe UI", sans-serif;
 }
 
