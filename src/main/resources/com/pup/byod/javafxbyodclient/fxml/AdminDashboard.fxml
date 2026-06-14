@@ -52,9 +52,9 @@
                 </graphic>
             </ToggleButton>
             
-            <ToggleButton text="Event Approvals" onAction="#showEventApprovals" toggleGroup="$sidebarGroup" prefWidth="200.0" styleClass="sidebar-btn">
+            <ToggleButton text="Event Requests" onAction="#showEventRequests" toggleGroup="$sidebarGroup" prefWidth="200.0" styleClass="sidebar-btn">
                 <graphic>
-                    <SVGPath content="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z" styleClass="sidebar-icon"/>
+                    <SVGPath content="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm-2-7h-4v4h4v-4z" styleClass="sidebar-icon"/>
                 </graphic>
             </ToggleButton>
             

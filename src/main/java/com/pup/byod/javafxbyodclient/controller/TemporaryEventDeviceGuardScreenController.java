@@ -2,15 +2,22 @@ package com.pup.byod.javafxbyodclient.controller;
 
 import com.pup.byod.javafxbyodclient.model.EventRequest;
 import com.pup.byod.javafxbyodclient.model.EventRequestDevice;
+import com.pup.byod.javafxbyodclient.model.ActiveEventRequest;
 import com.pup.byod.javafxbyodclient.service.EventRequestService;
 import com.pup.byod.javafxbyodclient.session.SessionManager;
 import com.pup.byod.javafxbyodclient.util.AlertHelper;
 import com.pup.byod.javafxbyodclient.util.ValidationHelper;
+import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.StackPane;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -19,15 +26,50 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class TemporaryEventDeviceGuardScreenController {
-    // Left Section: Event Logs Table
+    // Main layouts
+    @FXML private VBox adminView;
+    @FXML private VBox guardView;
+    @FXML private StackPane formOverlay;
+
+    // Admin view
+    @FXML private TextField adminSearchField;
+    @FXML private TableView<EventRequest> adminEventsTable;
+    @FXML private TableColumn<EventRequest, Integer> colAdminEventId;
+    @FXML private TableColumn<EventRequest, String> colAdminStudentId;
+    @FXML private TableColumn<EventRequest, String> colAdminEventName;
+    @FXML private TableColumn<EventRequest, String> colAdminStartDate;
+    @FXML private TableColumn<EventRequest, String> colAdminEndDate;
+    @FXML private TableColumn<EventRequest, String> colAdminEventStatus;
+    @FXML private Button editSelectedBtn;
+
+    // Guard view elements
+    @FXML private TextField guardStudentIdField;
+    @FXML private TextField guardEventNameField;
+    @FXML private TextField guardResponsiblePersonField;
+    @FXML private TextField guardOrganizationField;
+    @FXML private TextField guardContactField;
+    @FXML private ComboBox<String> guardPurposeBox;
+    @FXML private DatePicker guardStartDatePicker;
+    @FXML private DatePicker guardEndDatePicker;
+    @FXML private ComboBox<String> guardDocTypeBox;
+    @FXML private TextField guardDocRefField;
+
+    @FXML private TableView<EventDeviceSelection> guardItemsTable;
+    @FXML private TableColumn<EventDeviceSelection, Boolean> colGuardSelect;
+    @FXML private TableColumn<EventDeviceSelection, Integer> colGuardItemId;
+    @FXML private TableColumn<EventDeviceSelection, String> colGuardItemName;
+    @FXML private TableColumn<EventDeviceSelection, String> colGuardSerialNumber;
+    @FXML private TableColumn<EventDeviceSelection, String> colGuardType;
+    @FXML private TableColumn<EventDeviceSelection, String> colGuardStatus;
+    @FXML private TableColumn<EventDeviceSelection, String> colGuardCurrentDayStatus;
+
+    // Left Section: Event Logs Table (Guards)
     @FXML private TextField searchField;
     @FXML private TableView<EventRequest> eventsTable;
-    @FXML private TableColumn<EventRequest, Integer> colEventId;
     @FXML private TableColumn<EventRequest, String> colStudentId;
     @FXML private TableColumn<EventRequest, String> colEventName;
-    @FXML private TableColumn<EventRequest, String> colEventStatus;
 
-    // Right Section: Event Details Form
+    // Right Section: Event Details Form (Admins Overlay)
     @FXML private TextField formStudentIdField;
     @FXML private TextField responsiblePersonField;
     @FXML private TextField contactField;
@@ -39,15 +81,17 @@ public class TemporaryEventDeviceGuardScreenController {
     @FXML private ComboBox<String> docTypeBox;
     @FXML private TextField docRefField;
 
-    // Right Section: Devices Table
-    @FXML private TableView<EventRequestDevice> itemsTable;
-    @FXML private TableColumn<EventRequestDevice, Integer> colItemId;
-    @FXML private TableColumn<EventRequestDevice, String> colItemName;
-    @FXML private TableColumn<EventRequestDevice, String> colSerialNumber;
-    @FXML private TableColumn<EventRequestDevice, String> colType;
-    @FXML private TableColumn<EventRequestDevice, String> colStatus;
+    // Right Section: Devices Table (Admins Overlay)
+    @FXML private TableView<EventDeviceSelection> itemsTable;
+    @FXML private TableColumn<EventDeviceSelection, Boolean> colSelect;
+    @FXML private TableColumn<EventDeviceSelection, Integer> colItemId;
+    @FXML private TableColumn<EventDeviceSelection, String> colItemName;
+    @FXML private TableColumn<EventDeviceSelection, String> colSerialNumber;
+    @FXML private TableColumn<EventDeviceSelection, String> colType;
+    @FXML private TableColumn<EventDeviceSelection, String> colStatus;
+    @FXML private TableColumn<EventDeviceSelection, String> colCurrentDayStatus;
 
-    // Right Section: Add Temporary Device inputs
+    // Right Section: Add Temporary Device inputs (Admins Overlay)
     @FXML private TextField deviceNameField;
     @FXML private TextField brandField;
     @FXML private TextField modelField;
@@ -55,7 +99,16 @@ public class TemporaryEventDeviceGuardScreenController {
     @FXML private ComboBox<String> deviceTypeBox;
 
     // Actions
+    @FXML private VBox addDeviceCard;
+    @FXML private Button clearFormBtn;
     @FXML private Button verifyBtn;
+    @FXML private Button submitBtn;
+    @FXML private Button logIngressBtn;
+    @FXML private Button logEgressBtn;
+    @FXML private Button ingressEgressBtn;
+    @FXML private StackPane guardModalOverlay;
+
+    private boolean isEditMode = false;
 
     private static class DraftEventRequest {
         String studentId = "";
@@ -94,25 +147,46 @@ public class TemporaryEventDeviceGuardScreenController {
 
     private final EventRequestService eventRequestService = new EventRequestService();
     private final ObservableList<EventRequest> eventsList = FXCollections.observableArrayList();
-    private final ObservableList<EventRequestDevice> deviceList = FXCollections.observableArrayList();
+    private final ObservableList<EventDeviceSelection> deviceList = FXCollections.observableArrayList();
     private List<EventRequest> allRequests = new ArrayList<>();
 
     @FXML
     public void initialize() {
-        // Configure event logs table
-        colEventId.setCellValueFactory(new PropertyValueFactory<>("eventRequestId"));
+        // Configure admin events table
+        colAdminEventId.setCellValueFactory(new PropertyValueFactory<>("eventRequestId"));
+        colAdminStudentId.setCellValueFactory(new PropertyValueFactory<>("studentId"));
+        colAdminEventName.setCellValueFactory(new PropertyValueFactory<>("eventName"));
+        colAdminStartDate.setCellValueFactory(new PropertyValueFactory<>("startDate"));
+        colAdminEndDate.setCellValueFactory(new PropertyValueFactory<>("endDate"));
+        colAdminEventStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        adminEventsTable.setItems(eventsList);
+
+        // Configure guard events table
         colStudentId.setCellValueFactory(new PropertyValueFactory<>("studentId"));
         colEventName.setCellValueFactory(new PropertyValueFactory<>("eventName"));
-        colEventStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         eventsTable.setItems(eventsList);
 
-        // Configure devices table
+        // Configure admin devices table in overlay
+        colSelect.setVisible(false); // Admin doesn't need select checkboxes
         colItemId.setCellValueFactory(new PropertyValueFactory<>("eventDeviceId"));
         colItemName.setCellValueFactory(new PropertyValueFactory<>("deviceName"));
         colSerialNumber.setCellValueFactory(new PropertyValueFactory<>("serialNumber"));
         colType.setCellValueFactory(new PropertyValueFactory<>("deviceType"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("deviceStatus"));
+        colCurrentDayStatus.setCellValueFactory(new PropertyValueFactory<>("currentDayStatus"));
         itemsTable.setItems(deviceList);
+
+        // Configure guard devices table
+        colGuardSelect.setCellValueFactory(f -> f.getValue().selectedProperty());
+        colGuardSelect.setCellFactory(CheckBoxTableCell.forTableColumn(colGuardSelect));
+        colGuardItemId.setCellValueFactory(new PropertyValueFactory<>("eventDeviceId"));
+        colGuardItemName.setCellValueFactory(new PropertyValueFactory<>("deviceName"));
+        colGuardSerialNumber.setCellValueFactory(new PropertyValueFactory<>("serialNumber"));
+        colGuardType.setCellValueFactory(new PropertyValueFactory<>("deviceType"));
+        colGuardStatus.setCellValueFactory(new PropertyValueFactory<>("deviceStatus"));
+        colGuardCurrentDayStatus.setCellValueFactory(new PropertyValueFactory<>("currentDayStatus"));
+        guardItemsTable.setItems(deviceList);
+        guardItemsTable.setEditable(true);
 
         // Populate dropdowns
         purposeBox.getItems().addAll(
@@ -123,9 +197,45 @@ public class TemporaryEventDeviceGuardScreenController {
             "Other"
         );
         docTypeBox.getItems().addAll("Signed GPOA", "Paper Approval", "Other");
-        deviceTypeBox.getItems().addAll("laptop", "tablet", "phone", "camera", "projector", "other");
+        deviceTypeBox.getItems().addAll(
+            "Personal Computers",
+            "Components & Peripherals",
+            "Display & Projection",
+            "Project Prototypes (Optional SN)",
+            "Appliances (TLE)",
+            "Other"
+        );
 
-        // Load draft if exists
+        guardPurposeBox.getItems().addAll(purposeBox.getItems());
+        guardDocTypeBox.getItems().addAll(docTypeBox.getItems());
+
+        // Handle role visibility
+        boolean isGuard = false;
+        if (SessionManager.getInstance().getCurrentUser() != null) {
+            String role = SessionManager.getInstance().getCurrentUser().getRole();
+            if ("guard".equalsIgnoreCase(role)) {
+                isGuard = true;
+            }
+        }
+
+        adminView.setVisible(!isGuard);
+        adminView.setManaged(!isGuard);
+        guardView.setVisible(isGuard);
+        guardView.setManaged(isGuard);
+        formOverlay.setVisible(false);
+
+        // Selection listeners & double click for admin table
+        adminEventsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            editSelectedBtn.setDisable(newVal == null);
+        });
+
+        adminEventsTable.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2 && adminEventsTable.getSelectionModel().getSelectedItem() != null) {
+                openEditOverlay();
+            }
+        });
+
+        // Load draft if exists (for Admin view)
         if (draft.hasDraft) {
             formStudentIdField.setText(draft.studentId);
             eventNameField.setText(draft.eventName);
@@ -137,7 +247,11 @@ public class TemporaryEventDeviceGuardScreenController {
             docTypeBox.setValue(draft.docType);
             startDatePicker.setValue(draft.start);
             endDatePicker.setValue(draft.end);
-            deviceList.setAll(draft.devices);
+            
+            List<EventDeviceSelection> wrapped = draft.devices.stream()
+                .map(EventDeviceSelection::new)
+                .collect(Collectors.toList());
+            deviceList.setAll(wrapped);
             tempDeviceIdCounter = draft.tempCounter;
         } else {
             tempDeviceIdCounter = 1;
@@ -146,7 +260,7 @@ public class TemporaryEventDeviceGuardScreenController {
         // Setup real-time input listeners to update draft
         setupDraftListeners();
 
-        // Event Logs Selection Listener
+        // Event Logs Selection Listener for Guard table
         eventsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 showEventRequestDetails(newVal);
@@ -203,7 +317,32 @@ public class TemporaryEventDeviceGuardScreenController {
     @FXML
     public void loadEventLogs() {
         try {
-            allRequests = eventRequestService.getAllEventRequests();
+            boolean isGuard = false;
+            if (SessionManager.getInstance().getCurrentUser() != null) {
+                String role = SessionManager.getInstance().getCurrentUser().getRole();
+                if ("guard".equalsIgnoreCase(role)) {
+                    isGuard = true;
+                }
+            }
+
+            if (isGuard) {
+                List<ActiveEventRequest> active = eventRequestService.getGuardEventRequests();
+                List<EventRequest> mapped = new ArrayList<>();
+                for (ActiveEventRequest act : active) {
+                    EventRequest req = new EventRequest();
+                    req.setEventRequestId(act.getEventRequestId());
+                    req.setStudentId(act.getStudentId());
+                    req.setEventName(act.getEventName());
+                    req.setOrganization(act.getOrganization());
+                    req.setStartDate(act.getStartDate());
+                    req.setEndDate(act.getEndDate());
+                    req.setStatus(act.getStatus());
+                    mapped.add(req);
+                }
+                allRequests = mapped;
+            } else {
+                allRequests = eventRequestService.getAllEventRequests();
+            }
             eventsList.setAll(allRequests);
         } catch (Exception e) {
             AlertHelper.showError("Load Error", "Failed to retrieve event logs", e.getMessage());
@@ -228,60 +367,122 @@ public class TemporaryEventDeviceGuardScreenController {
     }
 
     private void showEventRequestDetails(EventRequest request) {
-        // Populate form details
-        formStudentIdField.setText(request.getStudentId());
-        responsiblePersonField.setText(request.getResponsiblePerson());
-        eventNameField.setText(request.getEventName());
-        organizationField.setText(request.getOrganization());
-        purposeBox.setValue(request.getEventPurpose());
-        docTypeBox.setValue(request.getApprovalDocType());
-        docRefField.setText(request.getApprovalDocRef());
-
-        // Parse contact details from remarks
-        String remarks = request.getRemarks();
-        if (remarks != null && remarks.startsWith("Contact: ")) {
-            int endIdx = remarks.indexOf("\n");
-            if (endIdx == -1) {
-                contactField.setText(remarks.substring(9).trim());
-            } else {
-                contactField.setText(remarks.substring(9, endIdx).trim());
-            }
-        } else {
-            contactField.clear();
+        EventRequest fullRequest = request;
+        try {
+            fullRequest = eventRequestService.getEventRequestById(request.getEventRequestId());
+        } catch (Exception e) {
+            // fallback if API request fails
         }
 
-        // Set dates
-        try {
-            if (request.getStartDate() != null) {
-                startDatePicker.setValue(LocalDate.parse(request.getStartDate()));
-            } else {
-                startDatePicker.setValue(null);
+        boolean isGuard = false;
+        if (SessionManager.getInstance().getCurrentUser() != null) {
+            String role = SessionManager.getInstance().getCurrentUser().getRole();
+            if ("guard".equalsIgnoreCase(role)) {
+                isGuard = true;
             }
-            if (request.getEndDate() != null) {
-                endDatePicker.setValue(LocalDate.parse(request.getEndDate()));
+        }
+
+        if (isGuard) {
+            guardStudentIdField.setText(fullRequest.getStudentId());
+            guardResponsiblePersonField.setText(fullRequest.getResponsiblePerson());
+            guardEventNameField.setText(fullRequest.getEventName());
+            guardOrganizationField.setText(fullRequest.getOrganization());
+            guardPurposeBox.setValue(fullRequest.getEventPurpose());
+            guardDocTypeBox.setValue(fullRequest.getApprovalDocType());
+            guardDocRefField.setText(fullRequest.getApprovalDocRef());
+
+            String remarks = fullRequest.getRemarks();
+            if (remarks != null && remarks.startsWith("Contact: ")) {
+                int endIdx = remarks.indexOf("\n");
+                if (endIdx == -1) {
+                    guardContactField.setText(remarks.substring(9).trim());
+                } else {
+                    guardContactField.setText(remarks.substring(9, endIdx).trim());
+                }
             } else {
+                guardContactField.clear();
+            }
+
+            try {
+                if (fullRequest.getStartDate() != null) {
+                    guardStartDatePicker.setValue(LocalDate.parse(fullRequest.getStartDate()));
+                } else {
+                    guardStartDatePicker.setValue(null);
+                }
+                if (fullRequest.getEndDate() != null) {
+                    guardEndDatePicker.setValue(LocalDate.parse(fullRequest.getEndDate()));
+                } else {
+                    guardEndDatePicker.setValue(null);
+                }
+            } catch (DateTimeParseException e) {
+                guardStartDatePicker.setValue(null);
+                guardEndDatePicker.setValue(null);
+            }
+        } else {
+            formStudentIdField.setText(fullRequest.getStudentId());
+            responsiblePersonField.setText(fullRequest.getResponsiblePerson());
+            eventNameField.setText(fullRequest.getEventName());
+            organizationField.setText(fullRequest.getOrganization());
+            purposeBox.setValue(fullRequest.getEventPurpose());
+            docTypeBox.setValue(fullRequest.getApprovalDocType());
+            docRefField.setText(fullRequest.getApprovalDocRef());
+
+            String remarks = fullRequest.getRemarks();
+            if (remarks != null && remarks.startsWith("Contact: ")) {
+                int endIdx = remarks.indexOf("\n");
+                if (endIdx == -1) {
+                    contactField.setText(remarks.substring(9).trim());
+                } else {
+                    contactField.setText(remarks.substring(9, endIdx).trim());
+                }
+            } else {
+                contactField.clear();
+            }
+
+            try {
+                if (fullRequest.getStartDate() != null) {
+                    startDatePicker.setValue(LocalDate.parse(fullRequest.getStartDate()));
+                } else {
+                    startDatePicker.setValue(null);
+                }
+                if (fullRequest.getEndDate() != null) {
+                    endDatePicker.setValue(LocalDate.parse(fullRequest.getEndDate()));
+                } else {
+                    endDatePicker.setValue(null);
+                }
+            } catch (DateTimeParseException e) {
+                startDatePicker.setValue(null);
                 endDatePicker.setValue(null);
             }
-        } catch (DateTimeParseException e) {
-            startDatePicker.setValue(null);
-            endDatePicker.setValue(null);
         }
 
         // Fetch associated devices
         try {
             List<EventRequestDevice> devices = eventRequestService.getEventRequestDevices(request.getEventRequestId());
-            deviceList.setAll(devices);
+            deviceList.clear();
+            for (EventRequestDevice d : devices) {
+                EventDeviceSelection sel = new EventDeviceSelection(d);
+                sel.selectedProperty().addListener((obs, oldVal, newVal) -> updateGuardActionButtonsState());
+                deviceList.add(sel);
+            }
+            if (ingressEgressBtn != null) {
+                ingressEgressBtn.setDisable(devices.isEmpty());
+            }
         } catch (Exception e) {
             AlertHelper.showError("Load Error", "Failed to load devices", e.getMessage());
             deviceList.clear();
+            if (ingressEgressBtn != null) {
+                ingressEgressBtn.setDisable(true);
+            }
         }
 
-        // Disable input fields in read-only view
-        setInputFieldsDisabled(true);
+        updateGuardActionButtonsState();
 
-        // Configure verification action
-        boolean isApproved = "approved".equalsIgnoreCase(request.getStatus());
-        verifyBtn.setDisable(!isApproved);
+        if (!isGuard) {
+            setInputFieldsDisabled(true);
+            boolean isApproved = "approved".equalsIgnoreCase(request.getStatus());
+            verifyBtn.setDisable(!isApproved);
+        }
     }
 
     private void setInputFieldsDisabled(boolean disabled) {
@@ -303,9 +504,22 @@ public class TemporaryEventDeviceGuardScreenController {
         deviceTypeBox.setDisable(disabled);
     }
 
+    private void setEventDetailsFieldsDisabled(boolean disabled) {
+        formStudentIdField.setDisable(disabled);
+        responsiblePersonField.setDisable(disabled);
+        contactField.setDisable(disabled);
+        eventNameField.setDisable(disabled);
+        organizationField.setDisable(disabled);
+        purposeBox.setDisable(disabled);
+        startDatePicker.setDisable(disabled);
+        endDatePicker.setDisable(disabled);
+        docTypeBox.setDisable(disabled);
+        docRefField.setDisable(disabled);
+    }
+
     @FXML
     public void handleAddItem() {
-        if (formStudentIdField.isDisable()) {
+        if (formStudentIdField.isDisable() && !isEditMode) {
             AlertHelper.showWarning("Action Restricted", "Read-only mode", "Clear the form to start a new event request.");
             return;
         }
@@ -322,7 +536,11 @@ public class TemporaryEventDeviceGuardScreenController {
         }
 
         EventRequestDevice item = new EventRequestDevice();
-        item.setEventDeviceId(tempDeviceIdCounter++);
+        if (isEditMode) {
+            item.setEventDeviceId(0);
+        } else {
+            item.setEventDeviceId(tempDeviceIdCounter++);
+        }
         item.setDeviceName(name);
         item.setBrand(brand);
         item.setModel(model);
@@ -331,7 +549,8 @@ public class TemporaryEventDeviceGuardScreenController {
         item.setQuantity(1);
         item.setDeviceStatus("pending"); // Default local status
 
-        deviceList.add(item);
+        EventDeviceSelection selection = new EventDeviceSelection(item);
+        deviceList.add(selection);
         draft.devices.add(item);
         draft.tempCounter = tempDeviceIdCounter;
         draft.hasDraft = true;
@@ -346,24 +565,27 @@ public class TemporaryEventDeviceGuardScreenController {
 
     @FXML
     public void handleRemoveItem() {
-        if (formStudentIdField.isDisable()) {
+        if (formStudentIdField.isDisable() && !isEditMode) {
             AlertHelper.showWarning("Action Restricted", "Read-only mode", "Cannot remove devices from an already submitted event request.");
             return;
         }
 
-        EventRequestDevice selected = itemsTable.getSelectionModel().getSelectedItem();
+        EventDeviceSelection selected = itemsTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
             AlertHelper.showWarning("Item Warning", "No selection", "Please select a device from the table to remove.");
             return;
         }
         deviceList.remove(selected);
-        draft.devices.remove(selected);
+        draft.devices.remove(selected.getDevice());
         draft.hasDraft = true;
     }
 
     @FXML
     public void handleClearForm() {
         eventsTable.getSelectionModel().clearSelection();
+        if (adminEventsTable != null) {
+            adminEventsTable.getSelectionModel().clearSelection();
+        }
 
         // Clear all fields
         formStudentIdField.clear();
@@ -395,39 +617,42 @@ public class TemporaryEventDeviceGuardScreenController {
         setInputFieldsDisabled(false);
 
         verifyBtn.setDisable(true);
+        if (ingressEgressBtn != null) {
+            ingressEgressBtn.setDisable(true);
+        }
     }
 
     @FXML
     public void handleVerify() {
-        EventRequestDevice selected = itemsTable.getSelectionModel().getSelectedItem();
+        EventDeviceSelection selected = itemsTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
             AlertHelper.showWarning("Verification", "No Selection", "Please select a device to verify.");
             return;
         }
 
-        if ("verified".equalsIgnoreCase(selected.getDeviceStatus()) || "approved".equalsIgnoreCase(selected.getDeviceStatus())) {
-            AlertHelper.showInfo("Verification", "Already Verified", "This device has already been verified.");
+        if ("returned".equalsIgnoreCase(selected.getDeviceStatus())) {
+            AlertHelper.showInfo("Verification", "Already Reconciled", "This device has already been reconciled.");
             return;
         }
 
         try {
             int guardId = SessionManager.getInstance().getCurrentUser().getUserId();
-            eventRequestService.verifyEventDevice(selected.getEventDeviceId(), guardId, "verified");
-            AlertHelper.showInfo("Success", "Device Verified", "Device " + selected.getDeviceName() + " has been marked verified.");
+            eventRequestService.verifyEventDevice(selected.getEventDeviceId(), guardId, "returned");
+            AlertHelper.showInfo("Success", "Device Reconciled", "Device " + selected.getDeviceName() + " has been marked returned/reconciled.");
 
             // Reload details to refresh statuses
-            EventRequest request = eventsTable.getSelectionModel().getSelectedItem();
+            EventRequest request = adminEventsTable.getSelectionModel().getSelectedItem();
             if (request != null) {
                 showEventRequestDetails(request);
             }
         } catch (Exception e) {
-            AlertHelper.showError("Error", "Verification Failed", e.getMessage());
+            AlertHelper.showError("Error", "Reconciliation Failed", e.getMessage());
         }
     }
 
     @FXML
     public void handleSubmitRequest() {
-        if (formStudentIdField.isDisable()) {
+        if (formStudentIdField.isDisable() && !isEditMode) {
             AlertHelper.showWarning("Action Restricted", "Read-only mode", "Form is in view-only mode. Click Clear Form to start a new registration.");
             return;
         }
@@ -449,19 +674,29 @@ public class TemporaryEventDeviceGuardScreenController {
             return;
         }
 
-        EventRequest request = new EventRequest();
-        request.setStudentId(studentId);
-        request.setEventName(eventName);
-        request.setOrganization(org);
+        EventRequest request;
+        if (isEditMode) {
+            request = adminEventsTable.getSelectionModel().getSelectedItem();
+            if (request == null) {
+                AlertHelper.showWarning("Update Request", "No Selection", "Please select a request to update.");
+                return;
+            }
+        } else {
+            request = new EventRequest();
+            request.setStudentId(studentId);
+            request.setIsSubmitted(true);
+            request.setIsAccommodated(true);
+            request.setStatus("approved"); // Approved immediately on creation
+        }
+
         request.setResponsiblePerson(responsible);
+        request.setOrganization(org);
+        request.setEventName(eventName);
         request.setEventPurpose(purpose);
         request.setApprovalDocRef(docRef);
         request.setApprovalDocType(docType);
         request.setStartDate(start.toString());
         request.setEndDate(end.toString());
-        request.setIsSubmitted(true);
-        request.setIsAccommodated(true);
-        request.setStatus("pending");
 
         // Prefix contact info in remarks column
         if (!ValidationHelper.isEmpty(contact)) {
@@ -470,19 +705,240 @@ public class TemporaryEventDeviceGuardScreenController {
             request.setRemarks("");
         }
 
-        request.setLineItems(new ArrayList<>(deviceList));
+        List<EventRequestDevice> items = deviceList.stream().map(EventDeviceSelection::getDevice).collect(Collectors.toList());
+        request.setLineItems(items);
 
-        if (!AlertHelper.showConfirmation("Submit Request", "Confirm Submission", "Are you sure you want to submit this temporary event registration request?")) {
+        if (SessionManager.getInstance().getCurrentUser() != null) {
+            request.setCreatorUserId(SessionManager.getInstance().getCurrentUser().getUserId());
+        }
+
+        String confirmTitle = isEditMode ? "Save Changes" : "Submit Request";
+        String confirmHeader = isEditMode ? "Confirm Saving Changes" : "Confirm Submission";
+        String confirmMsg = isEditMode ? "Are you sure you want to save the changes to this event request?" : "Are you sure you want to submit this temporary event registration request?";
+
+        if (!AlertHelper.showConfirmation(confirmTitle, confirmHeader, confirmMsg)) {
             return;
         }
 
         try {
-            eventRequestService.createEventRequest(request);
-            AlertHelper.showInfo("Success", "Submitted", "Event request submitted successfully.");
+            if (isEditMode) {
+                eventRequestService.updateEventRequest(request.getEventRequestId(), request);
+                AlertHelper.showInfo("Success", "Updated", "Event request updated successfully.");
+            } else {
+                eventRequestService.createEventRequest(request);
+                AlertHelper.showInfo("Success", "Submitted", "Event request submitted successfully.");
+            }
             loadEventLogs();
-            handleClearForm();
+            handleCloseOverlay();
         } catch (Exception e) {
-            AlertHelper.showError("Submit Error", "Submission Failed", e.getMessage());
+            AlertHelper.showError("Submit Error", "Action Failed", e.getMessage());
         }
+    }
+
+    @FXML
+    public void handleConfirmEntry() {
+        List<Integer> selectedDeviceIds = new ArrayList<>();
+        for (EventDeviceSelection sel : deviceList) {
+            if (sel.isSelected()) {
+                selectedDeviceIds.add(sel.getEventDeviceId());
+            }
+        }
+
+        if (selectedDeviceIds.isEmpty()) {
+            AlertHelper.showWarning("Entry Logging", "No Selection", "Please select at least one device to confirm entry.");
+            return;
+        }
+
+        try {
+            int guardId = SessionManager.getInstance().getCurrentUser().getUserId();
+            eventRequestService.logDeviceEntry(selectedDeviceIds, guardId);
+            AlertHelper.showInfo("Success", "Ingress Logged", "Successfully logged ingress for selected devices.");
+            
+            // Refresh table details to get the new status
+            EventRequest selectedRequest = eventsTable.getSelectionModel().getSelectedItem();
+            if (selectedRequest != null) {
+                showEventRequestDetails(selectedRequest);
+            }
+        } catch (Exception e) {
+            AlertHelper.showError("Entry Logging Error", "Action Failed", e.getMessage());
+        }
+    }
+
+    @FXML
+    public void handleConfirmExit() {
+        List<Integer> selectedDeviceIds = new ArrayList<>();
+        for (EventDeviceSelection sel : deviceList) {
+            if (sel.isSelected()) {
+                selectedDeviceIds.add(sel.getEventDeviceId());
+            }
+        }
+
+        if (selectedDeviceIds.isEmpty()) {
+            AlertHelper.showWarning("Egress Logging", "No Selection", "Please select at least one device to confirm exit.");
+            return;
+        }
+
+        try {
+            int guardId = SessionManager.getInstance().getCurrentUser().getUserId();
+            eventRequestService.logDeviceExit(selectedDeviceIds, guardId);
+            AlertHelper.showInfo("Success", "Egress Logged", "Successfully logged egress for selected devices.");
+            
+            // Refresh table details to get the new status
+            EventRequest selectedRequest = eventsTable.getSelectionModel().getSelectedItem();
+            if (selectedRequest != null) {
+                showEventRequestDetails(selectedRequest);
+            }
+        } catch (Exception e) {
+            AlertHelper.showError("Egress Logging Error", "Action Failed", e.getMessage());
+        }
+    }
+
+    @FXML
+    public void openAddOverlay() {
+        handleClearForm();
+        isEditMode = false;
+        setInputFieldsDisabled(false);
+        
+        // Hide verify button when creating a new event
+        verifyBtn.setVisible(false);
+        verifyBtn.setManaged(false);
+        submitBtn.setVisible(true);
+        submitBtn.setManaged(true);
+        submitBtn.setText("Submit Event Registration");
+        
+        clearFormBtn.setVisible(true);
+        clearFormBtn.setManaged(true);
+        
+        addDeviceCard.setVisible(true);
+        addDeviceCard.setManaged(true);
+        
+        formOverlay.setVisible(true);
+    }
+
+    @FXML
+    public void openEditOverlay() {
+        EventRequest selected = adminEventsTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            AlertHelper.showWarning("View/Reconcile Request", "No Selection", "Please select an event request to view/reconcile.");
+            return;
+        }
+        isEditMode = false;
+        
+        // Populate overlay details
+        showEventRequestDetails(selected);
+        
+        // Show verify button if it can be reconciled, hide editing options
+        verifyBtn.setVisible(true);
+        verifyBtn.setManaged(true);
+        
+        submitBtn.setVisible(false);
+        submitBtn.setManaged(false);
+        
+        clearFormBtn.setVisible(false);
+        clearFormBtn.setManaged(false);
+        
+        addDeviceCard.setVisible(false);
+        addDeviceCard.setManaged(false);
+
+        formOverlay.setVisible(true);
+    }
+
+    @FXML
+    public void handleCloseOverlay() {
+        formOverlay.setVisible(false);
+        handleClearForm();
+    }
+
+    @FXML
+    public void handleOpenGuardModal() {
+        guardModalOverlay.setVisible(true);
+        updateGuardActionButtonsState();
+    }
+
+    @FXML
+    public void handleCloseGuardModal() {
+        guardModalOverlay.setVisible(false);
+    }
+
+    private void updateGuardActionButtonsState() {
+        if (logIngressBtn == null || logEgressBtn == null) {
+            return;
+        }
+
+        boolean hasSelectedEntry = false;
+        boolean hasSelectedExit = false;
+        boolean anySelected = false;
+
+        for (EventDeviceSelection sel : deviceList) {
+            if (sel.isSelected()) {
+                anySelected = true;
+                String status = sel.getCurrentDayStatus();
+                if ("entry".equalsIgnoreCase(status)) {
+                    hasSelectedEntry = true;
+                } else if ("exit".equalsIgnoreCase(status)) {
+                    hasSelectedExit = true;
+                }
+            }
+        }
+
+        if (!anySelected) {
+            logIngressBtn.setDisable(true);
+            logEgressBtn.setDisable(true);
+        } else if (hasSelectedEntry && hasSelectedExit) {
+            logIngressBtn.setDisable(true);
+            logEgressBtn.setDisable(true);
+        } else if (hasSelectedExit && !hasSelectedEntry) {
+            logIngressBtn.setDisable(false);
+            logEgressBtn.setDisable(true);
+        } else if (hasSelectedEntry && !hasSelectedExit) {
+            logIngressBtn.setDisable(true);
+            logEgressBtn.setDisable(false);
+        } else {
+            logIngressBtn.setDisable(true);
+            logEgressBtn.setDisable(true);
+        }
+    }
+
+    @FXML
+    public void handleAdminSearch() {
+        String query = adminSearchField.getText();
+        if (ValidationHelper.isEmpty(query)) {
+            eventsList.setAll(allRequests);
+            return;
+        }
+
+        List<EventRequest> filtered = allRequests.stream()
+            .filter(r -> (r.getStudentId() != null && r.getStudentId().toLowerCase().contains(query.toLowerCase())) ||
+                         (r.getEventName() != null && r.getEventName().toLowerCase().contains(query.toLowerCase())) ||
+                         (r.getEventRequestId() != null && String.valueOf(r.getEventRequestId()).contains(query)))
+            .collect(Collectors.toList());
+
+        eventsList.setAll(filtered);
+    }
+
+    // Helper Wrapper class for Event Request Device selection with Checkboxes
+    public static class EventDeviceSelection {
+        private final BooleanProperty selected = new SimpleBooleanProperty(true);
+        private final EventRequestDevice device;
+
+        public EventDeviceSelection(EventRequestDevice device) {
+            this.device = device;
+        }
+
+        public BooleanProperty selectedProperty() { return selected; }
+        public boolean isSelected() { return selected.get(); }
+        public void setSelected(boolean val) { selected.set(val); }
+
+        public EventRequestDevice getDevice() { return device; }
+
+        public Integer getEventDeviceId() { return device.getEventDeviceId(); }
+        public String getDeviceName() { return device.getDeviceName(); }
+        public String getBrand() { return device.getBrand(); }
+        public String getModel() { return device.getModel(); }
+        public String getSerialNumber() { return device.getSerialNumber(); }
+        public String getDeviceType() { return device.getDeviceType(); }
+        public String getDeviceStatus() { return device.getDeviceStatus(); }
+        public String getCurrentDayStatus() { return device.getCurrentDayStatus(); }
+        public String getLastEventTime() { return device.getLastEventTime(); }
     }
 }

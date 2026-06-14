@@ -59,5 +59,12 @@ public class ReportService {
         Map[] reports = apiClient.get("/reports/incidents?from=" + from + "&to=" + to, Map[].class);
         return (List<Map<String, Object>>) (List) Arrays.asList(reports);
     }
+
+    // 7. Unreconciled Event Devices
+    @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> getUnreconciledEventDevicesReport() throws Exception {
+        Map[] reports = apiClient.get("/reports/unreconciled-event-devices", Map[].class);
+        return (List<Map<String, Object>>) (List) Arrays.asList(reports);
+    }
 }
 

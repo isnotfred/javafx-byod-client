@@ -45,7 +45,14 @@ public class TemporaryEventDeviceScreenController {
     @FXML
     public void initialize() {
         docTypeBox.getItems().addAll("Signed GPOA", "Paper Approval");
-        deviceTypeBox.getItems().addAll("laptop", "tablet", "phone", "camera", "projector", "other");
+        deviceTypeBox.getItems().addAll(
+            "Personal Computers",
+            "Components & Peripherals",
+            "Display & Projection",
+            "Project Prototypes (Optional SN)",
+            "Appliances (TLE)",
+            "Other"
+        );
 
         colDevName.setCellValueFactory(new PropertyValueFactory<>("deviceName"));
         colDevSN.setCellValueFactory(new PropertyValueFactory<>("serialNumber"));

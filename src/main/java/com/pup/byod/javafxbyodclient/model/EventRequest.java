@@ -24,8 +24,12 @@ public class EventRequest {
     private String createdAt;
     private String updatedAt;
     private List<EventRequestDevice> lineItems;
+    private Integer creatorUserId;
 
     // Getters and Setters
+    public Integer getCreatorUserId() { return creatorUserId; }
+    public void setCreatorUserId(Integer creatorUserId) { this.creatorUserId = creatorUserId; }
+
     public Integer getEventRequestId() { return eventRequestId; }
     public void setEventRequestId(Integer eventRequestId) { this.eventRequestId = eventRequestId; }
 

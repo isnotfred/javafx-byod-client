@@ -732,3 +732,37 @@
 .context-menu .menu-item:hover, .context-menu .menu-item:focused, .context-menu .menu-item:hover .label, .context-menu .menu-item:focused .label {
     -fx-text-fill: black;
 }
+
+/* Disabled inputs readable styles */
+.text-input:disabled {
+    -fx-opacity: 1.0;
+    -fx-text-fill: #102A43;
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+}
+.combo-box:disabled {
+    -fx-opacity: 1.0;
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+}
+.combo-box:disabled > .arrow-button {
+    -fx-opacity: 0.5;
+}
+.combo-box:disabled .label {
+    -fx-text-fill: #102A43;
+}
+.combo-box:disabled .text {
+    -fx-text-fill: #102A43;
+}
+.date-picker:disabled {
+    -fx-opacity: 1.0;
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+}
+.date-picker:disabled > .arrow-button {
+    -fx-opacity: 0.5;
+}
+.date-picker:disabled .text-field {
+    -fx-text-fill: #102A43;
+    -fx-opacity: 1.0;
+}

@@ -35,6 +35,10 @@ public class EventRequestService {
         return apiClient.post("/api/v1/event-requests", request, EventRequest.class);
     }
 
+    public EventRequest updateEventRequest(int id, EventRequest request) throws Exception {
+        return apiClient.put("/api/v1/event-requests/" + id, request, EventRequest.class);
+    }
+
     public void approveEventRequest(int id, int reviewerId) throws Exception {
         Map<String, Integer> body = new HashMap<>();
         body.put("reviewerUserId", reviewerId);
@@ -60,5 +64,29 @@ public class EventRequestService {
         body.put("verifiedBy", verifiedBy);
         body.put("deviceStatus", status);
         apiClient.put("/api/v1/event-requests/devices/" + eventDeviceId + "/verify", body, Void.class);
+    }
+
+    public List<ActiveEventRequest> getGuardEventRequests() throws Exception {
+        ActiveEventRequest[] requests = apiClient.get("/api/v1/event-requests/guard", ActiveEventRequest[].class);
+        return Arrays.asList(requests);
+    }
+
+    public void logDeviceEntry(List<Integer> deviceIds, int guardId) throws Exception {
+        Map<String, Object> body = new HashMap<>();
+        body.put("deviceIds", deviceIds);
+        body.put("guardId", guardId);
+        apiClient.post("/api/v1/event-requests/devices/log-entry", body, Void.class);
+    }
+
+    public void logDeviceExit(List<Integer> deviceIds, int guardId) throws Exception {
+        Map<String, Object> body = new HashMap<>();
+        body.put("deviceIds", deviceIds);
+        body.put("guardId", guardId);
+        apiClient.post("/api/v1/event-requests/devices/log-exit", body, Void.class);
+    }
+
+    public List<EventRequestDevice> getReconciliationReport() throws Exception {
+        EventRequestDevice[] devices = apiClient.get("/api/v1/event-requests/devices/reconciliation-report", EventRequestDevice[].class);
+        return Arrays.asList(devices);
     }
 }

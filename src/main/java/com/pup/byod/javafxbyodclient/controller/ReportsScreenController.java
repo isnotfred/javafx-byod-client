@@ -35,6 +35,7 @@ public class ReportsScreenController {
     private static final String ACTIVE_DEVICES = "Active Devices Report";
     private static final String DEVICE_FREQUENCY = "Device Frequency Report";
     private static final String INCIDENT_OVERRIDES = "Incident Overrides Report";
+    private static final String UNRECONCILED_EVENT_DEVICES = "Unreconciled Event Devices";
 
     @FXML
     public void initialize() {
@@ -44,7 +45,8 @@ public class ReportsScreenController {
             PENDING_REGISTRATIONS,
             ACTIVE_DEVICES,
             DEVICE_FREQUENCY,
-            INCIDENT_OVERRIDES
+            INCIDENT_OVERRIDES,
+            UNRECONCILED_EVENT_DEVICES
         );
         reportsTable.setItems(reportList);
 
@@ -77,7 +79,7 @@ public class ReportsScreenController {
             
             endDateContainer.setVisible(false);
             endDateContainer.setManaged(false);
-        } else if (PENDING_REGISTRATIONS.equals(reportType) || ACTIVE_DEVICES.equals(reportType)) {
+        } else if (PENDING_REGISTRATIONS.equals(reportType) || ACTIVE_DEVICES.equals(reportType) || UNRECONCILED_EVENT_DEVICES.equals(reportType)) {
             startDateContainer.setVisible(false);
             startDateContainer.setManaged(false);
             
@@ -194,6 +196,21 @@ public class ReportsScreenController {
                     createColumn("New Values", "newValues")
                 );
                 break;
+            case UNRECONCILED_EVENT_DEVICES:
+                reportsTable.getColumns().addAll(
+                    createColumn("Device ID", "eventDeviceId"),
+                    createColumn("Request ID", "eventRequestId"),
+                    createColumn("Device Name", "deviceName"),
+                    createColumn("Brand", "brand"),
+                    createColumn("Model", "model"),
+                    createColumn("Serial Number", "serialNumber"),
+                    createColumn("Device Type", "deviceType"),
+                    createColumn("Quantity", "quantity"),
+                    createColumn("Status", "deviceStatus"),
+                    createColumn("Daily Status", "currentDayStatus"),
+                    createColumn("Last Event", "lastEventTime")
+                );
+                break;
         }
 
         // Set reasonable default widths
@@ -256,8 +273,10 @@ public class ReportsScreenController {
                 records = reportService.getActiveDevicesReport();
             } else if (DEVICE_FREQUENCY.equals(reportType)) {
                 records = reportService.getDeviceFrequencyReport(start.toString(), end.toString());
-            } else {
+            } else if (INCIDENT_OVERRIDES.equals(reportType)) {
                 records = reportService.getIncidentsReport(start.toString(), end.toString());
+            } else {
+                records = reportService.getUnreconciledEventDevicesReport();
             }
 
             reportList.setAll(records);
@@ -462,6 +481,26 @@ public class ReportsScreenController {
                 pieData.add(new PieChart.Data(entry.getKey() + " (" + entry.getValue() + ")", entry.getValue()));
             }
 
+            pieChart.setData(pieData);
+            chartContainer.getChildren().add(pieChart);
+        } else if (UNRECONCILED_EVENT_DEVICES.equals(reportType)) {
+            PieChart pieChart = new PieChart();
+            pieChart.setTitle("Unreconciled Event Devices by Device Type");
+            pieChart.setAnimated(false);
+
+            Map<String, Integer> typeCounts = new HashMap<>();
+            for (Map<String, Object> record : records) {
+                String devType = String.valueOf(getValueFromMap(record, "deviceType"));
+                if (devType == null || devType.trim().isEmpty() || "null".equals(devType)) {
+                    devType = "Unknown Type";
+                }
+                typeCounts.put(devType, typeCounts.getOrDefault(devType, 0) + 1);
+            }
+
+            ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
+            typeCounts.forEach((devType, count) -> {
+                pieData.add(new PieChart.Data(devType + " (" + count + ")", count));
+            });
             pieChart.setData(pieData);
             chartContainer.getChildren().add(pieChart);
         }
