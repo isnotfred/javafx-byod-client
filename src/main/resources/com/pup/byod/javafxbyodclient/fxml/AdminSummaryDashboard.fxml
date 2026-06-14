@@ -6,7 +6,7 @@
 <?import javafx.scene.shape.SVGPath?>
 
 <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" 
-            style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" 
+            style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent; -fx-border-width: 0; -fx-padding: 0;" 
             xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.pup.byod.javafxbyodclient.controller.AdminSummaryDashboardController">
             
@@ -22,9 +22,9 @@
         </HBox>
         
         <!-- Cards Row -->
-        <HBox spacing="24.0" alignment="CENTER_LEFT">
+        <HBox spacing="24.0" alignment="CENTER_LEFT" maxWidth="Infinity" HBox.hgrow="ALWAYS">
             <!-- Card 1: Active Students -->
-            <VBox styleClass="stat-card" spacing="12.0">
+            <VBox styleClass="stat-card" spacing="12.0" HBox.hgrow="ALWAYS">
                 <HBox alignment="CENTER_LEFT">
                     <Label text="Active Students" styleClass="stat-title"/>
                     <Region HBox.hgrow="ALWAYS"/>
@@ -38,7 +38,7 @@
             </VBox>
             
             <!-- Card 2: Registered Devices -->
-            <VBox styleClass="stat-card" spacing="12.0">
+            <VBox styleClass="stat-card" spacing="12.0" HBox.hgrow="ALWAYS">
                 <HBox alignment="CENTER_LEFT">
                     <Label text="Registered Devices" styleClass="stat-title"/>
                     <Region HBox.hgrow="ALWAYS"/>
@@ -52,7 +52,7 @@
             </VBox>
             
             <!-- Card 3: Pending Approvals -->
-            <VBox styleClass="stat-card" spacing="12.0">
+            <VBox styleClass="stat-card" spacing="12.0" HBox.hgrow="ALWAYS">
                 <HBox alignment="CENTER_LEFT">
                     <Label text="Pending Approvals" styleClass="stat-title"/>
                     <Region HBox.hgrow="ALWAYS"/>
@@ -66,7 +66,7 @@
             </VBox>
             
             <!-- Card 4: Devices On Campus (Gold Border, Lighter Yellow Container) -->
-            <VBox styleClass="stat-card-gold" spacing="12.0">
+            <VBox styleClass="stat-card-gold" spacing="12.0" HBox.hgrow="ALWAYS">
                 <HBox alignment="CENTER_LEFT">
                     <Label text="Devices On-Campus" styleClass="stat-title"/>
                     <Region HBox.hgrow="ALWAYS"/>
@@ -79,21 +79,27 @@
             <Label fx:id="devicesOnCampusLabel" text="0" styleClass="stat-value, stat-value-gold"/>
         </VBox>
         </HBox>
-        
-        <Label text="Quick Access Modules" styleClass="section-title"/>
-        
-        <!-- Quick Access Buttons (2x2 Stack Layout) -->
-        <FlowPane hgap="24.0" vgap="24.0" prefWrapLength="800.0">
+                <!-- Quick Access Buttons (2x2 Stack Layout via responsive GridPane) -->
+        <GridPane hgap="24.0" vgap="24.0" maxWidth="Infinity" HBox.hgrow="ALWAYS">
+            <columnConstraints>
+                <ColumnConstraints hgrow="ALWAYS" minWidth="100.0" percentWidth="50"/>
+                <ColumnConstraints hgrow="ALWAYS" minWidth="100.0" percentWidth="50"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints vgrow="SOMETIMES" minHeight="10.0"/>
+                <RowConstraints vgrow="SOMETIMES" minHeight="10.0"/>
+            </rowConstraints>
+            
             <!-- Student Registry -->
-            <Button onAction="#goToStudents" prefWidth="380.0" styleClass="shortcut-card">
+            <Button onAction="#goToStudents" maxWidth="Infinity" styleClass="shortcut-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
                 <graphic>
-                    <HBox spacing="16.0" alignment="CENTER_LEFT">
+                    <HBox spacing="16.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                         <StackPane styleClass="shortcut-icon-container">
                             <!-- Clean Sheet List SVG -->
                             <SVGPath content="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" 
                                      styleClass="shortcut-icon"/>
                         </StackPane>
-                        <VBox spacing="4.0" alignment="CENTER_LEFT">
+                        <VBox spacing="4.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                             <Label text="Student Registry" styleClass="shortcut-title"/>
                             <Label text="Manage student profiles and registration status" styleClass="shortcut-desc"/>
                         </VBox>
@@ -102,15 +108,15 @@
             </Button>
             
             <!-- Device Registry -->
-            <Button onAction="#goToDevices" prefWidth="380.0" styleClass="shortcut-card">
+            <Button onAction="#goToDevices" maxWidth="Infinity" styleClass="shortcut-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
                 <graphic>
-                    <HBox spacing="16.0" alignment="CENTER_LEFT">
+                    <HBox spacing="16.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                         <StackPane styleClass="shortcut-icon-container">
                             <!-- Monitor SVG -->
                             <SVGPath content="M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7l-2 3v1h8v-1l-2-3h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H3V4h18v12z" 
                                      styleClass="shortcut-icon"/>
                         </StackPane>
-                        <VBox spacing="4.0" alignment="CENTER_LEFT">
+                        <VBox spacing="4.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                             <Label text="Device Registry" styleClass="shortcut-title"/>
                             <Label text="Manage student-linked devices and specifications" styleClass="shortcut-desc"/>
                         </VBox>
@@ -119,9 +125,9 @@
             </Button>
             
             <!-- Review Approvals -->
-            <Button onAction="#goToApprovals" prefWidth="380.0" styleClass="shortcut-card">
+            <Button onAction="#goToApprovals" maxWidth="Infinity" styleClass="shortcut-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
                 <graphic>
-                    <HBox spacing="16.0" alignment="CENTER_LEFT">
+                    <HBox spacing="16.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                         <StackPane alignment="TOP_RIGHT">
                             <StackPane styleClass="shortcut-icon-container">
                                 <!-- Shield Check/Circle Check SVG -->
@@ -130,7 +136,7 @@
                             </StackPane>
                             <Label fx:id="pendingApprovalsBadge" text="0" styleClass="shortcut-badge"/>
                         </StackPane>
-                        <VBox spacing="4.0" alignment="CENTER_LEFT">
+                        <VBox spacing="4.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                             <Label text="Review Approvals" styleClass="shortcut-title"/>
                             <Label text="Approve or reject pending BYOD registration requests" styleClass="shortcut-desc"/>
                         </VBox>
@@ -139,22 +145,22 @@
             </Button>
             
             <!-- Analytical Reports -->
-            <Button onAction="#goToReports" prefWidth="380.0" styleClass="shortcut-card">
+            <Button onAction="#goToReports" maxWidth="Infinity" styleClass="shortcut-card" GridPane.columnIndex="1" GridPane.rowIndex="1">
                 <graphic>
-                    <HBox spacing="16.0" alignment="CENTER_LEFT">
+                    <HBox spacing="16.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                         <StackPane styleClass="shortcut-icon-container">
                             <!-- Bar Chart SVG -->
                             <SVGPath content="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z" 
                                      styleClass="shortcut-icon"/>
                         </StackPane>
-                        <VBox spacing="4.0" alignment="CENTER_LEFT">
+                        <VBox spacing="4.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                             <Label text="Analytical Reports" styleClass="shortcut-title"/>
                             <Label text="View campus gate logs and analytical reports" styleClass="shortcut-desc"/>
                         </VBox>
                     </HBox>
                 </graphic>
             </Button>
-        </FlowPane>
+        </GridPane>
         
     </VBox>
 </ScrollPane>

@@ -53,7 +53,7 @@
     <!-- Layer 2: Guard View (Main Screen) -->
     <VBox fx:id="guardView" spacing="20.0" alignment="TOP_CENTER" VBox.vgrow="ALWAYS" visible="false" managed="false">
         <padding>
-            <Insets top="15.0" right="15.0" bottom="15.0" left="15.0"/>
+            <Insets top="5.0" right="5.0" bottom="5.0" left="5.0"/>
         </padding>
         
         <!-- Hero Header Banner -->

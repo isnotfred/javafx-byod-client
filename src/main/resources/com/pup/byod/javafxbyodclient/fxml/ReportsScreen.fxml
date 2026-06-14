@@ -33,6 +33,8 @@
             <HBox fx:id="startDateContainer" spacing="8.0" alignment="CENTER_LEFT">
                 <Label fx:id="startDateLabel" text="From:" styleClass="form-label"/>
                 <DatePicker fx:id="startDatePicker" styleClass="modern-date-picker" prefHeight="38.0"/>
+                <ComboBox fx:id="monthSelectBox" styleClass="modern-combo-box" prefHeight="38.0" prefWidth="130.0" visible="false" managed="false"/>
+                <ComboBox fx:id="yearSelectBox" styleClass="modern-combo-box" prefHeight="38.0" prefWidth="95.0" visible="false" managed="false"/>
             </HBox>
             
             <HBox fx:id="endDateContainer" spacing="8.0" alignment="CENTER_LEFT">

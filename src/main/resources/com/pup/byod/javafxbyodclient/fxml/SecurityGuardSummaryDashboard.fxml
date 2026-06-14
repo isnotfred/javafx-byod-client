@@ -6,7 +6,7 @@
 <?import javafx.scene.shape.SVGPath?>
 
 <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" 
-            style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" 
+            style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent; -fx-border-width: 0; -fx-padding: 0;" 
             xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.pup.byod.javafxbyodclient.controller.SecurityGuardSummaryDashboardController">
             
@@ -22,9 +22,9 @@
         </HBox>
         
         <!-- Cards Row -->
-        <HBox spacing="24.0" alignment="CENTER_LEFT">
+        <HBox spacing="24.0" alignment="CENTER_LEFT" maxWidth="Infinity" HBox.hgrow="ALWAYS">
             <!-- Card 1: Devices On Campus (Gold) -->
-            <VBox styleClass="stat-card-gold" spacing="12.0">
+            <VBox styleClass="stat-card-gold" spacing="12.0" HBox.hgrow="ALWAYS">
                 <HBox alignment="CENTER_LEFT">
                     <Label text="Devices On-Campus" styleClass="stat-title"/>
                     <Region HBox.hgrow="ALWAYS"/>
@@ -37,7 +37,7 @@
             </VBox>
             
             <!-- Card 2: Active Events -->
-            <VBox styleClass="stat-card" spacing="12.0">
+            <VBox styleClass="stat-card" spacing="12.0" HBox.hgrow="ALWAYS">
                 <HBox alignment="CENTER_LEFT">
                     <Label text="Active Events" styleClass="stat-title"/>
                     <Region HBox.hgrow="ALWAYS"/>
@@ -50,7 +50,7 @@
             </VBox>
             
             <!-- Card 3: Approved Devices -->
-            <VBox styleClass="stat-card" spacing="12.0">
+            <VBox styleClass="stat-card" spacing="12.0" HBox.hgrow="ALWAYS">
                 <HBox alignment="CENTER_LEFT">
                     <Label text="Approved Devices" styleClass="stat-title"/>
                     <Region HBox.hgrow="ALWAYS"/>
@@ -65,17 +65,26 @@
         
         <Label text="Quick Access Gate Controls" styleClass="section-title"/>
         
-        <!-- Quick Access Buttons (2x2 Stack Layout) -->
-        <FlowPane hgap="24.0" vgap="24.0" prefWrapLength="800.0">
+        <!-- Quick Access Buttons (2x2 Stack Layout via responsive GridPane) -->
+        <GridPane hgap="24.0" vgap="24.0" maxWidth="Infinity" HBox.hgrow="ALWAYS">
+            <columnConstraints>
+                <ColumnConstraints hgrow="ALWAYS" minWidth="100.0" percentWidth="50"/>
+                <ColumnConstraints hgrow="ALWAYS" minWidth="100.0" percentWidth="50"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints vgrow="SOMETIMES" minHeight="10.0"/>
+                <RowConstraints vgrow="SOMETIMES" minHeight="10.0"/>
+            </rowConstraints>
+            
             <!-- Ingress/Egress -->
-            <Button onAction="#goToGateScan" prefWidth="380.0" styleClass="shortcut-card">
+            <Button onAction="#goToGateScan" maxWidth="Infinity" styleClass="shortcut-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
                 <graphic>
-                    <HBox spacing="16.0" alignment="CENTER_LEFT">
+                    <HBox spacing="16.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                         <StackPane styleClass="shortcut-icon-container">
                             <SVGPath content="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z" 
                                      styleClass="shortcut-icon"/>
                         </StackPane>
-                        <VBox spacing="4.0" alignment="CENTER_LEFT">
+                        <VBox spacing="4.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                             <Label text="Ingress/Egress" styleClass="shortcut-title"/>
                             <Label text="Log student devices entering and exiting campus" styleClass="shortcut-desc"/>
                         </VBox>
@@ -84,14 +93,14 @@
             </Button>
             
             <!-- Quick Registration -->
-            <Button onAction="#goToQuickRegister" prefWidth="380.0" styleClass="shortcut-card">
+            <Button onAction="#goToQuickRegister" maxWidth="Infinity" styleClass="shortcut-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
                 <graphic>
-                    <HBox spacing="16.0" alignment="CENTER_LEFT">
+                    <HBox spacing="16.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                         <StackPane styleClass="shortcut-icon-container">
                             <SVGPath content="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" 
                                      styleClass="shortcut-icon"/>
                         </StackPane>
-                        <VBox spacing="4.0" alignment="CENTER_LEFT">
+                        <VBox spacing="4.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                             <Label text="Quick Registration" styleClass="shortcut-title"/>
                             <Label text="Quickly register incoming temporary devices" styleClass="shortcut-desc"/>
                         </VBox>
@@ -100,14 +109,14 @@
             </Button>
             
             <!-- Event Device Verification -->
-            <Button onAction="#goToEventScanner" prefWidth="380.0" styleClass="shortcut-card">
+            <Button onAction="#goToEventScanner" maxWidth="Infinity" styleClass="shortcut-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
                 <graphic>
-                    <HBox spacing="16.0" alignment="CENTER_LEFT">
+                    <HBox spacing="16.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                         <StackPane styleClass="shortcut-icon-container">
                             <SVGPath content="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z" 
                                      styleClass="shortcut-icon"/>
                         </StackPane>
-                        <VBox spacing="4.0" alignment="CENTER_LEFT">
+                        <VBox spacing="4.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                             <Label text="Event Devices" styleClass="shortcut-title"/>
                             <Label text="Verify devices for specific campus events" styleClass="shortcut-desc"/>
                         </VBox>
@@ -116,21 +125,21 @@
             </Button>
             
             <!-- On-Campus Devices -->
-            <Button onAction="#goToActiveDevices" prefWidth="380.0" styleClass="shortcut-card">
+            <Button onAction="#goToActiveDevices" maxWidth="Infinity" styleClass="shortcut-card" GridPane.columnIndex="1" GridPane.rowIndex="1">
                 <graphic>
-                    <HBox spacing="16.0" alignment="CENTER_LEFT">
+                    <HBox spacing="16.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                         <StackPane styleClass="shortcut-icon-container">
                             <SVGPath content="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" 
                                      styleClass="shortcut-icon"/>
                         </StackPane>
-                        <VBox spacing="4.0" alignment="CENTER_LEFT">
+                        <VBox spacing="4.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                             <Label text="On-Campus Devices" styleClass="shortcut-title"/>
                             <Label text="View all active devices currently in the campus" styleClass="shortcut-desc"/>
                         </VBox>
                     </HBox>
                 </graphic>
             </Button>
-        </FlowPane>
+        </GridPane>
         
     </VBox>
 </ScrollPane>

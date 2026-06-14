@@ -12,6 +12,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Button;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.util.List;
@@ -31,6 +32,10 @@ public class UserManagementScreenController {
     @FXML private ComboBox<String> roleBox;
     @FXML private ComboBox<String> statusBox;
 
+    @FXML private Button updateBtn;
+    @FXML private Button changeRoleBtn;
+    @FXML private Button deactivateBtn;
+
     private final SuperAdminService superAdminService = new SuperAdminService();
     private final ObservableList<User> userList = FXCollections.observableArrayList();
 
@@ -44,8 +49,12 @@ public class UserManagementScreenController {
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
         roleBox.getItems().addAll("super_admin", "admin", "guard");
-        statusBox.getItems().addAll("active", "pending", "deactivated");
+        statusBox.getItems().addAll("active", "pending", "inactive");
         userTable.setItems(userList);
+
+        updateBtn.setDisable(true);
+        changeRoleBtn.setDisable(true);
+        deactivateBtn.setDisable(true);
         colId.getStyleClass().add("right-arrow-header");
 
         // Restrict sorting strictly to the User ID column with a 2-state sort (ASCENDING <-> DESCENDING)
@@ -76,6 +85,35 @@ public class UserManagementScreenController {
                 emailField.setText(newVal.getEmail());
                 roleBox.setValue(newVal.getRole());
                 statusBox.setValue(newVal.getStatus());
+
+                updateBtn.setDisable(false);
+                changeRoleBtn.setDisable(false);
+                deactivateBtn.setDisable(false);
+
+                boolean isInactive = "inactive".equalsIgnoreCase(newVal.getStatus()) || "deactivated".equalsIgnoreCase(newVal.getStatus());
+                if (isInactive) {
+                    deactivateBtn.setText("Reactivate Operator");
+                    deactivateBtn.getStyleClass().removeAll("action-btn-danger");
+                    if (!deactivateBtn.getStyleClass().contains("action-btn-success")) {
+                        deactivateBtn.getStyleClass().add("action-btn-success");
+                    }
+                } else {
+                    deactivateBtn.setText("Deactivate Operator");
+                    deactivateBtn.getStyleClass().removeAll("action-btn-success");
+                    if (!deactivateBtn.getStyleClass().contains("action-btn-danger")) {
+                        deactivateBtn.getStyleClass().add("action-btn-danger");
+                    }
+                }
+            } else {
+                updateBtn.setDisable(true);
+                changeRoleBtn.setDisable(true);
+                deactivateBtn.setDisable(true);
+
+                deactivateBtn.setText("Deactivate Operator");
+                deactivateBtn.getStyleClass().removeAll("action-btn-success");
+                if (!deactivateBtn.getStyleClass().contains("action-btn-danger")) {
+                    deactivateBtn.getStyleClass().add("action-btn-danger");
+                }
             }
         });
 
@@ -185,17 +223,34 @@ public class UserManagementScreenController {
             AlertHelper.showWarning("User update", "No Selection", "Please select a user.");
             return;
         }
-        if (!AlertHelper.showConfirmation("Deactivate Operator", "Confirm Deactivation", "Are you sure you want to deactivate operator " + selected.getUsername() + "? They will lose access to the system.")) {
-            return;
-        }
-        try {
-            int actingUserId = SessionManager.getInstance().getCurrentUser().getUserId();
-            superAdminService.deactivateUser(selected.getUserId(), actingUserId);
-            AlertHelper.showInfo("Deactivated", "Success", "User account deactivated successfully.");
-            clearForm();
-            loadUsers();
-        } catch (Exception e) {
-            AlertHelper.showError("Error", "Action Failed", e.getMessage());
+
+        boolean isInactive = "inactive".equalsIgnoreCase(selected.getStatus()) || "deactivated".equalsIgnoreCase(selected.getStatus());
+        int actingUserId = SessionManager.getInstance().getCurrentUser().getUserId();
+
+        if (isInactive) {
+            if (!AlertHelper.showConfirmation("Reactivate Operator", "Confirm Reactivation", "Are you sure you want to reactivate operator " + selected.getUsername() + "?")) {
+                return;
+            }
+            try {
+                superAdminService.updateUser(selected.getUserId(), actingUserId, selected.getFullName(), "active");
+                AlertHelper.showInfo("Reactivated", "Success", "User account reactivated successfully.");
+                clearForm();
+                loadUsers();
+            } catch (Exception e) {
+                AlertHelper.showError("Error", "Action Failed", e.getMessage());
+            }
+        } else {
+            if (!AlertHelper.showConfirmation("Deactivate Operator", "Confirm Deactivation", "Are you sure you want to deactivate operator " + selected.getUsername() + "? They will lose access to the system.")) {
+                return;
+            }
+            try {
+                superAdminService.deactivateUser(selected.getUserId(), actingUserId);
+                AlertHelper.showInfo("Deactivated", "Success", "User account deactivated successfully.");
+                clearForm();
+                loadUsers();
+            } catch (Exception e) {
+                AlertHelper.showError("Error", "Action Failed", e.getMessage());
+            }
         }
     }
 
@@ -206,5 +261,15 @@ public class UserManagementScreenController {
         roleBox.setValue(null);
         statusBox.setValue(null);
         userTable.getSelectionModel().clearSelection();
+
+        updateBtn.setDisable(true);
+        changeRoleBtn.setDisable(true);
+        deactivateBtn.setDisable(true);
+
+        deactivateBtn.setText("Deactivate Operator");
+        deactivateBtn.getStyleClass().removeAll("action-btn-success");
+        if (!deactivateBtn.getStyleClass().contains("action-btn-danger")) {
+            deactivateBtn.getStyleClass().add("action-btn-danger");
+        }
     }
 }

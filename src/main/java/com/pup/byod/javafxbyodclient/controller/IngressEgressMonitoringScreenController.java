@@ -279,24 +279,43 @@ public class IngressEgressMonitoringScreenController {
                 }
             }
 
+            // Check if any device is currently inside campus
+            boolean hasAnyDeviceInside = false;
+            for (Device d : devices) {
+                DeviceCampusStatus cs = statusMap.get(d.getSerialNumber());
+                String campusStatus = cs != null ? cs.getCampusStatus() : "exit";
+                if ("entry".equalsIgnoreCase(campusStatus) || "inside".equalsIgnoreCase(campusStatus)) {
+                    hasAnyDeviceInside = true;
+                    break;
+                }
+            }
+
             deviceList.clear();
             for (Device d : devices) {
                 DeviceCampusStatus cs = statusMap.get(d.getSerialNumber());
                 String campusStatus = cs != null ? cs.getCampusStatus() : "exit";
                 String lastTime = cs != null ? cs.getLastEventTime() : null;
 
-                DeviceSelection selection = new DeviceSelection(d, campusStatus, lastTime);
-                
-                // Deselect automatically if inactive or not approved (excluding pending which defaults to true below)
-                if ("inactive".equalsIgnoreCase(d.getDeviceStatus()) || "rejected".equalsIgnoreCase(d.getRegistrationStatus())) {
-                    selection.setSelected(false);
-                }
-                
-                deviceList.add(selection);
-            }
-            
-            // Devices are already returned by getDevicesByStudentId including pending ones
+                boolean isInside = "entry".equalsIgnoreCase(campusStatus) || "inside".equalsIgnoreCase(campusStatus);
 
+                if (hasAnyDeviceInside) {
+                    // Egress flow: only show and pre-check devices that are currently inside
+                    if (isInside) {
+                        DeviceSelection selection = new DeviceSelection(d, campusStatus, lastTime);
+                        selection.setSelected(true);
+                        deviceList.add(selection);
+                    }
+                } else {
+                    // Ingress flow: show all devices
+                    DeviceSelection selection = new DeviceSelection(d, campusStatus, lastTime);
+                    if ("inactive".equalsIgnoreCase(d.getDeviceStatus()) || "rejected".equalsIgnoreCase(d.getRegistrationStatus())) {
+                        selection.setSelected(false);
+                    } else {
+                        selection.setSelected(true);
+                    }
+                    deviceList.add(selection);
+                }
+            }
             
             updateActionButtonsVisibility();
         } catch (Exception e) {
@@ -364,9 +383,9 @@ public class IngressEgressMonitoringScreenController {
         int guardId = SessionManager.getInstance().getCurrentUser().getUserId();
 
         try {
-            // Log exit/egress for all devices that are currently inside (entry/inside status)
+            // Log exit/egress for all devices that are currently inside (entry/inside status) and are checked
             for (DeviceSelection selection : deviceList) {
-                if ("entry".equalsIgnoreCase(selection.getCampusStatus()) || "inside".equalsIgnoreCase(selection.getCampusStatus())) {
+                if (selection.isSelected() && ("entry".equalsIgnoreCase(selection.getCampusStatus()) || "inside".equalsIgnoreCase(selection.getCampusStatus()))) {
                     logService.logExit(selection.getSerialNumber(), guardId, notes);
                     loggedCount++;
                 }

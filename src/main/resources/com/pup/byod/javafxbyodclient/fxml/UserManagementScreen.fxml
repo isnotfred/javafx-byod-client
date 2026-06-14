@@ -3,18 +3,16 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Tooltip?>
 
-<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.pup.byod.javafxbyodclient.controller.UserManagementScreenController"
-            fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
-            style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
-
-    <VBox spacing="15.0" VBox.vgrow="ALWAYS"
-          stylesheets="@../css/admin_dashboard_styles.css">
-          
-        <padding>
-            <Insets top="5.0" right="5.0" bottom="5.0" left="5.0"/>
-        </padding>
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.pup.byod.javafxbyodclient.controller.UserManagementScreenController"
+      spacing="15.0" VBox.vgrow="ALWAYS"
+      stylesheets="@../css/admin_dashboard_styles.css">
+      
+    <padding>
+        <Insets top="5.0" right="5.0" bottom="5.0" left="5.0"/>
+    </padding>
     
     <!-- Hero Header Banner -->
     <VBox styleClass="welcome-banner" spacing="4.0" alignment="CENTER_LEFT" maxWidth="Infinity">
@@ -35,7 +33,7 @@
                     <Label text="Super Admin Privileges Only" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 12px; -fx-text-fill: #E11D48; -fx-font-weight: bold;"/>
                 </VBox>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Button text="Deactivate Operator" onAction="#handleDeactivate" styleClass="action-btn, action-btn-danger" prefHeight="38.0" prefWidth="180.0"/>
+                <Button fx:id="deactivateBtn" text="Deactivate Operator" onAction="#handleDeactivate" styleClass="action-btn, action-btn-danger" prefHeight="38.0" prefWidth="180.0"/>
             </HBox>
             
             <TableView fx:id="userTable" VBox.vgrow="ALWAYS" styleClass="modern-table" minHeight="300.0">
@@ -67,7 +65,11 @@
             
             <VBox spacing="5.0">
                 <Label text="Username:" styleClass="form-label"/>
-                <TextField fx:id="usernameField" promptText="(Read-only)" editable="false" styleClass="modern-textfield, read-only-field" prefHeight="38.0"/>
+                <TextField fx:id="usernameField" promptText="(Read-only)" editable="false" styleClass="modern-textfield, read-only-field" prefHeight="38.0">
+                    <tooltip>
+                        <Tooltip text="Username is system-generated based on email and cannot be edited."/>
+                    </tooltip>
+                </TextField>
             </VBox>
             
             <VBox spacing="5.0">
@@ -89,12 +91,11 @@
             
             <VBox spacing="10.0" alignment="CENTER">
                 <Button text="Onboard New Operator" onAction="#handleOnboard" maxWidth="Infinity" prefHeight="40.0" styleClass="action-btn, action-btn-success"/>
-                <Button text="Update Operator Details" onAction="#handleUpdate" maxWidth="Infinity" prefHeight="40.0" styleClass="action-btn, action-btn-primary"/>
-                <Button text="Change Role Only" onAction="#handleChangeRole" maxWidth="Infinity" prefHeight="40.0" styleClass="action-btn, action-btn-warning"/>
+                <Button fx:id="updateBtn" text="Update Operator Details" onAction="#handleUpdate" maxWidth="Infinity" prefHeight="40.0" styleClass="action-btn, action-btn-primary"/>
+                <Button fx:id="changeRoleBtn" text="Change Role Only" onAction="#handleChangeRole" maxWidth="Infinity" prefHeight="40.0" styleClass="action-btn, action-btn-warning"/>
             </VBox>
         </VBox>
         
     </HBox>
     
 </VBox>
-</ScrollPane>

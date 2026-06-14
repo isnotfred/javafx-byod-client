@@ -18,6 +18,8 @@ public class ReportsScreenController {
     @FXML private ComboBox<String> reportTypeBox;
     @FXML private DatePicker startDatePicker;
     @FXML private DatePicker endDatePicker;
+    @FXML private ComboBox<String> monthSelectBox;
+    @FXML private ComboBox<Integer> yearSelectBox;
     @FXML private TableView<Map<String, Object>> reportsTable;
     @FXML private TabPane reportsTabPane;
     @FXML private StackPane chartContainer;
@@ -57,8 +59,27 @@ public class ReportsScreenController {
             adjustFilters(newVal);
         });
 
-        // Set default selection
-        reportTypeBox.getSelectionModel().select(INCIDENT_OVERRIDES);
+        // Set default selection and values
+        startDatePicker.setValue(LocalDate.now());
+        endDatePicker.setValue(LocalDate.now());
+        reportsTable.setPlaceholder(new Label("No report records found. Try adjusting filter dates."));
+
+        // Initialize Month and Year ComboBoxes
+        monthSelectBox.getItems().addAll(
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        );
+        LocalDate now = LocalDate.now();
+        monthSelectBox.getSelectionModel().select(now.getMonthValue() - 1);
+
+        int currentYear = now.getYear();
+        for (int y = currentYear - 5; y <= currentYear + 2; y++) {
+            yearSelectBox.getItems().add(y);
+        }
+        yearSelectBox.getSelectionModel().select(Integer.valueOf(currentYear));
+
+        reportTypeBox.getSelectionModel().select(DAILY_TRAFFIC);
+        generateReport(true);
     }
 
     private void adjustFilters(String reportType) {
@@ -69,6 +90,12 @@ public class ReportsScreenController {
             startDateContainer.setVisible(true);
             startDateContainer.setManaged(true);
             startDateLabel.setText("Date:");
+            startDatePicker.setVisible(true);
+            startDatePicker.setManaged(true);
+            monthSelectBox.setVisible(false);
+            monthSelectBox.setManaged(false);
+            yearSelectBox.setVisible(false);
+            yearSelectBox.setManaged(false);
             
             endDateContainer.setVisible(false);
             endDateContainer.setManaged(false);
@@ -76,6 +103,12 @@ public class ReportsScreenController {
             startDateContainer.setVisible(true);
             startDateContainer.setManaged(true);
             startDateLabel.setText("Select Month/Year:");
+            startDatePicker.setVisible(false);
+            startDatePicker.setManaged(false);
+            monthSelectBox.setVisible(true);
+            monthSelectBox.setManaged(true);
+            yearSelectBox.setVisible(true);
+            yearSelectBox.setManaged(true);
             
             endDateContainer.setVisible(false);
             endDateContainer.setManaged(false);
@@ -89,6 +122,12 @@ public class ReportsScreenController {
             startDateContainer.setVisible(true);
             startDateContainer.setManaged(true);
             startDateLabel.setText("From:");
+            startDatePicker.setVisible(true);
+            startDatePicker.setManaged(true);
+            monthSelectBox.setVisible(false);
+            monthSelectBox.setManaged(false);
+            yearSelectBox.setVisible(false);
+            yearSelectBox.setManaged(false);
             
             endDateContainer.setVisible(true);
             endDateContainer.setManaged(true);
@@ -239,24 +278,41 @@ public class ReportsScreenController {
 
     @FXML
     public void handleGenerateReport() {
+        generateReport(false);
+    }
+
+    private void generateReport(boolean silent) {
         String reportType = reportTypeBox.getValue();
         LocalDate start = startDatePicker.getValue();
         LocalDate end = endDatePicker.getValue();
 
         if (reportType == null) {
-            AlertHelper.showWarning("Report Generator", "Report Type Required", "Please select a report type first.");
+            if (!silent) {
+                AlertHelper.showWarning("Report Generator", "Report Type Required", "Please select a report type first.");
+            }
             return;
         }
 
         // Validate dates dynamically based on report selection
-        if (DAILY_TRAFFIC.equals(reportType) || MONTHLY_TRAFFIC.equals(reportType)) {
+        if (DAILY_TRAFFIC.equals(reportType)) {
             if (start == null) {
-                AlertHelper.showWarning("Report Generator", "Date Required", "Please specify a date.");
+                if (!silent) {
+                    AlertHelper.showWarning("Report Generator", "Date Required", "Please specify a date.");
+                }
+                return;
+            }
+        } else if (MONTHLY_TRAFFIC.equals(reportType)) {
+            if (monthSelectBox.getValue() == null || yearSelectBox.getValue() == null) {
+                if (!silent) {
+                    AlertHelper.showWarning("Report Generator", "Month/Year Required", "Please select a month and a year.");
+                }
                 return;
             }
         } else if (DEVICE_FREQUENCY.equals(reportType) || INCIDENT_OVERRIDES.equals(reportType)) {
             if (start == null || end == null) {
-                AlertHelper.showWarning("Report Generator", "Date Range Required", "Please specify both starting and ending dates.");
+                if (!silent) {
+                    AlertHelper.showWarning("Report Generator", "Date Range Required", "Please specify both starting and ending dates.");
+                }
                 return;
             }
         }
@@ -266,7 +322,9 @@ public class ReportsScreenController {
             if (DAILY_TRAFFIC.equals(reportType)) {
                 records = reportService.getDailyTrafficReport(start.toString(), null, null, null);
             } else if (MONTHLY_TRAFFIC.equals(reportType)) {
-                records = reportService.getMonthlyTrafficReport(start.getYear(), start.getMonthValue());
+                int month = monthSelectBox.getSelectionModel().getSelectedIndex() + 1;
+                Integer year = yearSelectBox.getValue();
+                records = reportService.getMonthlyTrafficReport(year != null ? year : LocalDate.now().getYear(), month);
             } else if (PENDING_REGISTRATIONS.equals(reportType)) {
                 records = reportService.getPendingRegistrationReport();
             } else if (ACTIVE_DEVICES.equals(reportType)) {
@@ -281,11 +339,13 @@ public class ReportsScreenController {
 
             reportList.setAll(records);
             updateVisualAnalytics(reportType, records);
-            if (records.isEmpty()) {
+            if (records.isEmpty() && !silent) {
                 AlertHelper.showInfo("Report Info", "Empty Dataset", "No matching report logs found.");
             }
         } catch (Exception e) {
-            AlertHelper.showError("Generation Error", "Report failed", e.getMessage());
+            if (!silent) {
+                AlertHelper.showError("Generation Error", "Report failed", e.getMessage());
+            }
             e.printStackTrace();
         }
     }

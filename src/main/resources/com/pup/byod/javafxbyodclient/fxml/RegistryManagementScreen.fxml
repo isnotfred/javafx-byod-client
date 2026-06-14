@@ -28,7 +28,7 @@
                 <TextField fx:id="searchField" promptText="Search student ID or Name..." HBox.hgrow="ALWAYS" styleClass="modern-textfield" prefHeight="38.0" maxWidth="300.0"/>
                 <Button text="Search" onAction="#handleSearch" styleClass="action-btn, action-btn-primary" prefHeight="38.0"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Button text="Import Devices" onAction="#handleImportDevicesCsv" styleClass="action-btn, action-btn-success" prefHeight="38.0"/>
+                <Button text="Import Students &amp; Devices" onAction="#handleImportDevicesCsv" styleClass="action-btn, action-btn-success" prefHeight="38.0"/>
                 <Button text="Export Students" onAction="#handleExportStudents" styleClass="action-btn" prefHeight="38.0" style="-fx-background-color: #f1f5f9; -fx-border-color: #cbd5e1; -fx-border-radius: 8; -fx-text-fill: #475569;"/>
                 <Button text="Add Student" onAction="#openAddOverlay" styleClass="action-btn, action-btn-warning" prefHeight="38.0"/>
                 <Button fx:id="editSelectedBtn" text="Edit Selected" onAction="#openEditOverlay" disable="true" styleClass="action-btn, action-btn-primary" prefHeight="38.0"/>

@@ -4,17 +4,14 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.pup.byod.javafxbyodclient.controller.IngressEgressMonitoringScreenController"
-            fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
-            style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
-            
-    <VBox spacing="15.0" alignment="TOP_CENTER" VBox.vgrow="ALWAYS"
-          stylesheets="@../css/admin_dashboard_styles.css">
-          
-        <padding>
-            <Insets top="5.0" right="5.0" bottom="5.0" left="5.0"/>
-        </padding>
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.pup.byod.javafxbyodclient.controller.IngressEgressMonitoringScreenController"
+      spacing="15.0" alignment="TOP_CENTER" VBox.vgrow="ALWAYS"
+      stylesheets="@../css/admin_dashboard_styles.css">
+      
+    <padding>
+        <Insets top="5.0" right="5.0" bottom="5.0" left="5.0"/>
+    </padding>
     
     <!-- Hero Header Banner -->
     <VBox styleClass="welcome-banner" spacing="4.0" alignment="CENTER_LEFT" maxWidth="Infinity">
@@ -119,4 +116,3 @@
     </HBox>
     
 </VBox>
-</ScrollPane>

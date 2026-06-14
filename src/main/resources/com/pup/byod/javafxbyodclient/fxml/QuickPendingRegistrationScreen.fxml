@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<ScrollPane fitToWidth="true" style="-fx-background: transparent; -fx-background-color: transparent;"
+<ScrollPane fitToWidth="true" style="-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent; -fx-border-width: 0; -fx-padding: 0;"
             xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.pup.byod.javafxbyodclient.controller.QuickPendingRegistrationScreenController"
             stylesheets="@../css/admin_dashboard_styles.css"
@@ -13,7 +13,7 @@
     <content>
         <VBox spacing="15.0" alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
             <padding>
-                <Insets top="5.0" right="15.0" bottom="15.0" left="15.0"/>
+                <Insets top="5.0" right="5.0" bottom="5.0" left="5.0"/>
             </padding>
             
             <!-- Hero Header Banner -->
@@ -23,7 +23,7 @@
             </VBox>
             
             <!-- Registration Form Card -->
-            <VBox spacing="15.0" maxWidth="550.0" alignment="TOP_LEFT"
+            <VBox spacing="15.0" alignment="TOP_LEFT"
                   style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 24px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 8, 0, 0, 2);">
                 
                 <Label text="REGISTRATION DETAILS" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #829AB1; -fx-text-transform: uppercase; -fx-padding: 0 0 5 0;"/>
@@ -72,7 +72,7 @@
                 
                 <Separator style="-fx-padding: 10px 0 0 0;"/>
                 
-                <Button text="Register Device" onAction="#handleRegister" maxWidth="Infinity" prefHeight="40.0" styleClass="action-btn, action-btn-success"/>
+                <Button fx:id="registerBtn" text="Register Device" onAction="#handleRegister" maxWidth="Infinity" prefHeight="40.0" styleClass="action-btn, action-btn-success"/>
             </VBox>
         </VBox>
     </content>
