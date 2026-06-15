@@ -54,6 +54,12 @@ public class QuickPendingRegistrationScreenController {
         com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(modelField);
         com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(serialNumberField);
         com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(remarksField);
+        
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(studentIdField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(deviceNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(serialNumberField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(deviceTypeBox);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(purposeBox);
     }
 
 
@@ -70,8 +76,13 @@ public class QuickPendingRegistrationScreenController {
         String purpose = purposeBox.getValue();
         String remarks = remarksField.getText();
 
-        if (ValidationHelper.isEmpty(studentId) || ValidationHelper.isEmpty(name) ||
-                ValidationHelper.isEmpty(sn) || type == null || purpose == null) {
+        boolean v1 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(studentIdField, "Input needed");
+        boolean v2 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(deviceNameField, "Input needed");
+        boolean v3 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(serialNumberField, "Input needed");
+        boolean v4 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateComboBox(deviceTypeBox);
+        boolean v5 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateComboBox(purposeBox);
+
+        if (!v1 || !v2 || !v3 || !v4 || !v5) {
             AlertHelper.showWarning("Form Validation", "Missing Fields", "Please fill in all mandatory fields.");
             return;
         }
@@ -133,5 +144,11 @@ public class QuickPendingRegistrationScreenController {
         remarksField.clear();
         deviceTypeBox.setValue(null);
         purposeBox.setValue(null);
+        
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(studentIdField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(deviceNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(serialNumberField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(deviceTypeBox);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(purposeBox);
     }
 }

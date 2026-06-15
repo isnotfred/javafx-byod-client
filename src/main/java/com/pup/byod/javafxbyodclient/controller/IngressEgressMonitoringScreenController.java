@@ -266,23 +266,20 @@ public class IngressEgressMonitoringScreenController {
 
                 boolean isInside = "entry".equalsIgnoreCase(campusStatus) || "inside".equalsIgnoreCase(campusStatus);
 
+                DeviceSelection selection = new DeviceSelection(d, campusStatus, lastTime);
+
                 if (hasAnyDeviceInside) {
-                    // Egress flow: only show and pre-check devices that are currently inside
-                    if (isInside) {
-                        DeviceSelection selection = new DeviceSelection(d, campusStatus, lastTime);
-                        selection.setSelected(true);
-                        deviceList.add(selection);
-                    }
+                    // Egress flow: show all devices, but only pre-check devices that are currently inside
+                    selection.setSelected(isInside);
                 } else {
                     // Ingress flow: show all devices
-                    DeviceSelection selection = new DeviceSelection(d, campusStatus, lastTime);
                     if ("inactive".equalsIgnoreCase(d.getDeviceStatus()) || "rejected".equalsIgnoreCase(d.getRegistrationStatus())) {
                         selection.setSelected(false);
                     } else {
                         selection.setSelected(true);
                     }
-                    deviceList.add(selection);
                 }
+                deviceList.add(selection);
             }
             
             updateActionButtonsVisibility();

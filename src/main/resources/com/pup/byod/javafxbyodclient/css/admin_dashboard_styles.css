@@ -903,3 +903,12 @@
 
 
 
+
+/* Fix for DatePicker Month and Year text visibility */
+.date-picker-popup .month-year-pane .label {
+    -fx-text-fill: black;
+}
+.date-picker-popup .spinner .button .left-arrow,
+.date-picker-popup .spinner .button .right-arrow {
+    -fx-background-color: black;
+}

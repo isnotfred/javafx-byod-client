@@ -20,8 +20,8 @@
     </VBox>
     
     <!-- Main Content Card -->
-    <VBox spacing="20.0" VBox.vgrow="ALWAYS"
-          style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 24px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 10, 0, 0, 4);">
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+        <VBox spacing="20.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 24px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 10, 0, 0, 4);">
         
         <Label text="Global System Settings &amp; Policies" style="-fx-font-family: 'Hanken Grotesk', 'Segoe UI Bold', 'Segoe UI', sans-serif; -fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #102A43;"/>
         <Separator/>
@@ -73,6 +73,8 @@
         <HBox alignment="CENTER_RIGHT" style="-fx-padding: 20px 0 0 0;">
             <Button fx:id="saveButton" text="Save Settings" onAction="#handleSaveSettings" styleClass="action-btn, action-btn-success" prefHeight="40.0" prefWidth="180.0"/>
         </HBox>
-    </VBox>
+            
+        </VBox>
+    </ScrollPane>
     
 </VBox>

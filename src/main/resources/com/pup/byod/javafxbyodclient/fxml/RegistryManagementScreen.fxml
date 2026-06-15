@@ -84,16 +84,16 @@
                             <ColumnConstraints percentWidth="70.0"/>
                         </columnConstraints>
                         
-                        <Label text="Student ID: *" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="form-label"/>
+                        <Label fx:id="studentIdLabel" text="Student ID:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                         <TextField fx:id="studentIdField" promptText="e.g. 2021-10023" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                         
-                        <Label text="First Name: *" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="form-label"/>
+                        <Label text="First Name:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                         <TextField fx:id="firstNameField" promptText="e.g. Juan" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                         
-                        <Label text="Last Name: *" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="form-label"/>
+                        <Label text="Last Name:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                         <TextField fx:id="lastNameField" promptText="e.g. Dela Cruz" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                         
-                        <Label text="Course &amp; Section: *" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="form-label"/>
+                        <Label text="Course &amp; Section:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                         <TextField fx:id="courseYearLevelField" promptText="e.g. BSIT 3-1" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
                         
                         <Label text="Student Status:" GridPane.columnIndex="0" GridPane.rowIndex="4" styleClass="form-label"/>
@@ -129,7 +129,7 @@
                             <ColumnConstraints percentWidth="70.0"/>
                         </columnConstraints>
                         
-                        <Label text="Device Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="form-label"/>
+                        <Label text="Device Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                         <TextField fx:id="deviceNameField" promptText="e.g. Dell XPS" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                         
                         <Label text="Device Brand:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="form-label"/>
@@ -138,16 +138,16 @@
                         <Label text="Device Model:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="form-label"/>
                         <TextField fx:id="modelField" promptText="e.g. XPS 15 9520" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                         
-                        <Label text="Device Serial Number:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="form-label"/>
+                        <Label text="Device Serial Number:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                         <TextField fx:id="serialNumberField" promptText="e.g. SN-DELL-12345" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
                         
-                        <Label text="Device Type:" GridPane.columnIndex="0" GridPane.rowIndex="4" styleClass="form-label"/>
+                        <Label text="Device Type:" GridPane.columnIndex="0" GridPane.rowIndex="4" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                         <ComboBox fx:id="deviceTypeBox" promptText="Select Device Type" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
                         
-                        <Label text="Device Purpose:" GridPane.columnIndex="0" GridPane.rowIndex="5" styleClass="form-label"/>
+                        <Label text="Device Purpose:" GridPane.columnIndex="0" GridPane.rowIndex="5" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                         <ComboBox fx:id="devicePurposeBox" promptText="Select Device Purpose" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
                         
-                        <Label text="Device Status:" GridPane.columnIndex="0" GridPane.rowIndex="6" styleClass="form-label"/>
+                        <Label text="Device Status:" GridPane.columnIndex="0" GridPane.rowIndex="6" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                         <ComboBox fx:id="deviceStatusBox" promptText="Select Status" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
                     </GridPane>
                     

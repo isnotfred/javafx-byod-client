@@ -55,6 +55,8 @@ public class AlertHelper {
         javafx.scene.control.Label contentLabel = new javafx.scene.control.Label(content);
         contentLabel.setWrapText(true);
         contentLabel.setMinHeight(javafx.scene.layout.Region.USE_PREF_SIZE);
+        contentLabel.setPrefWidth(380);
+        contentLabel.setMaxWidth(380);
         contentLabel.getStyleClass().add("content");
         dialogPane.setContent(contentLabel);
         
@@ -69,6 +71,8 @@ public class AlertHelper {
         dialogPane.getStyleClass().add("custom-dialog-pane");
         dialogPane.setMinHeight(javafx.scene.layout.Region.USE_PREF_SIZE);
         dialogPane.setMinWidth(450);
+        dialogPane.setPrefWidth(450);
+        dialogPane.setMaxWidth(450);
         
         if (!"confirm".equals(type)) {
             // Create custom flat SVG graphic

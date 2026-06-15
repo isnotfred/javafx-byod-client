@@ -201,11 +201,11 @@
                     
                     <HBox spacing="20.0">
                         <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
-                            <Label text="Student ID:" styleClass="form-label"/>
+                            <Label text="Student ID:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                             <TextField fx:id="formStudentIdField" promptText="e.g. 2021-00001" styleClass="modern-textfield" prefHeight="38.0"/>
                         </VBox>
                         <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
-                            <Label text="Event Name:" styleClass="form-label"/>
+                            <Label text="Event Name:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                             <TextField fx:id="eventNameField" promptText="e.g. IT Fair 2026" styleClass="modern-textfield" prefHeight="38.0"/>
                         </VBox>
                     </HBox>
@@ -228,17 +228,20 @@
                         </VBox>
                         <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
                             <Label text="Purpose:" styleClass="form-label"/>
-                            <ComboBox fx:id="purposeBox" promptText="Select Purpose" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0"/>
+                            <StackPane>
+                                <ComboBox fx:id="purposeBox" promptText="Select Purpose" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0"/>
+                                <TextField fx:id="customPurposeField" promptText="Please specify purpose..." styleClass="modern-textfield" prefHeight="38.0" visible="false" managed="false"/>
+                            </StackPane>
                         </VBox>
                     </HBox>
                     
                     <HBox spacing="20.0">
                         <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
-                            <Label text="Start Date:" styleClass="form-label"/>
+                            <Label text="Start Date:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                             <DatePicker fx:id="startDatePicker" styleClass="modern-date-picker" maxWidth="Infinity" prefHeight="38.0"/>
                         </VBox>
                         <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
-                            <Label text="End Date:" styleClass="form-label"/>
+                            <Label text="End Date:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                             <DatePicker fx:id="endDatePicker" styleClass="modern-date-picker" maxWidth="Infinity" prefHeight="38.0"/>
                         </VBox>
                     </HBox>
@@ -282,7 +285,7 @@
                         
                         <HBox spacing="20.0">
                             <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
-                                <Label text="Device Name:" styleClass="form-label"/>
+                                <Label text="Device Name:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                                 <TextField fx:id="deviceNameField" promptText="e.g. RPi 4 Model B" styleClass="modern-textfield" prefHeight="38.0"/>
                             </VBox>
                             <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
@@ -301,7 +304,7 @@
                                 <TextField fx:id="serialNumberField" promptText="Optional Serial Number" styleClass="modern-textfield" prefHeight="38.0"/>
                             </VBox>
                             <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
-                                <Label text="Device Type:" styleClass="form-label"/>
+                                <Label text="Device Type:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                                 <ComboBox fx:id="deviceTypeBox" promptText="Select Type" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0"/>
                             </VBox>
                         </HBox>
@@ -312,12 +315,9 @@
                         </HBox>
                     </VBox>
                     
-                    <Separator/>
-                    
                     <!-- Clearance Actions Panel -->
                     <HBox spacing="12.0" alignment="CENTER_RIGHT" style="-fx-padding: 5px 0 0 0;">
                         <Button fx:id="clearFormBtn" text="Clear Form" onAction="#handleClearForm" styleClass="action-btn, action-btn-secondary" prefHeight="38.0"/>
-                        <Button fx:id="verifyBtn" text="Verify Device" onAction="#handleVerify" styleClass="action-btn, action-btn-success" disable="true" prefHeight="38.0"/>
                         <Button fx:id="submitBtn" text="Submit Event Registration" onAction="#handleSubmitRequest" styleClass="action-btn, action-btn-primary" prefHeight="38.0"/>
                     </HBox>
                     

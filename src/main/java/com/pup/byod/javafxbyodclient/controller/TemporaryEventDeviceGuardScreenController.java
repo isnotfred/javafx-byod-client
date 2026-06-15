@@ -76,6 +76,7 @@ public class TemporaryEventDeviceGuardScreenController {
     @FXML private TextField eventNameField;
     @FXML private TextField organizationField;
     @FXML private ComboBox<String> purposeBox;
+    @FXML private TextField customPurposeField;
     @FXML private DatePicker startDatePicker;
     @FXML private DatePicker endDatePicker;
     @FXML private ComboBox<String> docTypeBox;
@@ -100,7 +101,7 @@ public class TemporaryEventDeviceGuardScreenController {
     // Actions
     @FXML private VBox addDeviceCard;
     @FXML private Button clearFormBtn;
-    @FXML private Button verifyBtn;
+
     @FXML private Button submitBtn;
     @FXML private Button logIngressBtn;
     @FXML private Button logEgressBtn;
@@ -175,16 +176,51 @@ public class TemporaryEventDeviceGuardScreenController {
         itemsTable.setItems(deviceList);
 
         // Configure guard devices table
-        colGuardSelect.setCellValueFactory(f -> f.getValue().selectedProperty());
-        colGuardSelect.setCellFactory(CheckBoxTableCell.forTableColumn(colGuardSelect));
-        colGuardItemId.setCellValueFactory(new PropertyValueFactory<>("eventDeviceId"));
-        colGuardItemName.setCellValueFactory(new PropertyValueFactory<>("deviceName"));
-        colGuardSerialNumber.setCellValueFactory(new PropertyValueFactory<>("serialNumber"));
-        colGuardType.setCellValueFactory(new PropertyValueFactory<>("deviceType"));
-        colGuardStatus.setCellValueFactory(new PropertyValueFactory<>("deviceStatus"));
-        colGuardCurrentDayStatus.setCellValueFactory(new PropertyValueFactory<>("currentDayStatus"));
+        colGuardSelect.setCellValueFactory(f -> {
+            f.getValue().selectedProperty().addListener((obs, oldV, newV) -> {
+                guardItemsTable.getSelectionModel().clearSelection();
+                guardItemsTable.refresh();
+                updateGuardActionButtonsState();
+            });
+            return f.getValue().selectedProperty();
+        });
+        colGuardSelect.setCellFactory(javafx.scene.control.cell.CheckBoxTableCell.forTableColumn(colGuardSelect));
+        colGuardItemId.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("eventDeviceId"));
+        colGuardItemName.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("deviceName"));
+        colGuardSerialNumber.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("serialNumber"));
+        colGuardType.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("deviceType"));
+        colGuardStatus.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("deviceStatus"));
+        colGuardCurrentDayStatus.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("currentDayStatus"));
         guardItemsTable.setItems(deviceList);
         guardItemsTable.setEditable(true);
+
+        guardItemsTable.setRowFactory(tv -> {
+            javafx.scene.control.TableRow<EventDeviceSelection> row = new javafx.scene.control.TableRow<EventDeviceSelection>() {
+                @Override
+                protected void updateItem(EventDeviceSelection item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setStyle("");
+                    } else {
+                        if (item.isSelected()) {
+                            setStyle("-fx-background-color: #E1F5FE; -fx-text-fill: black;");
+                        } else {
+                            setStyle("-fx-background-color: transparent; -fx-text-fill: black;");
+                        }
+                    }
+                }
+            };
+            row.setOnMouseClicked(event -> {
+                if (!row.isEmpty() && event.getButton() == javafx.scene.input.MouseButton.PRIMARY && event.getClickCount() == 1) {
+                    EventDeviceSelection item = row.getItem();
+                    item.setSelected(!item.isSelected());
+                    row.getTableView().getSelectionModel().clearSelection();
+                    row.getTableView().refresh();
+                    updateGuardActionButtonsState();
+                }
+            });
+            return row;
+        });
 
         // Populate dropdowns
         purposeBox.getItems().addAll(
@@ -304,6 +340,14 @@ public class TemporaryEventDeviceGuardScreenController {
         com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(brandField);
         com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(modelField);
         com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(serialNumberField);
+        
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(formStudentIdField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(eventNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(startDatePicker);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(endDatePicker);
+        
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(deviceNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(deviceTypeBox);
     }
 
     private void setupDraftListeners() {
@@ -328,9 +372,24 @@ public class TemporaryEventDeviceGuardScreenController {
             draft.hasDraft = true;
         });
         purposeBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if ("Other".equals(newVal)) {
+                purposeBox.setVisible(false);
+                purposeBox.setManaged(false);
+                customPurposeField.setVisible(true);
+                customPurposeField.setManaged(true);
+                customPurposeField.requestFocus();
+            }
             draft.purpose = newVal;
             draft.hasDraft = true;
         });
+        
+        if (customPurposeField != null) {
+            customPurposeField.textProperty().addListener((obs, oldVal, newVal) -> {
+                draft.purpose = newVal;
+                draft.hasDraft = true;
+            });
+        }
+
         docRefField.textProperty().addListener((obs, oldVal, newVal) -> {
             draft.docRef = newVal;
             draft.hasDraft = true;
@@ -346,6 +405,22 @@ public class TemporaryEventDeviceGuardScreenController {
         endDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> {
             draft.end = newVal;
             draft.hasDraft = true;
+        });
+        
+        startDatePicker.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                setDisable(empty || date.compareTo(LocalDate.now()) < 0);
+            }
+        });
+        
+        endDatePicker.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                setDisable(empty || date.compareTo(LocalDate.now()) < 0);
+            }
         });
     }
 
@@ -516,7 +591,7 @@ public class TemporaryEventDeviceGuardScreenController {
         if (!isGuard) {
             setInputFieldsDisabled(true);
             boolean isApproved = "approved".equalsIgnoreCase(request.getStatus());
-            verifyBtn.setDisable(!isApproved);
+
         }
     }
 
@@ -565,7 +640,10 @@ public class TemporaryEventDeviceGuardScreenController {
         String sn = serialNumberField.getText();
         String type = deviceTypeBox.getValue();
 
-        if (ValidationHelper.isEmpty(name) || type == null) {
+        boolean v1 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(deviceNameField, "Input needed");
+        boolean v2 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateComboBox(deviceTypeBox);
+
+        if (!v1 || !v2) {
             AlertHelper.showWarning("Item Warning", "Missing inputs", "Please enter at least a device name and select a device type.");
             return;
         }
@@ -596,6 +674,9 @@ public class TemporaryEventDeviceGuardScreenController {
         modelField.clear();
         serialNumberField.clear();
         deviceTypeBox.setValue(null);
+        
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(deviceNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(deviceTypeBox);
     }
 
     @FXML
@@ -629,10 +710,22 @@ public class TemporaryEventDeviceGuardScreenController {
         eventNameField.clear();
         organizationField.clear();
         purposeBox.setValue(null);
+        if (customPurposeField != null) {
+            customPurposeField.clear();
+            customPurposeField.setVisible(false);
+            customPurposeField.setManaged(false);
+        }
+        purposeBox.setVisible(true);
+        purposeBox.setManaged(true);
         startDatePicker.setValue(null);
         endDatePicker.setValue(null);
         docTypeBox.setValue(null);
         docRefField.clear();
+        
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(formStudentIdField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(eventNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(startDatePicker);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(endDatePicker);
 
         // Clear device inputs
         deviceNameField.clear();
@@ -640,6 +733,9 @@ public class TemporaryEventDeviceGuardScreenController {
         modelField.clear();
         serialNumberField.clear();
         deviceTypeBox.setValue(null);
+        
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(deviceNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(deviceTypeBox);
 
         // Clear lists
         deviceList.clear();
@@ -651,7 +747,7 @@ public class TemporaryEventDeviceGuardScreenController {
         // Enable inputs
         setInputFieldsDisabled(false);
 
-        verifyBtn.setDisable(true);
+
         if (ingressEgressBtn != null) {
             ingressEgressBtn.setDisable(true);
         }
@@ -697,15 +793,19 @@ public class TemporaryEventDeviceGuardScreenController {
         String org = organizationField.getText();
         String responsible = responsiblePersonField.getText();
         String contact = contactField.getText();
-        String purpose = purposeBox.getValue();
+        String purpose = "Other".equals(purposeBox.getValue()) && customPurposeField != null ? customPurposeField.getText() : purposeBox.getValue();
         String docRef = docRefField.getText();
         String docType = docTypeBox.getValue();
         LocalDate start = startDatePicker.getValue();
         LocalDate end = endDatePicker.getValue();
 
-        if (ValidationHelper.isEmpty(studentId) || ValidationHelper.isEmpty(eventName) ||
-            start == null || end == null || deviceList.isEmpty()) {
-            AlertHelper.showWarning("Form Validation", "Incomplete fields", "Please fill in student ID, event name, start/end dates, and add at least one device.");
+        boolean v1 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(formStudentIdField, "Input needed");
+        boolean v2 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(eventNameField, "Input needed");
+        boolean v3 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateDatePicker(startDatePicker);
+        boolean v4 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateDatePicker(endDatePicker);
+
+        if (!v1 || !v2 || !v3 || !v4 || deviceList.isEmpty()) {
+            AlertHelper.showWarning("Form Validation", "Incomplete fields", "Please fill in all required fields and add at least one device.");
             return;
         }
 
@@ -856,8 +956,6 @@ public class TemporaryEventDeviceGuardScreenController {
         setInputFieldsDisabled(false);
         
         // Hide verify button when creating a new event
-        verifyBtn.setVisible(false);
-        verifyBtn.setManaged(false);
         submitBtn.setVisible(true);
         submitBtn.setManaged(true);
         submitBtn.setText("Submit Event Registration");
@@ -884,8 +982,7 @@ public class TemporaryEventDeviceGuardScreenController {
         showEventRequestDetails(selected);
         
         // Show verify button if it can be reconciled, hide editing options
-        verifyBtn.setVisible(true);
-        verifyBtn.setManaged(true);
+
         
         submitBtn.setVisible(false);
         submitBtn.setManaged(false);

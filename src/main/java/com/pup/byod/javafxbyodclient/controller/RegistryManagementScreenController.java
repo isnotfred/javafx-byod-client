@@ -34,6 +34,7 @@ public class RegistryManagementScreenController {
     @FXML private Button editSelectedBtn;
     @FXML private Button clearFormBtn;
     @FXML private Button deactivateRecordBtn;
+    @FXML private Label studentIdLabel;
 
     // Overlay control
     @FXML private StackPane formOverlay;
@@ -174,6 +175,17 @@ public class RegistryManagementScreenController {
         com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(modelField);
         com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(serialNumberField);
 
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(studentIdField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(firstNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(lastNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(courseYearLevelField);
+        
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(deviceNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(serialNumberField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(deviceTypeBox);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(devicePurposeBox);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(deviceStatusBox);
+
         // Load students
         loadStudents();
     }
@@ -241,6 +253,9 @@ public class RegistryManagementScreenController {
         isStudentEditMode = true;
         studentIdField.setText(selected.getStudentId());
         studentIdField.setDisable(true); // Student ID is immutable on edit
+        if (studentIdLabel != null) {
+            studentIdLabel.setGraphic(null);
+        }
         firstNameField.setText(selected.getFirstName());
         lastNameField.setText(selected.getLastName());
         courseYearLevelField.setText(selected.getCourseYearLevel());
@@ -562,10 +577,15 @@ public class RegistryManagementScreenController {
         String purpose = devicePurposeBox.getValue();
         String deviceStatusVal = deviceStatusBox.getValue();
 
-        if (ValidationHelper.isEmpty(deviceName) || ValidationHelper.isEmpty(sn) || 
-            type == null || purpose == null || deviceStatusVal == null) {
+        boolean v1 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(deviceNameField, "Input needed");
+        boolean v2 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(serialNumberField, "Input needed");
+        boolean v3 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateComboBox(deviceTypeBox);
+        boolean v4 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateComboBox(devicePurposeBox);
+        boolean v5 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateComboBox(deviceStatusBox);
+
+        if (!v1 || !v2 || !v3 || !v4 || !v5) {
             AlertHelper.showWarning("Device Warning", "Missing Device Fields", 
-                "Please complete all device fields (Name, Serial Number, Type, Purpose, Status) before proceeding.");
+                "Please complete all required device fields before proceeding.");
             return;
         }
 
@@ -611,7 +631,14 @@ public class RegistryManagementScreenController {
         serialNumberField.setDisable(false);
         deviceTypeBox.setValue(null);
         devicePurposeBox.setValue(null);
-        deviceStatusBox.setValue("active");
+        deviceStatusBox.setValue(null);
+        
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(deviceNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(serialNumberField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(deviceTypeBox);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(devicePurposeBox);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(deviceStatusBox);
+
         isDeviceEditMode = false;
         
         deviceTable.getSelectionModel().clearSelection();
@@ -634,9 +661,13 @@ public class RegistryManagementScreenController {
         String course = courseYearLevelField.getText();
         String studentStatus = studentStatusBox.getValue();
 
-        if (ValidationHelper.isEmpty(studentId) || ValidationHelper.isEmpty(first) || 
-            ValidationHelper.isEmpty(last) || ValidationHelper.isEmpty(course) || studentStatus == null) {
-            AlertHelper.showWarning("Form Warning", "Missing Student Fields", "Please fill in all student information fields.");
+        boolean v1 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(studentIdField, "Input needed");
+        boolean v2 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(firstNameField, "Input needed");
+        boolean v3 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(lastNameField, "Input needed");
+        boolean v4 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(courseYearLevelField, "Input needed");
+
+        if (!v1 || !v2 || !v3 || !v4) {
+            AlertHelper.showWarning("Validation Error", "Missing Fields", "Please complete all required fields (*).");
             return;
         }
 
@@ -701,6 +732,18 @@ public class RegistryManagementScreenController {
         lastNameField.clear();
         courseYearLevelField.clear();
         studentStatusBox.setValue("active");
+        
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(studentIdField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(firstNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(lastNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(courseYearLevelField);
+        
+        if (studentIdLabel != null) {
+            javafx.scene.control.Label ast = new javafx.scene.control.Label("*");
+            ast.setStyle("-fx-text-fill: red;");
+            studentIdLabel.setGraphic(ast);
+        }
+
         isStudentEditMode = false;
     }
 

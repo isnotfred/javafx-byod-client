@@ -29,12 +29,12 @@
                 <Label text="REGISTRATION DETAILS" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #829AB1; -fx-text-transform: uppercase; -fx-padding: 0 0 5 0;"/>
                 
                 <VBox spacing="5.0">
-                    <Label text="Student ID Number:" styleClass="form-label"/>
+                    <Label text="Student ID Number:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                     <TextField fx:id="studentIdField" promptText="e.g. 2021-10023" styleClass="modern-textfield" prefHeight="38.0"/>
                 </VBox>
                 
                 <VBox spacing="5.0">
-                    <Label text="Device Name:" styleClass="form-label"/>
+                    <Label text="Device Name:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                     <TextField fx:id="deviceNameField" promptText="e.g. Laptop" styleClass="modern-textfield" prefHeight="38.0"/>
                 </VBox>
                 
@@ -50,17 +50,17 @@
                 </HBox>
                 
                 <VBox spacing="5.0">
-                    <Label text="Serial Number:" styleClass="form-label"/>
+                    <Label text="Serial Number:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                     <TextField fx:id="serialNumberField" promptText="e.g. SN-12345" styleClass="modern-textfield" prefHeight="38.0"/>
                 </VBox>
                 
                 <HBox spacing="15.0">
                     <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                        <Label text="Device Type:" styleClass="form-label"/>
+                        <Label text="Device Type:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                         <ComboBox fx:id="deviceTypeBox" promptText="Select Category" maxWidth="Infinity" styleClass="modern-combo-box" prefHeight="38.0"/>
                     </VBox>
                     <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                        <Label text="Device Purpose:" styleClass="form-label"/>
+                        <Label text="Device Purpose:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                         <ComboBox fx:id="purposeBox" promptText="Select Purpose" maxWidth="Infinity" styleClass="modern-combo-box" prefHeight="38.0"/>
                     </VBox>
                 </HBox>

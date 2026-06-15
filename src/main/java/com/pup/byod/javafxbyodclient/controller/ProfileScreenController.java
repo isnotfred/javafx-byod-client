@@ -103,6 +103,9 @@ public class ProfileScreenController {
 
         if (!newPassword.equals(confirmPassword)) {
             AlertHelper.showWarning("Profile Update", "Password Mismatch", "Passwords do not match. Please verify.");
+            currentPasswordField.clear();
+            newPasswordField.clear();
+            confirmPasswordField.clear();
             return;
         }
 

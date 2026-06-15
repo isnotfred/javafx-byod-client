@@ -41,7 +41,13 @@ public class ForgotPasswordScreenController {
                 });
             } catch (Exception e) {
                 Platform.runLater(() -> {
-                    AlertHelper.showError("Error", "Request Failed", e.getMessage());
+                    String msg = e.getMessage() != null ? e.getMessage().toLowerCase() : "";
+                    if (msg.contains("not found") || msg.contains("invalid") || msg.contains("not exist") || msg.contains("no user")) {
+                        AlertHelper.showError("Error", "Email Not Registered", "That email is not registered in the system.");
+                    } else {
+                        AlertHelper.showError("Error", "Email Not Registered", "That email is not registered in the system. (Or another error occurred)");
+                    }
+                    emailField.clear();
                 });
             }
         }).start();
