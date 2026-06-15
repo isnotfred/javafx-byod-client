@@ -131,6 +131,26 @@ public class UserManagementScreenController {
         });
         userTable.setItems(filteredData);
 
+        // Highlight inactive operators in bright/pinkish red
+        userTable.setRowFactory(tv -> {
+            TableRow<User> row = new TableRow<User>() {
+                @Override
+                protected void updateItem(User item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        getStyleClass().removeAll("inactive-row");
+                    } else if ("inactive".equalsIgnoreCase(item.getStatus()) || "deactivated".equalsIgnoreCase(item.getStatus())) {
+                        if (!getStyleClass().contains("inactive-row")) {
+                            getStyleClass().add("inactive-row");
+                        }
+                    } else {
+                        getStyleClass().removeAll("inactive-row");
+                    }
+                }
+            };
+            return row;
+        });
+
         loadUsers();
     }
 
@@ -167,8 +187,15 @@ public class UserManagementScreenController {
             return;
         }
 
+        // Prevent self-deactivation
+        int currentUserId = SessionManager.getInstance().getCurrentUser().getUserId();
+        if (selected.getUserId() == currentUserId) {
+            AlertHelper.showWarning("Deactivation", "Self-Deactivation Blocked", "You cannot deactivate your own account.");
+            return;
+        }
+
         boolean isInactive = "inactive".equalsIgnoreCase(selected.getStatus()) || "deactivated".equalsIgnoreCase(selected.getStatus());
-        int actingUserId = SessionManager.getInstance().getCurrentUser().getUserId();
+        int actingUserId = currentUserId;
 
         if (isInactive) {
             if (!AlertHelper.showConfirmation("Reactivate Operator", "Confirm Reactivation", "Are you sure you want to reactivate operator " + selected.getUsername() + "?")) {

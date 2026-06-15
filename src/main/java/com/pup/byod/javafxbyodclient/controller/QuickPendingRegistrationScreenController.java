@@ -46,48 +46,16 @@ public class QuickPendingRegistrationScreenController {
                 "Other"
         );
 
-        // Setup Student ID Autocomplete (matching Ingress/Egress autocomplete logic)
-        ContextMenu studentAutoCompleteMenu = new ContextMenu();
-        studentIdField.textProperty().addListener((observable, oldValue, newValue) -> {
-            String currentText = newValue.trim();
-            if (currentText.length() >= 3) {
-                new Thread(() -> {
-                    try {
-                        List<Student> matches = studentService.searchStudents(currentText);
-                        Platform.runLater(() -> {
-                            if (!studentIdField.getText().trim().equals(currentText)) return;
-                            
-                            studentAutoCompleteMenu.getItems().clear();
-                            if (!matches.isEmpty()) {
-                                for (Student s : matches) {
-                                    MenuItem item = new MenuItem(s.getStudentId() + " - " + s.getFirstName() + " " + s.getLastName());
-                                    item.setOnAction(e -> {
-                                        studentIdField.setText(s.getStudentId());
-                                    });
-                                    studentAutoCompleteMenu.getItems().add(item);
-                                }
-                                if (studentIdField.isFocused() && studentIdField.getScene() != null && studentIdField.getScene().getWindow() != null) {
-                                    studentAutoCompleteMenu.show(studentIdField, javafx.geometry.Side.BOTTOM, 0, 0);
-                                }
-                            } else {
-                                studentAutoCompleteMenu.hide();
-                            }
-                        });
-                    } catch (Exception e) {
-                        Platform.runLater(studentAutoCompleteMenu::hide);
-                    }
-                }).start();
-            } else {
-                studentAutoCompleteMenu.hide();
-            }
-        });
-        
-        studentIdField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal) {
-                studentAutoCompleteMenu.hide();
-            }
-        });
+        // Setup Student ID Autocomplete & Prompt Text Helpers
+        com.pup.byod.javafxbyodclient.util.StudentSearchDropdown.attach(studentIdField, null);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(studentIdField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(deviceNameField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(brandField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(modelField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(serialNumberField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(remarksField);
     }
+
 
     @FXML
     public void handleRegister() {

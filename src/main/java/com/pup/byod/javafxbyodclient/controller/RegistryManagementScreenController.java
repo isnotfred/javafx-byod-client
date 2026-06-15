@@ -32,6 +32,8 @@ public class RegistryManagementScreenController {
     @FXML private TableColumn<Student, String> colStudentCourse;
     @FXML private TableColumn<Student, String> colStudentStatus;
     @FXML private Button editSelectedBtn;
+    @FXML private Button clearFormBtn;
+    @FXML private Button deactivateRecordBtn;
 
     // Overlay control
     @FXML private StackPane formOverlay;
@@ -129,6 +131,49 @@ public class RegistryManagementScreenController {
             onDeviceSelected(newVal);
         });
 
+        // Red row styling for inactive students
+        studentTable.setRowFactory(tv -> {
+            TableRow<Student> row = new TableRow<Student>() {
+                @Override
+                protected void updateItem(Student item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        getStyleClass().removeAll("inactive-row");
+                    } else if ("inactive".equalsIgnoreCase(item.getStatus())) {
+                        if (!getStyleClass().contains("inactive-row")) {
+                            getStyleClass().add("inactive-row");
+                        }
+                    } else {
+                        getStyleClass().removeAll("inactive-row");
+                    }
+                }
+            };
+            return row;
+        });
+
+        // Enter key triggers search
+        searchField.setOnKeyPressed(event -> {
+            if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                handleSearch();
+            }
+        });
+
+        // Search dynamically as the user types
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
+            handleSearch();
+        });
+
+        // Setup PromptTextHelpers
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(searchField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(studentIdField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(firstNameField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(lastNameField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(courseYearLevelField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(deviceNameField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(brandField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(modelField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(serialNumberField);
+
         // Load students
         loadStudents();
     }
@@ -165,6 +210,24 @@ public class RegistryManagementScreenController {
         handleClearForm(); // Clears all inputs and selections
         isStudentEditMode = false;
         studentIdField.setDisable(false);
+        studentTable.getSelectionModel().clearSelection();
+        deviceList.clear();
+
+        // Hide deactivate button in add mode, show clear form
+        if (deactivateRecordBtn != null) {
+            deactivateRecordBtn.setVisible(false);
+            deactivateRecordBtn.setManaged(false);
+            deactivateRecordBtn.setText("Deactivate Record");
+            deactivateRecordBtn.getStyleClass().removeAll("action-btn-success");
+            if (!deactivateRecordBtn.getStyleClass().contains("action-btn-danger")) {
+                deactivateRecordBtn.getStyleClass().add("action-btn-danger");
+            }
+        }
+        if (clearFormBtn != null) {
+            clearFormBtn.setVisible(true);
+            clearFormBtn.setManaged(true);
+        }
+
         formOverlay.setVisible(true);
     }
 
@@ -187,6 +250,27 @@ public class RegistryManagementScreenController {
         handleClearDevice();
         deviceList.clear();
         loadDevicesForStudent(selected.getStudentId());
+
+        // Show deactivate button in edit mode, hide clear form
+        if (deactivateRecordBtn != null) {
+            boolean isInactive = "inactive".equalsIgnoreCase(selected.getStatus());
+            if (isInactive) {
+                deactivateRecordBtn.setVisible(false);
+                deactivateRecordBtn.setManaged(false);
+            } else {
+                deactivateRecordBtn.setVisible(true);
+                deactivateRecordBtn.setManaged(true);
+                deactivateRecordBtn.setText("Deactivate Record");
+                deactivateRecordBtn.getStyleClass().removeAll("action-btn-success");
+                if (!deactivateRecordBtn.getStyleClass().contains("action-btn-danger")) {
+                    deactivateRecordBtn.getStyleClass().add("action-btn-danger");
+                }
+            }
+        }
+        if (clearFormBtn != null) {
+            clearFormBtn.setVisible(false);
+            clearFormBtn.setManaged(false);
+        }
 
         formOverlay.setVisible(true);
     }
@@ -431,7 +515,13 @@ public class RegistryManagementScreenController {
             return;
         }
 
-        if (!AlertHelper.showConfirmation("Deactivation", "Confirm Deactivation", "Are you sure you want to deactivate the selected student/device record? This action is soft-destructive.")) {
+        // Prevent re-deactivation of already inactive students
+        if (selectedStudent != null && "inactive".equalsIgnoreCase(selectedStudent.getStatus())) {
+            AlertHelper.showWarning("Deactivate Record", "Already Inactive", "This student record is already deactivated.");
+            return;
+        }
+
+        if (!AlertHelper.showConfirmation("Deactivation", "Confirm Deactivation", "Are you sure you want to deactivate the selected student/device record? This action will permanently deactivate the student record. Deactivated records cannot be reactivated.")) {
             return;
         }
 

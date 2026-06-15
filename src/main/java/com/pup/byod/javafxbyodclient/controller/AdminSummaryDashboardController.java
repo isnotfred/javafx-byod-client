@@ -111,8 +111,8 @@ public class AdminSummaryDashboardController {
     @FXML
     public void goToDevices() {
         NavigationManager.getInstance().loadViewIntoContainer(
-            NavigationManager.getInstance().getContentArea(), "RegistryManagementScreen.fxml");
-        syncSidebarSelection("Registry Management");
+            NavigationManager.getInstance().getContentArea(), "TemporaryEventDeviceGuardScreen.fxml");
+        syncSidebarSelection("Event Requests");
     }
 
     @FXML
@@ -134,7 +134,7 @@ public class AdminSummaryDashboardController {
             javafx.scene.layout.Pane container = NavigationManager.getInstance().getContentArea();
             if (container != null && container.getScene() != null) {
                 javafx.scene.Scene scene = container.getScene();
-                for (javafx.scene.Node node : scene.getRoot().lookupAll(".toggle-button")) {
+                for (javafx.scene.Node node : scene.getRoot().lookupAll(".sidebar-btn")) {
                     if (node instanceof ToggleButton) {
                         ToggleButton tb = (ToggleButton) node;
                         if (buttonText.equals(tb.getText())) {

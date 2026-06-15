@@ -99,3 +99,9 @@
     -fx-wrap-text: true;
     -fx-alignment: center-left;
 }
+
+/* ─── Persistent prompt text on focus ─── */
+.text-input:focused, .showing-prompt:focused {
+    -fx-prompt-text-fill: #94A3B8;
+}
+

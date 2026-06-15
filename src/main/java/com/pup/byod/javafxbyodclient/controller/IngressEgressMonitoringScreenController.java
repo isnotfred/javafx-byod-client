@@ -64,48 +64,16 @@ public class IngressEgressMonitoringScreenController {
 
     @FXML
     public void initialize() {
-        // Setup Student ID Autocomplete
-        ContextMenu studentAutoCompleteMenu = new ContextMenu();
-        studentIdField.textProperty().addListener((observable, oldValue, newValue) -> {
-            String currentText = newValue.trim();
-            if (currentText.length() >= 3) {
-                new Thread(() -> {
-                    try {
-                        List<Student> matches = studentService.searchStudents(currentText);
-                        Platform.runLater(() -> {
-                            if (!studentIdField.getText().trim().equals(currentText)) return;
-                            
-                            studentAutoCompleteMenu.getItems().clear();
-                            if (!matches.isEmpty()) {
-                                for (Student s : matches) {
-                                    MenuItem item = new MenuItem(s.getStudentId() + " - " + s.getFirstName() + " " + s.getLastName());
-                                    item.setOnAction(e -> {
-                                        studentIdField.setText(s.getStudentId());
-                                        handleStudentSearch();
-                                    });
-                                    studentAutoCompleteMenu.getItems().add(item);
-                                }
-                                if (studentIdField.isFocused() && studentIdField.getScene() != null && studentIdField.getScene().getWindow() != null) {
-                                    studentAutoCompleteMenu.show(studentIdField, javafx.geometry.Side.BOTTOM, 0, 0);
-                                }
-                            } else {
-                                studentAutoCompleteMenu.hide();
-                            }
-                        });
-                    } catch (Exception e) {
-                        Platform.runLater(studentAutoCompleteMenu::hide);
-                    }
-                }).start();
-            } else {
-                studentAutoCompleteMenu.hide();
-            }
-        });
+        // Setup Student ID Autocomplete & Prompt text behavior
+        com.pup.byod.javafxbyodclient.util.StudentSearchDropdown.attach(studentIdField, s -> handleStudentSearch());
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(studentIdField);
         
-        studentIdField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal) {
-                studentAutoCompleteMenu.hide();
+        studentIdField.setOnKeyPressed(event -> {
+            if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                handleStudentSearch();
             }
         });
+
 
         // Initialize Device Columns
         // Prevent native JavaFX row selection to avoid conflicting with our custom highlight colors

@@ -88,7 +88,6 @@ public class TemporaryEventDeviceGuardScreenController {
     @FXML private TableColumn<EventDeviceSelection, String> colItemName;
     @FXML private TableColumn<EventDeviceSelection, String> colSerialNumber;
     @FXML private TableColumn<EventDeviceSelection, String> colType;
-    @FXML private TableColumn<EventDeviceSelection, String> colStatus;
     @FXML private TableColumn<EventDeviceSelection, String> colCurrentDayStatus;
 
     // Right Section: Add Temporary Device inputs (Admins Overlay)
@@ -172,7 +171,6 @@ public class TemporaryEventDeviceGuardScreenController {
         colItemName.setCellValueFactory(new PropertyValueFactory<>("deviceName"));
         colSerialNumber.setCellValueFactory(new PropertyValueFactory<>("serialNumber"));
         colType.setCellValueFactory(new PropertyValueFactory<>("deviceType"));
-        colStatus.setCellValueFactory(new PropertyValueFactory<>("deviceStatus"));
         colCurrentDayStatus.setCellValueFactory(new PropertyValueFactory<>("currentDayStatus"));
         itemsTable.setItems(deviceList);
 
@@ -196,7 +194,7 @@ public class TemporaryEventDeviceGuardScreenController {
             "Temporary Equipment",
             "Other"
         );
-        docTypeBox.getItems().addAll("Signed GPOA", "Paper Approval", "Other");
+        docTypeBox.getItems().addAll("Signed GPOA", "Paper Approval");
         deviceTypeBox.getItems().addAll(
             "Personal Computers",
             "Components & Peripherals",
@@ -269,6 +267,43 @@ public class TemporaryEventDeviceGuardScreenController {
 
         // Load logs initially
         loadEventLogs();
+
+        // Setup autocomplete, dynamic search filtering, and prompt helpers
+        com.pup.byod.javafxbyodclient.util.StudentSearchDropdown.attach(formStudentIdField, null);
+
+        adminSearchField.textProperty().addListener((obs, oldVal, newVal) -> handleAdminSearch());
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> handleSearchLogs());
+
+        adminSearchField.setOnKeyPressed(event -> {
+            if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                handleAdminSearch();
+            }
+        });
+        searchField.setOnKeyPressed(event -> {
+            if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                handleSearchLogs();
+            }
+        });
+
+        // Setup PromptTextHelpers
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(adminSearchField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(guardStudentIdField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(guardEventNameField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(guardResponsiblePersonField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(guardOrganizationField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(guardContactField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(guardDocRefField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(searchField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(formStudentIdField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(responsiblePersonField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(contactField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(eventNameField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(organizationField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(docRefField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(deviceNameField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(brandField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(modelField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(serialNumberField);
     }
 
     private void setupDraftListeners() {
@@ -674,6 +709,17 @@ public class TemporaryEventDeviceGuardScreenController {
             return;
         }
 
+        // 7-day max date range validation — prevent submission
+        if (start.isAfter(end)) {
+            AlertHelper.showWarning("Date Validation", "Invalid Date Range", "Start date must be before or equal to end date.");
+            return;
+        }
+        long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(start, end);
+        if (daysBetween > 7) {
+            AlertHelper.showWarning("Date Validation", "Duration Exceeds Limit", "Event request date range cannot exceed 7 days. Current range: " + daysBetween + " days.");
+            return;
+        }
+
         EventRequest request;
         if (isEditMode) {
             request = adminEventsTable.getSelectionModel().getSelectedItem();
@@ -754,6 +800,11 @@ public class TemporaryEventDeviceGuardScreenController {
             eventRequestService.logDeviceEntry(selectedDeviceIds, guardId);
             AlertHelper.showInfo("Success", "Ingress Logged", "Successfully logged ingress for selected devices.");
             
+            // Deselect all devices after logging
+            for (EventDeviceSelection sel : deviceList) {
+                sel.setSelected(false);
+            }
+            
             // Refresh table details to get the new status
             EventRequest selectedRequest = eventsTable.getSelectionModel().getSelectedItem();
             if (selectedRequest != null) {
@@ -782,6 +833,11 @@ public class TemporaryEventDeviceGuardScreenController {
             int guardId = SessionManager.getInstance().getCurrentUser().getUserId();
             eventRequestService.logDeviceExit(selectedDeviceIds, guardId);
             AlertHelper.showInfo("Success", "Egress Logged", "Successfully logged egress for selected devices.");
+            
+            // Deselect all devices after logging
+            for (EventDeviceSelection sel : deviceList) {
+                sel.setSelected(false);
+            }
             
             // Refresh table details to get the new status
             EventRequest selectedRequest = eventsTable.getSelectionModel().getSelectedItem();

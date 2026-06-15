@@ -100,7 +100,7 @@
                                      styleClass="shortcut-icon"/>
                         </StackPane>
                         <VBox spacing="4.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
-                            <Label text="Student Registry" styleClass="shortcut-title"/>
+                            <Label text="Registry Management" styleClass="shortcut-title"/>
                             <Label text="Manage student profiles and registration status" styleClass="shortcut-desc"/>
                         </VBox>
                     </HBox>
@@ -117,8 +117,8 @@
                                      styleClass="shortcut-icon"/>
                         </StackPane>
                         <VBox spacing="4.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
-                            <Label text="Device Registry" styleClass="shortcut-title"/>
-                            <Label text="Manage student-linked devices and specifications" styleClass="shortcut-desc"/>
+                            <Label text="Event Requests" styleClass="shortcut-title"/>
+                            <Label text="Manage event clearance requests and temporary device authorization" styleClass="shortcut-desc"/>
                         </VBox>
                     </HBox>
                 </graphic>

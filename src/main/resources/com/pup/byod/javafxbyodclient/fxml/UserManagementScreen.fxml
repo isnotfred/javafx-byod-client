@@ -36,7 +36,10 @@
         <!-- Top Toolbar -->
         <HBox spacing="10.0" alignment="CENTER_LEFT">
             <Label text="Search:" styleClass="form-label" style="-fx-padding: 0 5px 0 0;"/>
-            <TextField fx:id="searchField" promptText="Search name, username, email..." styleClass="modern-textfield" prefHeight="38.0" prefWidth="250.0"/>
+            <StackPane alignment="CENTER_LEFT" prefWidth="250.0">
+                <TextField fx:id="searchField" promptText="Search name, username, email..." styleClass="modern-textfield, search-field-with-icon" prefHeight="38.0" maxWidth="Infinity"/>
+                <Label text="🔍" mouseTransparent="true" style="-fx-padding: 0 0 0 10px; -fx-text-fill: #94A3B8; -fx-font-size: 13px;"/>
+            </StackPane>
             <Region HBox.hgrow="ALWAYS"/>
             <Button text="Add Operator" onAction="#handleAddOperator" styleClass="action-btn, action-btn-success" prefHeight="38.0" prefWidth="140.0"/>
             <Button fx:id="editBtn" text="Edit Operator" onAction="#handleEditOperator" styleClass="action-btn, action-btn-primary" prefHeight="38.0" prefWidth="140.0"/>

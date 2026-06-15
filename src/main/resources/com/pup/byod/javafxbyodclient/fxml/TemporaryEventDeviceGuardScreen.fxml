@@ -26,12 +26,14 @@
               style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 16px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 8, 0, 0, 2);">
             
             <HBox spacing="10.0" alignment="CENTER_LEFT">
-                <TextField fx:id="adminSearchField" promptText="Search student ID, Name or Event..." HBox.hgrow="ALWAYS" styleClass="modern-textfield" prefHeight="38.0" maxWidth="300.0"/>
-                <Button text="Search" onAction="#handleAdminSearch" styleClass="action-btn, action-btn-primary" prefHeight="38.0"/>
+                <StackPane alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="300.0">
+                    <TextField fx:id="adminSearchField" promptText="Search student ID, Name or Event..." styleClass="modern-textfield, search-field-with-icon" prefHeight="38.0" maxWidth="Infinity"/>
+                    <Label text="🔍" mouseTransparent="true" style="-fx-padding: 0 0 0 10px; -fx-text-fill: #94A3B8; -fx-font-size: 13px;"/>
+                </StackPane>
                 <Button text="Refresh" onAction="#loadEventLogs" styleClass="action-btn, action-btn-secondary" prefHeight="38.0"/>
                 <Region HBox.hgrow="ALWAYS"/>
                 <Button text="New Event Request" onAction="#openAddOverlay" styleClass="action-btn, action-btn-warning" prefHeight="38.0"/>
-                <Button fx:id="editSelectedBtn" text="View Selected / Reconcile" onAction="#openEditOverlay" disable="true" styleClass="action-btn, action-btn-primary" prefHeight="38.0"/>
+                <Button fx:id="editSelectedBtn" text="View Selected" onAction="#openEditOverlay" disable="true" styleClass="action-btn, action-btn-primary" prefHeight="38.0"/>
             </HBox>
             
             <TableView fx:id="adminEventsTable" VBox.vgrow="ALWAYS" styleClass="modern-table" minHeight="300.0">
@@ -71,8 +73,10 @@
                 <Label text="CLEARANCE LOGS" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #829AB1; -fx-text-transform: uppercase;"/>
                 
                 <HBox spacing="8.0" alignment="CENTER_LEFT">
-                    <TextField fx:id="searchField" promptText="Search ID or Event" HBox.hgrow="ALWAYS" styleClass="modern-textfield" prefHeight="35.0"/>
-                    <Button text="Search" onAction="#handleSearchLogs" styleClass="action-btn, action-btn-primary" prefHeight="35.0"/>
+                <StackPane alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                    <TextField fx:id="searchField" promptText="Search ID or Event" styleClass="modern-textfield, search-field-with-icon" prefHeight="35.0" maxWidth="Infinity"/>
+                    <Label text="🔍" mouseTransparent="true" style="-fx-padding: 0 0 0 10px; -fx-text-fill: #94A3B8; -fx-font-size: 12px;"/>
+                </StackPane>
                     <Button text="Refresh" onAction="#loadEventLogs" styleClass="action-btn, action-btn-secondary" prefHeight="35.0"/>
                 </HBox>
                 
@@ -265,7 +269,7 @@
                             <TableColumn fx:id="colItemName" text="Device Name" prefWidth="130.0"/>
                             <TableColumn fx:id="colSerialNumber" text="Serial Number" prefWidth="130.0"/>
                             <TableColumn fx:id="colType" text="Type" prefWidth="140.0"/>
-                            <TableColumn fx:id="colStatus" text="Manifest Status" prefWidth="130.0"/>
+
                             <TableColumn fx:id="colCurrentDayStatus" text="Today's Status" prefWidth="130.0"/>
                         </columns>
                     </TableView>
@@ -304,7 +308,7 @@
                         
                         <HBox spacing="10.0" alignment="CENTER_RIGHT" style="-fx-padding: 5px 0 0 0;">
                             <Button text="Remove Device" onAction="#handleRemoveItem" styleClass="action-btn, action-btn-danger" prefHeight="32.0" style="-fx-font-size: 12px;"/>
-                            <Button text="Add Device Locally" onAction="#handleAddItem" styleClass="action-btn, action-btn-secondary" prefHeight="32.0" style="-fx-font-size: 12px;"/>
+                            <Button text="Add Device" onAction="#handleAddItem" styleClass="action-btn, action-btn-secondary" prefHeight="32.0" style="-fx-font-size: 12px;"/>
                         </HBox>
                     </VBox>
                     
@@ -313,7 +317,7 @@
                     <!-- Clearance Actions Panel -->
                     <HBox spacing="12.0" alignment="CENTER_RIGHT" style="-fx-padding: 5px 0 0 0;">
                         <Button fx:id="clearFormBtn" text="Clear Form" onAction="#handleClearForm" styleClass="action-btn, action-btn-secondary" prefHeight="38.0"/>
-                        <Button fx:id="verifyBtn" text="Reconcile Selected" onAction="#handleVerify" styleClass="action-btn, action-btn-success" disable="true" prefHeight="38.0"/>
+                        <Button fx:id="verifyBtn" text="Verify Device" onAction="#handleVerify" styleClass="action-btn, action-btn-success" disable="true" prefHeight="38.0"/>
                         <Button fx:id="submitBtn" text="Submit Event Registration" onAction="#handleSubmitRequest" styleClass="action-btn, action-btn-primary" prefHeight="38.0"/>
                     </HBox>
                     

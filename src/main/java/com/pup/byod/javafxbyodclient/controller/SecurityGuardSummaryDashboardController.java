@@ -67,7 +67,7 @@ public class SecurityGuardSummaryDashboardController {
     public void goToGateScan() {
         NavigationManager.getInstance().loadViewIntoContainer(
             NavigationManager.getInstance().getContentArea(), "IngressEgressMonitoringScreen.fxml");
-        syncSidebarSelection("Gate Entry/Exit Scan");
+        syncSidebarSelection("Ingress/Egress");
     }
 
     @FXML

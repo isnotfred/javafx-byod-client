@@ -26,8 +26,11 @@
         <!-- Filter Bar -->
         <HBox spacing="15.0" alignment="BOTTOM_LEFT" style="-fx-padding: 5px 0 5px 0;">
             <VBox spacing="5.0">
-                <Label text="Operator Search:" styleClass="form-label"/>
-                <TextField fx:id="usernameFilterField" promptText="Search name..." styleClass="modern-textfield" prefHeight="38.0" prefWidth="160.0"/>
+                <Label text="Operated By:" styleClass="form-label"/>
+                <StackPane alignment="CENTER_LEFT" prefWidth="160.0">
+                    <TextField fx:id="usernameFilterField" promptText="Search name..." styleClass="modern-textfield, search-field-with-icon" prefHeight="38.0" maxWidth="Infinity"/>
+                    <Label text="🔍" mouseTransparent="true" style="-fx-padding: 0 0 0 10px; -fx-text-fill: #94A3B8; -fx-font-size: 13px;"/>
+                </StackPane>
             </VBox>
             
             <VBox spacing="5.0">
@@ -55,7 +58,7 @@
             </columnResizePolicy>
             <columns>
                 <TableColumn fx:id="colAuditId" text="Audit ID" prefWidth="90.0" styleClass="centered-column"/>
-                <TableColumn fx:id="colPerformedBy" text="Performed By" prefWidth="130.0"/>
+                <TableColumn fx:id="colPerformedBy" text="Operated By" prefWidth="130.0"/>
                 <TableColumn fx:id="colActionType" text="Action Type" prefWidth="160.0"/>
                 <TableColumn fx:id="colTargetTable" text="Target Table" prefWidth="120.0"/>
                 <TableColumn fx:id="colTargetId" text="Target ID" prefWidth="100.0" styleClass="centered-column"/>

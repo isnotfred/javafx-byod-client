@@ -29,6 +29,32 @@ public class SystemConfigurationScreenController {
         maxDevicesSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(3, 10, 3));
         eventDurationSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(7, 365, 7));
 
+        // Make spinners editable (typable)
+        maxDevicesSpinner.setEditable(true);
+        eventDurationSpinner.setEditable(true);
+
+        // Commit spinner values on focus lost
+        maxDevicesSpinner.focusedProperty().addListener((obs, wasFocused, isFocused) -> {
+            if (!isFocused) {
+                try {
+                    int val = Integer.parseInt(maxDevicesSpinner.getEditor().getText());
+                    maxDevicesSpinner.getValueFactory().setValue(Math.max(3, Math.min(10, val)));
+                } catch (NumberFormatException e) {
+                    maxDevicesSpinner.getValueFactory().setValue(3);
+                }
+            }
+        });
+        eventDurationSpinner.focusedProperty().addListener((obs, wasFocused, isFocused) -> {
+            if (!isFocused) {
+                try {
+                    int val = Integer.parseInt(eventDurationSpinner.getEditor().getText());
+                    eventDurationSpinner.getValueFactory().setValue(Math.max(7, Math.min(365, val)));
+                } catch (NumberFormatException e) {
+                    eventDurationSpinner.getValueFactory().setValue(7);
+                }
+            }
+        });
+
         // Setup Combobox options
         autoExitCombo.getItems().addAll("8:00 PM", "9:00 PM", "10:00 PM");
         autoExitCombo.setValue("10:00 PM");

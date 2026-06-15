@@ -845,3 +845,61 @@
     -fx-background-color: #CBD5E1;
 }
 
+/* ─── Inactive Rows — uniform bright red highlight ─── */
+.modern-table .table-row-cell.inactive-row,
+.modern-table .table-row-cell.inactive-row:odd,
+.modern-table .table-row-cell.inactive-row:hover {
+    -fx-background-color: #FFE4E6; /* Single uniform shade of light pinkish red */
+}
+.modern-table .table-row-cell.inactive-row:selected {
+    -fx-background-color: #FECDD3; /* A bit darker red highlight for selected rows */
+}
+.modern-table .table-row-cell.inactive-row .table-cell,
+.modern-table .table-row-cell.inactive-row:selected .table-cell {
+    -fx-text-fill: #DC2626; /* Single uniform shade of bright red text */
+}
+
+/* ─── Required Field Asterisk ─── */
+.required-asterisk {
+    -fx-text-fill: #DC2626;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+/* ─── Sidebar button min-height to prevent logout shift ─── */
+.sidebar-btn {
+    -fx-min-height: 40px;
+    -fx-pref-height: 40px;
+}
+
+/* ─── Persistent prompt text on focus ─── */
+.text-input:focused, .showing-prompt:focused {
+    -fx-prompt-text-fill: #94A3B8;
+}
+
+/* ─── Student Search Dropdown Context Menu ─── */
+.student-search-popup {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 8px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);
+    -fx-padding: 4px 0px 4px 0px;
+}
+.student-search-popup .menu-item {
+    -fx-padding: 8px 12px;
+}
+.student-search-popup .menu-item:hover, .student-search-popup .menu-item:focused {
+    -fx-background-color: #f8fafc;
+}
+.student-search-popup .menu-item:hover .label, .student-search-popup .menu-item:focused .label {
+    -fx-text-fill: black;
+}
+
+/* ─── Search Field with Embedded Icon ─── */
+.search-field-with-icon {
+    -fx-padding: 8px 12px 8px 30px !important;
+}
+
+
+
