@@ -265,12 +265,14 @@ public class IngressEgressMonitoringScreenController {
                 String lastTime = cs != null ? cs.getLastEventTime() : null;
 
                 boolean isInside = "entry".equalsIgnoreCase(campusStatus) || "inside".equalsIgnoreCase(campusStatus);
+                boolean isPending = "pending".equalsIgnoreCase(d.getRegistrationStatus());
 
                 DeviceSelection selection = new DeviceSelection(d, campusStatus, lastTime);
 
                 if (hasAnyDeviceInside) {
-                    // Egress flow: show all devices, but only pre-check devices that are currently inside
-                    selection.setSelected(isInside);
+                    // Egress flow: show all devices, pre-check devices that are currently inside
+                    // AND pre-check newly registered pending devices (they are about to enter)
+                    selection.setSelected(isInside || isPending);
                 } else {
                     // Ingress flow: show all devices
                     if ("inactive".equalsIgnoreCase(d.getDeviceStatus()) || "rejected".equalsIgnoreCase(d.getRegistrationStatus())) {
@@ -279,6 +281,7 @@ public class IngressEgressMonitoringScreenController {
                         selection.setSelected(true);
                     }
                 }
+                
                 deviceList.add(selection);
             }
             

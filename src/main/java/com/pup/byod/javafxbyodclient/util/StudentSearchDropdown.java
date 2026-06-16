@@ -39,7 +39,8 @@ public class StudentSearchDropdown {
                                     autocompleteMenu.getItems().add(item);
                                 }
                                 if (textField.isFocused() && textField.getScene() != null && textField.getScene().getWindow() != null) {
-                                    autocompleteMenu.show(textField, javafx.geometry.Side.BOTTOM, 0, 0);
+                                    javafx.geometry.Bounds bounds = textField.localToScreen(textField.getBoundsInLocal());
+                                    autocompleteMenu.show(textField, bounds.getMinX(), bounds.getMaxY());
                                 }
                             } else {
                                 autocompleteMenu.hide();

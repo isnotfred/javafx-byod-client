@@ -79,7 +79,9 @@
             <Label fx:id="devicesOnCampusLabel" text="0" styleClass="stat-value, stat-value-gold"/>
         </VBox>
         </HBox>
-                <!-- Quick Access Buttons (2x2 Stack Layout via responsive GridPane) -->
+        
+        <Label text="Quick Access Management Panels" styleClass="section-title"/>
+        <!-- Quick Access Buttons (2x2 Stack Layout via responsive GridPane) -->
         <GridPane hgap="24.0" vgap="24.0" maxWidth="Infinity" HBox.hgrow="ALWAYS">
             <columnConstraints>
                 <ColumnConstraints hgrow="ALWAYS" minWidth="100.0" percentWidth="50"/>
