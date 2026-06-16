@@ -64,4 +64,8 @@ public class DeviceService {
     public void deactivateDevice(int id) throws Exception {
         apiClient.put("/api/v1/devices/" + id + "/deactivate", null, Void.class);
     }
+
+    public java.util.Map<String, Object> importDevicesCsv(java.io.File file) throws Exception {
+        return apiClient.postMultipart("/api/v1/devices/import", file, java.util.Map.class);
+    }
 }

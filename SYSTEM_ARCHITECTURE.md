@@ -144,6 +144,7 @@ The PostgreSQL database is hosted on Railway and is the single source of truth. 
 | **event_request_devices** | event_device_id SERIAL | Individual devices listed under an event request |
 | **device_logs** | log_id SERIAL | Immutable gate entry/exit event log — never UPDATE or DELETE |
 | **audit_logs** | audit_id SERIAL | Immutable system-wide audit trail — write via fn_write_audit_log() only |
+| **system_settings** | setting_key VARCHAR(100) | System settings and policy parameters |
 
 ### 6.2 Views
 
@@ -152,6 +153,7 @@ The PostgreSQL database is hosted on Railway and is the single source of truth. 
 | **v_device_campus_status** | Derives inside/outside status per approved active device from the latest device_log row |
 | **v_pending_devices** | Pending device registrations for the admin approval queue, with student name joined |
 | **v_active_event_requests** | Pending and approved event requests with device counts |
+| **v_event_device_status** | Current daily campus presence status per event request device |
 
 ### 6.3 Key Functions and Triggers
 
@@ -163,6 +165,7 @@ The PostgreSQL database is hosted on Railway and is the single source of truth. 
 | **fn_guard_registration_transition()** | Enforces device registration state machine: pending → approved \| pending → rejected \| rejected → pending |
 | **fn_guard_device_log_approved_only()** | Blocks gate log inserts for unapproved or inactive devices |
 | **fn_guard_consecutive_events()** | Blocks two consecutive same-type events (e.g. double-entry without exit). Auto-exit rows are exempt. |
+| **fn_guard_consecutive_event_device_events()** | Blocks two consecutive same-type events for event devices (e.g. double entry/exit) |
 | **fn_audit_log_immutable()** | Prevents UPDATE and DELETE on audit_logs rows |
 | **fn_device_log_immutable()** | Prevents hard-delete on device_logs rows |
 | **fn_protect_student/device/user_delete()** | Blocks hard-delete when referencing records exist; requires setting status = inactive instead |
@@ -250,7 +253,9 @@ Standardised `action_type` values (enforced by CHECK constraint):
 
 ## 10. Project File Structure
 
-The frontend and backend live in two separate Git repositories. Each follows### 10.1 Frontend Repository — JavaFX (IntelliJ IDEA)
+The frontend and backend live in two separate Git repositories.
+
+### 10.1 Frontend Repository — JavaFX (IntelliJ IDEA)
 
 The frontend is built using a decoupled **MVC + Service** pattern. Rather than initiating network connections directly inside FXML controllers, the frontend isolates presentation logic from data access and communication. This separation of concerns improves testability, prevents UI freezes, and guarantees code reusability.
 
@@ -276,17 +281,27 @@ The frontend is built using a decoupled **MVC + Service** pattern. Rather than i
 | **ForgotPasswordScreenController** | `ForgotPasswordScreen.fxml` | Capture email/username and trigger onboarding password recovery token |
 | **ResetPasswordScreenController** | `ResetPasswordScreen.fxml` | Submit security token and new password to finalize recovery process |
 | **AdminDashboardController** | `AdminDashboard.fxml` | Shell navigation bar and statistics panels for `admin` role |
+| **AdminSummaryDashboardController** | `AdminSummaryDashboard.fxml` | Summary dashboard statistics and quick-nav shortcuts (`admin` only) |
 | **SecurityGuardDashboardController** | `SecurityGuardDashboard.fxml` | Entry/exit quick-paths and scanned statistics for `guard` role |
+| **SecurityGuardSummaryDashboardController** | `SecurityGuardSummaryDashboard.fxml` | Summary dashboard statistics and scanning updates for `guard` role |
+| **SuperAdminDashboardController** | `SuperAdminDashboard.fxml` | Shell navigation bar and panel container for `super_admin` role |
+| **SuperAdminSummaryDashboardController** | `SuperAdminSummaryDashboard.fxml` | Summary dashboard statistics and system health indicators for `super_admin` role |
 | **DeviceManagementScreenController** | `DeviceManagementScreen.fxml` | Main registry lookup — search, filter, and deactivate registered devices |
 | **PendingRegistrationApprovalScreenController** | `PendingRegistrationApprovalScreen.fxml` | Approval queue — review specs, approve/reject device registrations (`admin` only) |
+| **EventApprovalScreenController** | `EventApprovalScreen.fxml` | Event approval queue — review, approve, reject, or return temporary event bypass requests (`admin` only) |
 | **QuickPendingRegistrationScreenController** | `QuickPendingRegistrationScreen.fxml` | Guard onboarding form — register student devices directly at the gate |
 | **StudentManagementScreenController** | `StudentManagementScreen.fxml` | Student directory CRUD — register students, edit details, and soft-delete students |
+| **RegistryManagementScreenController** | `RegistryManagementScreen.fxml` | Unified student directory & device staging panel — add/edit student profiles and pre-register hardware (`admin` only) |
 | **UserManagementScreenController** | `UserManagementScreen.fxml` | System operator directory — register, configure, or block admins/guards (`super_admin` only) |
 | **IngressEgressMonitoringScreenController** | `IngressEgressMonitoringScreen.fxml` | Ingress scan gate — input serial numbers, prompt status warnings, log entry/exit events |
-| **ActiveDevicesInsideCampusScreenController** | `ActiveDevicesInsideCampusScreen.fxml` | Real-time scan list — browse devices currently flagged as inside the campus (`guard` view) |
+| **ActiveDevicesInsideCampusScreenController** | `ActiveDevicesInsideCampusScreen.fxml`, `ActiveDevicesAdminScreen.fxml` | Real-time monitoring directory of all registered devices and campus presence status (both guard/admin views) |
 | **TemporaryEventDeviceScreenController** | `TemporaryEventDeviceScreen.fxml` | Event request wizard — create event entries, attach multiple devices, submit for review |
-| **LogsScreenController** | `LogsScreen.fxml` | Logs explorer — filter and export gate logs (`device_logs`) and system audtis (`audit_logs`) |
+| **TemporaryEventDeviceGuardScreenController** | `TemporaryEventDeviceGuardScreen.fxml` | Temporary event device check-in/check-out scanning registry (`guard` view) |
+| **LogsScreenController** | `LogsScreen.fxml` | Logs explorer — filter and export gate logs (`device_logs`) and system audits (`audit_logs`) |
+| **SystemAuditLogsScreenController** | `SystemAuditLogsScreen.fxml` | Audit trail viewer — filter and inspect system actions, old/new states, and IP addresses (`super_admin` only) |
 | **ReportsScreenController** | `ReportsScreen.fxml` | Analytics hub — query, visualize, and print reports (`admin`/`super_admin` only) |
+| **ProfileScreenController** | `ProfileScreen.fxml` | User profile page — update personal information, email, and password (any authenticated user) |
+| **SystemConfigurationScreenController** | `SystemConfigurationScreen.fxml` | System-wide config panel — edit parameters like automatic check-out timeouts (`super_admin` only) |
 
 ---
 
@@ -304,6 +319,7 @@ The frontend is built using a decoupled **MVC + Service** pattern. Rather than i
 | **EventRequestDevice** | `event_request_devices` Table | Device list nested inside event details with check-in flags |
 | **ActiveEventRequest** | `v_active_event_requests` View | Summary listing active events with active device counters |
 | **AuditLog** | `audit_logs` Table | Immutable record representation for audit tables |
+| **SystemSetting** | `system_settings` Table | Key-value settings metadata for configuring runtime operations |
 
 ---
 
@@ -336,23 +352,33 @@ byod-frontend/                                        ← GitHub repo root
 │       │   ├── module-info.java                      ← JavaFX module declaration
 │       │   └── com/pup/byod/javafxbyodclient/
 │       │       ├── Launcher.java                     ← Main entry point workaround (for shaded JARs)
-│       │       ├── HelloApplication.java             ← Standard application subclass
+│       │       ├── BYODApplication.java              ← Standard application subclass
 │       │       ├── controller/                       ← Presentation Controllers
 │       │       │   ├── LoginScreenController.java
 │       │       │   ├── ForgotPasswordScreenController.java
 │       │       │   ├── ResetPasswordScreenController.java
 │       │       │   ├── AdminDashboardController.java
+│       │       │   ├── AdminSummaryDashboardController.java
 │       │       │   ├── SecurityGuardDashboardController.java
+│       │       │   ├── SecurityGuardSummaryDashboardController.java
+│       │       │   ├── SuperAdminDashboardController.java
+│       │       │   ├── SuperAdminSummaryDashboardController.java
 │       │       │   ├── DeviceManagementScreenController.java
 │       │       │   ├── PendingRegistrationApprovalScreenController.java
+│       │       │   ├── EventApprovalScreenController.java
 │       │       │   ├── QuickPendingRegistrationScreenController.java
 │       │       │   ├── StudentManagementScreenController.java
+│       │       │   ├── RegistryManagementScreenController.java
 │       │       │   ├── UserManagementScreenController.java
 │       │       │   ├── IngressEgressMonitoringScreenController.java
 │       │       │   ├── ActiveDevicesInsideCampusScreenController.java
 │       │       │   ├── TemporaryEventDeviceScreenController.java
+│       │       │   ├── TemporaryEventDeviceGuardScreenController.java
 │       │       │   ├── LogsScreenController.java
-│       │       │   └── ReportsScreenController.java
+│       │       │   ├── SystemAuditLogsScreenController.java
+│       │       │   ├── ReportsScreenController.java
+│       │       │   ├── ProfileScreenController.java
+│       │       │   └── SystemConfigurationScreenController.java
 │       │       ├── service/                          ← REST API client services
 │       │       │   ├── ApiClient.java                ← Abstract Base HTTP Client handler
 │       │       │   ├── AuthService.java              ← Authentication requests
@@ -361,7 +387,8 @@ byod-frontend/                                        ← GitHub repo root
 │       │       │   ├── EventRequestService.java      ← Temporary event request pipeline
 │       │       │   ├── LogService.java               ← Ingress/egress logging & active trackers
 │       │       │   ├── ReportService.java            ← Report query wrappers
-│       │       │   └── SuperAdminService.java        ← User account modifications
+│       │       │   ├── SuperAdminService.java        ← User account modifications
+│       │       │   └── SystemSettingService.java     ← System configuration updates
 │       │       ├── session/                          ← Client session storage
 │       │       │   └── SessionManager.java           ← Active user state and session tracking
 │       │       ├── model/                            ← Models & JavaFX property DTOs
@@ -375,6 +402,7 @@ byod-frontend/                                        ← GitHub repo root
 │       │       │   ├── PendingDevice.java
 │       │       │   ├── Student.java
 │       │       │   ├── User.java
+│       │       │   ├── SystemSetting.java
 │       │       │   └── enums/                        ← Enums mapping database constraints
 │       │       │       ├── ApprovalDocType.java
 │       │       │       ├── AuditActionType.java
@@ -399,11 +427,17 @@ byod-frontend/                                        ← GitHub repo root
 │               │   ├── ForgotPasswordScreen.fxml
 │               │   ├── ResetPasswordScreen.fxml
 │               │   ├── AdminDashboard.fxml
+│               │   ├── AdminSummaryDashboard.fxml
 │               │   ├── SecurityGuardDashboard.fxml
+│               │   ├── SecurityGuardSummaryDashboard.fxml
+│               │   ├── SuperAdminDashboard.fxml
+│               │   ├── SuperAdminSummaryDashboard.fxml
 │               │   ├── DeviceManagementScreen.fxml
 │               │   ├── PendingRegistrationApprovalScreen.fxml
+│               │   ├── EventApprovalScreen.fxml
 │               │   ├── QuickPendingRegistrationScreen.fxml
 │               │   ├── StudentManagementScreen.fxml
+│               │   ├── RegistryManagementScreen.fxml
 │               │   ├── UserManagementScreen.fxml
 │               │   ├── IngressEgressMonitoringScreen.fxml
 │               │   ├── ActiveDevicesInsideCampusScreen.fxml
@@ -411,7 +445,10 @@ byod-frontend/                                        ← GitHub repo root
 │               │   ├── TemporaryEventDeviceScreen.fxml
 │               │   ├── TemporaryEventDeviceGuardScreen.fxml
 │               │   ├── LogsScreen.fxml
-│               │   └── ReportsScreen.fxml
+│               │   ├── SystemAuditLogsScreen.fxml
+│               │   ├── ReportsScreen.fxml
+│               │   ├── ProfileScreen.fxml
+│               │   └── SystemConfigurationScreen.fxml
 │               └── css/
 │                   └── styles.css                    ← Premium Dark-Theme stylesheets
 ├── pom.xml                                           ← Maven dependencies
@@ -463,6 +500,7 @@ The backend follows the standard Spring Boot layered structure. Each layer has o
 | DeviceDAO | devices table, v_pending_devices, v_device_campus_status |
 | EventRequestDAO | event_requests table, v_active_event_requests |
 | EventRequestDeviceDAO | event_request_devices table |
+| EventDeviceLogDAO | event_device_logs table, v_event_device_status view |
 | DeviceLogDAO | device_logs table |
 | AuditLogDAO | Calls fn_write_audit_log() — never INSERTs into audit_logs directly |
 | SystemSettingDAO | system_settings table |
@@ -474,11 +512,15 @@ The backend follows the standard Spring Boot layered structure. Each layer has o
 | User | users table |
 | Student | students table |
 | Device | devices table |
+| PendingDevice | v_pending_devices view — device + student name for approval queue |
+| DeviceCampusStatus | v_device_campus_status view — inside/outside status per device |
 | EventRequest | event_requests table |
 | EventRequestDevice | event_request_devices table |
+| ActiveEventRequest | v_active_event_requests view — pending/approved requests with device count |
+| EventDeviceLog | event_device_logs table |
 | DeviceLog | device_logs table |
 | AuditLog | audit_logs table |
-| AuditActionTypes | Constant values for audit actions |
+| AuditActionTypes | Constant values for audit actions (specifically super admin / config changes) |
 | SystemSetting | system_settings table |
 
 **Report Models (`model/report/`)**
@@ -547,15 +589,20 @@ byod-backend/                           ← GitHub repo root
 │   │   │       │   ├── DeviceDAO.java
 │   │   │       │   ├── EventRequestDAO.java
 │   │   │       │   ├── EventRequestDeviceDAO.java
+│   │   │       │   ├── EventDeviceLogDAO.java
 │   │   │       │   ├── DeviceLogDAO.java
 │   │   │       │   ├── AuditLogDAO.java              ← calls fn_write_audit_log()
 │   │   │       │   └── SystemSettingDAO.java
-│   │   │       ├── model/                            ← POJOs + enums per DB table
+│   │   │       ├── model/                            ← POJOs + enums per DB table / view
 │   │   │       │   ├── User.java
 │   │   │       │   ├── Student.java
 │   │   │       │   ├── Device.java
+│   │   │       │   ├── PendingDevice.java
+│   │   │       │   ├── DeviceCampusStatus.java
 │   │   │       │   ├── EventRequest.java
 │   │   │       │   ├── EventRequestDevice.java
+│   │   │       │   ├── ActiveEventRequest.java
+│   │   │       │   ├── EventDeviceLog.java
 │   │   │       │   ├── DeviceLog.java
 │   │   │       │   ├── AuditLog.java
 │   │   │       │   ├── AuditActionTypes.java
@@ -586,8 +633,11 @@ byod-backend/                           ← GitHub repo root
 │   │   │           └── DateUtil.java
 │   │   └── resources/
 │   │       ├── application.properties                ← Spring config (reads Railway env vars)
+│   │       ├── application-local.properties          ← Local configuration (omitted from version control)
 │   │       └── db/
-│   │           └── schema.sql                        ← Full PostgreSQL schema (reference copy)
+│   │           ├── schema.sql                        ← Full PostgreSQL schema (reference copy)
+│   │           ├── migration_email_pending.sql       ← Database migration schema updates
+│   │           └── migration_password_reset.sql      ← Database migration schema updates
 │   └── test/
 │       └── java/com/pup/byod/javabyodbackend/       ← Unit / integration tests
 ├── pom.xml                                           ← Maven: Spring Boot, JDBC, PostgreSQL driver, BCrypt

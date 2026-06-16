@@ -5,22 +5,45 @@ import com.pup.byod.javafxbyodclient.util.NavigationManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.StackPane;
 
+import com.pup.byod.javafxbyodclient.util.AlertHelper;
+
 public class AdminDashboardController {
-    @FXML private Label welcomeLabel;
     @FXML private StackPane contentArea;
+    @FXML private ToggleGroup sidebarGroup;
+    @FXML private Label roleBadge;
 
     @FXML
     public void initialize() {
         NavigationManager.getInstance().setContentArea(contentArea);
-        if (SessionManager.getInstance().getCurrentUser() != null) {
-            String fullName = SessionManager.getInstance().getCurrentUser().getFullName();
-            String role = SessionManager.getInstance().getCurrentUser().getRole();
-            welcomeLabel.setText("Welcome, " + fullName + " (" + role + ")");
-        }
         // Load default screen
         showSummaryDashboard();
+
+        // Initialize role badge
+        if (SessionManager.getInstance().getCurrentUser() != null) {
+            String role = SessionManager.getInstance().getCurrentUser().getRole();
+            if ("admin".equalsIgnoreCase(role)) {
+                roleBadge.setText("ADMIN");
+                roleBadge.getStyleClass().add("role-badge-admin");
+            } else if ("guard".equalsIgnoreCase(role)) {
+                roleBadge.setText("GUARD");
+                roleBadge.getStyleClass().add("role-badge-guard");
+            } else if ("super_admin".equalsIgnoreCase(role)) {
+                roleBadge.setText("SUPER ADMIN");
+                roleBadge.getStyleClass().add("role-badge-super-admin");
+            }
+        }
+
+        // Prevent deselecting active sidebar item
+        if (sidebarGroup != null) {
+            sidebarGroup.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal == null && oldVal != null) {
+                    oldVal.setSelected(true);
+                }
+            });
+        }
     }
 
     @FXML
@@ -29,8 +52,13 @@ public class AdminDashboardController {
     }
 
     @FXML
+    public void showRegistryManagement() {
+        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "RegistryManagementScreen.fxml");
+    }
+
+    @FXML
     public void showDeviceManagement() {
-        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "DeviceManagementScreen.fxml");
+        showRegistryManagement();
     }
 
     @FXML
@@ -39,8 +67,13 @@ public class AdminDashboardController {
     }
 
     @FXML
+    public void showEventRequests() {
+        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "TemporaryEventDeviceGuardScreen.fxml");
+    }
+
+    @FXML
     public void showStudentManagement() {
-        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "StudentManagementScreen.fxml");
+        showRegistryManagement();
     }
 
     @FXML
@@ -54,13 +87,20 @@ public class AdminDashboardController {
     }
 
     @FXML
+    public void showSystemAuditLogs() {
+        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "SystemAuditLogsScreen.fxml");
+    }
+
+    @FXML
     public void showProfile() {
         NavigationManager.getInstance().loadViewIntoContainer(contentArea, "ProfileScreen.fxml");
     }
 
     @FXML
     public void handleLogout() {
-        SessionManager.getInstance().logout();
-        NavigationManager.getInstance().switchRootScene("LoginScreen.fxml");
+        if (AlertHelper.showConfirmation("Logout", "Confirm Logout", "Are you sure you want to log out of the system?")) {
+            SessionManager.getInstance().logout();
+            NavigationManager.getInstance().switchRootScene("LoginScreen.fxml");
+        }
     }
 }

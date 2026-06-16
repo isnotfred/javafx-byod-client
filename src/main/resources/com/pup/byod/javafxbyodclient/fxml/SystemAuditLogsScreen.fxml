@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.pup.byod.javafxbyodclient.controller.SystemAuditLogsScreenController"
+      spacing="15.0" VBox.vgrow="ALWAYS"
+      stylesheets="@../css/admin_dashboard_styles.css">
+      
+    <padding>
+        <Insets top="5.0" right="5.0" bottom="5.0" left="5.0"/>
+    </padding>
+
+    <!-- Hero Header Banner -->
+    <VBox styleClass="welcome-banner" spacing="4.0" alignment="CENTER_LEFT" maxWidth="Infinity">
+        <Label text="System Audit Logs" styleClass="welcome-title"/>
+        <Label text="Read-only history of operator actions and system configuration overrides." styleClass="welcome-subtitle"/>
+    </VBox>
+
+    <!-- Main Card Container -->
+    <VBox spacing="12.0" VBox.vgrow="ALWAYS"
+          style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 16px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 8, 0, 0, 2);">
+        
+        <!-- Filter Bar -->
+        <HBox spacing="15.0" alignment="BOTTOM_LEFT" style="-fx-padding: 5px 0 5px 0;">
+            <VBox spacing="5.0">
+                <Label text="Operated By:" styleClass="form-label"/>
+                <StackPane alignment="CENTER_LEFT" prefWidth="160.0">
+                    <TextField fx:id="usernameFilterField" promptText="Search name..." styleClass="modern-textfield, search-field-with-icon" prefHeight="38.0" maxWidth="Infinity"/>
+                    <Label text="🔍" mouseTransparent="true" style="-fx-padding: 0 0 0 10px; -fx-text-fill: #94A3B8; -fx-font-size: 13px;"/>
+                </StackPane>
+            </VBox>
+            
+            <VBox spacing="5.0">
+                <Label text="Action Type:" styleClass="form-label"/>
+                <ComboBox fx:id="actionTypeBox" promptText="All Action Types" styleClass="modern-combo-box" prefHeight="38.0" prefWidth="180.0"/>
+            </VBox>
+            
+            <VBox spacing="5.0">
+                <Label text="Start Date:" styleClass="form-label"/>
+                <DatePicker fx:id="startDatePicker" styleClass="modern-date-picker" prefHeight="38.0" prefWidth="140.0"/>
+            </VBox>
+            
+            <VBox spacing="5.0">
+                <Label text="End Date:" styleClass="form-label"/>
+                <DatePicker fx:id="endDatePicker" styleClass="modern-date-picker" prefHeight="38.0" prefWidth="140.0"/>
+            </VBox>
+            
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Reset Filters" onAction="#handleResetFilters" styleClass="action-btn, action-btn-secondary" prefHeight="38.0"/>
+        </HBox>
+        
+        <TableView fx:id="auditLogsTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+            </columnResizePolicy>
+            <columns>
+                <TableColumn fx:id="colAuditId" text="Audit ID" prefWidth="90.0" styleClass="centered-column"/>
+                <TableColumn fx:id="colPerformedBy" text="Operated By" prefWidth="130.0"/>
+                <TableColumn fx:id="colActionType" text="Action Type" prefWidth="160.0"/>
+                <TableColumn fx:id="colTargetTable" text="Target Table" prefWidth="120.0"/>
+                <TableColumn fx:id="colTargetId" text="Target ID" prefWidth="100.0" styleClass="centered-column"/>
+                <TableColumn fx:id="colOldValues" text="Old Values" prefWidth="140.0"/>
+                <TableColumn fx:id="colNewValues" text="New Values" prefWidth="140.0"/>
+                <TableColumn fx:id="colIpAddress" text="IP Address" prefWidth="110.0"/>
+                <TableColumn fx:id="colTimestamp" text="Timestamp" prefWidth="180.0"/>
+            </columns>
+        </TableView>
+    </VBox>
+</VBox>

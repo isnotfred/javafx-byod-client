@@ -1,0 +1,914 @@
+/* Premium Institutional Security Grid — Matching Image Design Exactly */
+
+/* Root and Main Container */
+.admin-dashboard-container {
+    -fx-background-color: #F0F4F8; /* Soft blue-grey background */
+    -fx-padding: 5px;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+/* Sidebar Navigation */
+.sidebar-container {
+    -fx-background-color: #102A43; /* Dark navy */
+    -fx-border-color: transparent #0C1E30 transparent transparent;
+    -fx-border-width: 0 1px 0 0;
+    -fx-border-style: solid;
+    -fx-min-width: 240px;
+    -fx-padding: 24px 16px;
+}
+/* Sidebar Title and Logo */
+.sidebar-logo-container {
+    -fx-padding: 10px 0 20px 8px;
+    -fx-alignment: center-left;
+}
+
+.sidebar-title-text {
+    -fx-font-family: "Inter", "Hanken Grotesk", "Segoe UI Bold", "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+    -fx-padding: 0;
+}
+
+/* Role capsule badge */
+.role-badge {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 10px;
+    -fx-padding: 3px 8px;
+    -fx-background-radius: 12px;
+    -fx-alignment: center;
+    -fx-max-height: 20px;
+    -fx-display: inline-block;
+}
+
+.role-badge-admin {
+    -fx-background-color: #F0B429; /* Gold */
+    -fx-text-fill: #102A43;
+}
+
+.role-badge-guard {
+    -fx-background-color: #38BDF8; /* Sky blue */
+    -fx-text-fill: #0F172A;
+}
+
+.role-badge-super-admin {
+    -fx-background-color: #E2E8F0; /* Silver / Soft Grey */
+    -fx-text-fill: #0F172A;
+}
+
+/* Sidebar Buttons */
+.sidebar-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #8BA4B9;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 24px; /* Pill shape */
+    -fx-padding: 10px 16px;
+    -fx-cursor: hand;
+    -fx-alignment: center-left;
+    -fx-graphic-text-gap: 12px;
+}
+
+.sidebar-btn .sidebar-icon {
+    -fx-fill: #8BA4B9;
+}
+
+.sidebar-btn:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+    -fx-text-fill: #FFFFFF;
+}
+
+.sidebar-btn:hover .sidebar-icon {
+    -fx-fill: #FFFFFF;
+}
+
+.sidebar-btn:selected {
+    -fx-background-color: #F0B429;
+    -fx-text-fill: #102A43;
+    -fx-font-weight: bold;
+}
+
+.sidebar-btn:selected .sidebar-icon {
+    -fx-fill: #102A43;
+}
+
+/* Welcome Hero Banner */
+.welcome-banner {
+    -fx-background-color: #102A43; /* Match dark navy in banner */
+    -fx-padding: 20px 32px;
+    -fx-background-radius: 16px;
+    -fx-border-radius: 16px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 15, 0, 0, 8);
+    -fx-min-height: 90px;
+}
+
+.welcome-title {
+    -fx-font-family: "Hanken Grotesk", "Segoe UI Bold", "Segoe UI", sans-serif;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+}
+
+.welcome-subtitle {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: #BFDBFE;
+    -fx-padding: 6px 0 0 0;
+}
+
+/* Refresh Stats Button */
+.refresh-btn {
+    -fx-background-color: #F0B429;
+    -fx-text-fill: #102A43;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20px; /* Pill shape */
+    -fx-padding: 10px 20px;
+    -fx-cursor: hand;
+}
+
+.refresh-btn:hover {
+    -fx-background-color: #FDE68A;
+}
+
+/* Stat Cards */
+.stat-card {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 16px;
+    -fx-background-radius: 16px;
+    -fx-padding: 20px;
+    -fx-min-width: 200px;
+    -fx-pref-width: 220px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 10, 0, 0, 4);
+}
+
+/* Gold border highlight for Devices On-Campus */
+.stat-card-gold {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #F0B429;
+    -fx-border-width: 2px;
+    -fx-border-radius: 16px;
+    -fx-background-radius: 16px;
+    -fx-padding: 19px; /* adjust for 2px border */
+    -fx-min-width: 200px;
+    -fx-pref-width: 220px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 10, 0, 0, 4);
+}
+
+.stat-card:hover, .stat-card-gold:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 15, 0, 0, 6);
+}
+
+.stat-title {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #627D98;
+    -fx-text-transform: uppercase;
+}
+
+.stat-value {
+    -fx-font-family: "Hanken Grotesk", "Segoe UI Bold", "Segoe UI", sans-serif;
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 0 2px 0;
+}
+
+/* Custom colors for stats numbers matching their icons */
+.stat-value-blue {
+    -fx-text-fill: #0284C7;
+}
+
+.stat-value-purple {
+    -fx-text-fill: #7C3AED;
+}
+
+.stat-value-orange {
+    -fx-text-fill: #D97706;
+}
+
+.stat-value-gold {
+    -fx-text-fill: #D97706;
+}
+
+.stat-detail {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 11px;
+    -fx-text-fill: #627D98;
+}
+
+.stat-detail-green {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #22C55E;
+}
+
+/* Stat Card Icon Containers */
+.stat-icon-container {
+    -fx-background-radius: 8px;
+    -fx-min-width: 32px;
+    -fx-min-height: 32px;
+    -fx-pref-width: 32px;
+    -fx-pref-height: 32px;
+    -fx-alignment: center;
+}
+
+.stat-icon-blue { -fx-background-color: #E0F2FE; }
+.stat-icon-purple { -fx-background-color: #F3E8FF; }
+.stat-icon-yellow { -fx-background-color: #FEF3C7; }
+.stat-icon-light-yellow { -fx-background-color: #FEF08A; } /* Lighter yellow background */
+
+.stat-icon-blue-svg { -fx-fill: #0284C7; }
+.stat-icon-purple-svg { -fx-fill: #7C3AED; }
+.stat-icon-yellow-svg { -fx-fill: #D97706; }
+
+/* Quick Access Section */
+.section-title {
+    -fx-font-family: "Hanken Grotesk", "Segoe UI Bold", "Segoe UI", sans-serif;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #486581;
+    -fx-text-transform: uppercase;
+    -fx-padding: 20px 0 4px 0;
+}
+
+/* Horizontal Access Shortcut Cards */
+.shortcut-card-horiz {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-padding: 12px 16px;
+    -fx-min-width: 210px;
+    -fx-pref-width: 220px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 10, 0, 0, 4);
+}
+
+.shortcut-card-horiz:hover {
+    -fx-border-color: #F0B429;
+    -fx-border-width: 2px;
+    -fx-padding: 11px 15px; /* prevents layout shift */
+}
+
+.shortcut-icon-container-small {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-min-width: 40px;
+    -fx-min-height: 40px;
+    -fx-pref-width: 40px;
+    -fx-pref-height: 40px;
+    -fx-alignment: center;
+}
+
+.shortcut-icon-small {
+    -fx-fill: #475569;
+}
+
+.shortcut-title-small {
+    -fx-font-family: "Hanken Grotesk", "Segoe UI Bold", "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #102A43;
+}
+
+.shortcut-desc-small {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 11px;
+    -fx-text-fill: #486581;
+}
+
+.shortcut-badge {
+    -fx-background-color: #F0B429;
+    -fx-text-fill: #102A43;
+    -fx-background-radius: 50%;
+    -fx-min-width: 14px;
+    -fx-min-height: 14px;
+    -fx-pref-width: 14px;
+    -fx-pref-height: 14px;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-translate-x: 5px;
+    -fx-translate-y: -5px;
+}
+
+/* 2x2 Stacked Access Shortcut Cards */
+.shortcut-card {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-padding: 20px 24px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 10, 0, 0, 4);
+    -fx-alignment: center-left;
+}
+
+.shortcut-card:hover {
+    -fx-border-color: #F0B429;
+    -fx-border-width: 2px;
+    -fx-padding: 19px 23px; /* prevents layout shift */
+}
+
+.shortcut-icon-container {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-min-width: 56px;
+    -fx-min-height: 56px;
+    -fx-pref-width: 56px;
+    -fx-pref-height: 56px;
+    -fx-alignment: center;
+}
+
+.shortcut-icon {
+    -fx-fill: #102A43;
+}
+
+.shortcut-title {
+    -fx-font-family: "Hanken Grotesk", "Segoe UI Bold", "Segoe UI", sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #102A43;
+}
+
+.shortcut-desc {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 11px;
+    -fx-text-fill: #486581;
+}
+
+/* ==================================================
+   CENTRALIZED SHARED STYLES FOR ADMIN MODULES
+   ================================================== */
+
+/* Generic Module Container & Card */
+.module-container {
+    -fx-background-color: transparent;
+    -fx-padding: 24px 32px;
+}
+
+.module-card {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-padding: 24px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 10, 0, 0, 4);
+}
+
+/* Headers */
+.module-header {
+    -fx-font-family: "Hanken Grotesk", "Segoe UI Bold", "Segoe UI", sans-serif;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #102A43;
+}
+
+.module-subheader {
+    -fx-font-family: "Hanken Grotesk", "Segoe UI Bold", "Segoe UI", sans-serif;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #102A43;
+}
+
+.form-label {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #475569;
+}
+
+/* Modern Form Controls */
+.modern-textfield, .modern-password-field, .modern-textarea {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 12px;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: #102A43;
+}
+
+.modern-textfield:focused, .modern-password-field:focused, .modern-textarea:focused {
+    -fx-border-color: #3B82F6;
+    -fx-effect: dropshadow(three-pass-box, rgba(59, 130, 246, 0.2), 5, 0, 0, 0);
+}
+
+.read-only-field {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: transparent;
+    -fx-opacity: 0.9;
+}
+.read-only-field:focused {
+    -fx-border-color: transparent;
+    -fx-background-color: #F8FAFC;
+}
+
+.modern-combo-box, .modern-date-picker {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+    -fx-padding: 2px;
+}
+
+.modern-combo-box:focused, .modern-date-picker:focused {
+    -fx-border-color: #3B82F6;
+}
+
+/* Action Buttons */
+.action-btn {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+}
+
+.action-btn-primary {
+    -fx-background-color: #102A43;
+    -fx-text-fill: #FFFFFF;
+}
+.action-btn-primary:hover {
+    -fx-background-color: #243B53;
+}
+
+.action-btn-secondary {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #475569;
+}
+.action-btn-secondary:hover {
+    -fx-background-color: #E2E8F0;
+}
+
+.action-btn-success {
+    -fx-background-color: #10B981;
+    -fx-text-fill: #FFFFFF;
+}
+.action-btn-success:hover {
+    -fx-background-color: #059669;
+}
+
+.action-btn-danger {
+    -fx-background-color: #EF4444;
+    -fx-text-fill: #FFFFFF;
+}
+.action-btn-danger:hover {
+    -fx-background-color: #DC2626;
+}
+
+.action-btn-warning {
+    -fx-background-color: #F0B429;
+    -fx-text-fill: #102A43;
+}
+.action-btn-warning:hover {
+    -fx-background-color: #D9A01C;
+}
+
+/* Modern Tables */
+.modern-table {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+}
+.modern-table .column-header-background {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 8px 8px 0 0;
+    -fx-border-color: transparent transparent #E2E8F0 transparent;
+}
+.modern-table .column-header {
+    -fx-background-color: transparent;
+    -fx-padding: 12px 16px;
+}
+.modern-table .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #64748B;
+    -fx-font-size: 12px;
+}
+.modern-table .table-row-cell {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: transparent transparent #F1F5F9 transparent;
+    -fx-cell-size: 40px;
+}
+.modern-table .table-row-cell:odd {
+    -fx-background-color: #FAFAFA;
+}
+.modern-table .table-row-cell:selected {
+    -fx-background-color: #E0F2FE;
+    -fx-text-fill: #102A43;
+}
+.modern-table .table-cell {
+    -fx-text-fill: #334155;
+    -fx-padding: 0 16px;
+    -fx-alignment: center-left;
+}
+.modern-table .centered-column {
+    -fx-alignment: center;
+}
+
+/* TabPane and Tabs Styles */
+.modern-tab-pane {
+    -fx-tab-min-width: 125px;
+    -fx-tab-max-width: 200px;
+    -fx-tab-min-height: 36px;
+    -fx-tab-max-height: 36px;
+}
+.modern-tab-pane > .tab-content-area {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 15px 0 0 0;
+}
+.modern-tab-pane .tab-header-area {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+.modern-tab-pane .tab-header-background {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #E2E8F0 transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+.modern-tab-pane .tab {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 6px 6px 0 0;
+    -fx-border-color: #E2E8F0 #E2E8F0 transparent #E2E8F0;
+    -fx-border-width: 1px 1px 0 1px;
+    -fx-padding: 6px 20px;
+    -fx-cursor: hand;
+    -fx-background-insets: 0;
+}
+.modern-tab-pane .tab:hover {
+    -fx-background-color: #F1F5F9;
+}
+.modern-tab-pane .tab:selected {
+    -fx-background-color: #102A43; /* Navy */
+    -fx-border-color: #102A43 #102A43 transparent #102A43;
+}
+.modern-tab-pane .tab .tab-label {
+    -fx-text-fill: #64748B;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+.modern-tab-pane .tab:selected .tab-label {
+    -fx-text-fill: #FFFFFF;
+}
+/* Disable focus ring border on tabs */
+.modern-tab-pane .tab:focused {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+.modern-tab-pane:focused {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* JavaFX Chart Custom Styles */
+.chart {
+    -fx-padding: 10px;
+    -fx-background-color: transparent;
+}
+.chart-content {
+    -fx-padding: 10px;
+}
+.chart-title {
+    -fx-text-fill: #102A43;
+    -fx-font-family: "Hanken Grotesk", "Segoe UI Bold", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-padding: 0 0 10px 0;
+}
+.chart-plot-background {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 8px;
+}
+.chart-alternative-row-fill {
+    -fx-fill: transparent;
+}
+.chart-alternative-column-fill {
+    -fx-fill: transparent;
+}
+.chart-horizontal-grid-lines {
+    -fx-stroke: #E2E8F0;
+    -fx-stroke-width: 1px;
+}
+.chart-vertical-grid-lines {
+    -fx-stroke: #E2E8F0;
+    -fx-stroke-width: 1px;
+}
+.axis {
+    -fx-tick-label-fill: #64748B;
+    -fx-tick-label-font-family: "Inter", sans-serif;
+    -fx-tick-label-font-size: 11px;
+}
+.axis-label {
+    -fx-text-fill: #475569;
+    -fx-font-family: "Inter", sans-serif;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+.chart-legend {
+    -fx-background-color: transparent;
+    -fx-padding: 10px 0 0 0;
+}
+.chart-legend-item {
+    -fx-text-fill: #475569;
+    -fx-font-family: "Inter", sans-serif;
+    -fx-font-size: 12px;
+}
+.chart-legend-item-symbol {
+    -fx-background-radius: 4px;
+}
+
+/* Grouped Bar Chart Colors (Navy & Gold) */
+.bar-chart {
+    -fx-bar-gap: 5px;
+    -fx-category-gap: 150px;
+}
+.default-color0.chart-bar {
+    -fx-background-color: linear-gradient(to top, #102A43, #243B53); /* Premium dark navy gradient */
+    -fx-background-radius: 6px 6px 0 0;
+}
+.default-color1.chart-bar {
+    -fx-background-color: linear-gradient(to top, #D97706, #F0B429); /* Gold/orange gradient */
+    -fx-background-radius: 6px 6px 0 0;
+}
+.default-color0.chart-legend-item-symbol {
+    -fx-background-color: #102A43;
+    -fx-background-radius: 4px;
+}
+.default-color1.chart-legend-item-symbol {
+    -fx-background-color: #F0B429;
+    -fx-background-radius: 4px;
+}
+
+/* Pie Chart Palette (Navy, Gold, Sky Blue, Purple, Teal, etc.) */
+.default-color0.chart-pie { -fx-pie-color: #102A43; } /* Navy */
+.default-color1.chart-pie { -fx-pie-color: #F0B429; } /* Gold */
+.default-color2.chart-pie { -fx-pie-color: #38BDF8; } /* Sky Blue */
+.default-color3.chart-pie { -fx-pie-color: #7C3AED; } /* Purple */
+.default-color4.chart-pie { -fx-pie-color: #0D9488; } /* Teal */
+.default-color5.chart-pie { -fx-pie-color: #E11D48; } /* Rose */
+.default-color6.chart-pie { -fx-pie-color: #2563EB; } /* Blue */
+.default-color7.chart-pie { -fx-pie-color: #16A34A; } /* Green */
+
+.overlay-close-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #64748b;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-min-width: 28px;
+    -fx-min-height: 28px;
+    -fx-max-width: 28px;
+    -fx-max-height: 28px;
+    -fx-pref-width: 28px;
+    -fx-pref-height: 28px;
+    -fx-padding: 0;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-alignment: center;
+}
+
+.overlay-close-btn:hover {
+    -fx-background-color: #EF4444; /* Container turns red */
+    -fx-text-fill: #FFFFFF; /* Close sign turns white */
+}
+
+/* Push sort arrow to the right edge */
+.right-arrow-header.column-header .label {
+    -fx-max-width: Infinity;
+    -fx-alignment: center-left;
+}
+
+/* Custom Table CheckBox Styling */
+.table-view .check-box .box {
+    -fx-background-color: white;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+}
+.table-view .check-box:selected .mark {
+    -fx-background-color: black;
+}
+.table-view .check-box:selected .box {
+    -fx-background-color: white;
+}
+
+/* Custom ContextMenu styling for autocomplete */
+.context-menu {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 8;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);
+    -fx-padding: 4 0 4 0;
+}
+.context-menu .menu-item:hover, .context-menu .menu-item:focused {
+    -fx-background-color: #f8fafc;
+}
+.context-menu .menu-item:hover, .context-menu .menu-item:focused, .context-menu .menu-item:hover .label, .context-menu .menu-item:focused .label {
+    -fx-text-fill: black;
+}
+
+/* Disabled inputs readable styles */
+.text-input:disabled {
+    -fx-opacity: 1.0;
+    -fx-text-fill: #102A43;
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+}
+.combo-box:disabled {
+    -fx-opacity: 1.0;
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+}
+.combo-box:disabled > .arrow-button {
+    -fx-opacity: 0.5;
+}
+.combo-box:disabled .label {
+    -fx-text-fill: #102A43;
+}
+.combo-box:disabled .text {
+    -fx-text-fill: #102A43;
+}
+.date-picker:disabled {
+    -fx-opacity: 1.0;
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+}
+.date-picker:disabled > .arrow-button {
+    -fx-opacity: 0.5;
+}
+.date-picker:disabled .text-field {
+    -fx-text-fill: #102A43;
+    -fx-opacity: 1.0;
+}
+
+/* ==================================================
+   CUSTOM STYLES FOR REDESIGNED CONTROLS
+   ================================================== */
+
+/* Sleek Modern Switch Button */
+.switch-btn {
+    -fx-background-color: #CBD5E1; /* Inactive grey */
+    -fx-background-radius: 12px;
+    -fx-min-width: 48px;
+    -fx-max-width: 48px;
+    -fx-min-height: 24px;
+    -fx-max-height: 24px;
+    -fx-pref-width: 48px;
+    -fx-pref-height: 24px;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+    -fx-alignment: center-left;
+}
+
+.switch-btn .thumb {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 10px;
+    -fx-min-width: 20px;
+    -fx-max-width: 20px;
+    -fx-min-height: 20px;
+    -fx-max-height: 20px;
+    -fx-pref-width: 20px;
+    -fx-pref-height: 20px;
+    -fx-translate-x: 2px;
+}
+
+.switch-btn:selected {
+    -fx-background-color: #10B981; /* Active success green */
+}
+
+.switch-btn:selected .thumb {
+    -fx-translate-x: 26px; /* Smooth transition/shift right */
+}
+
+/* Modern Flat Spinner styling matching our textfields */
+.spinner {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+.spinner:focused {
+    -fx-border-color: #3B82F6;
+    -fx-effect: dropshadow(three-pass-box, rgba(59, 130, 246, 0.2), 5, 0, 0, 0);
+}
+
+.spinner .text-field {
+    -fx-background-color: transparent;
+    -fx-background-radius: 8px 0 0 8px;
+    -fx-border-radius: 8px 0 0 8px;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: #102A43;
+    -fx-padding: 8px 12px;
+}
+
+.spinner .increment-arrow-button, .spinner .decrement-arrow-button {
+    -fx-background-color: #F1F5F9;
+    -fx-background-radius: 0 8px 8px 0;
+    -fx-cursor: hand;
+}
+
+.spinner .increment-arrow-button:hover, .spinner .decrement-arrow-button:hover {
+    -fx-background-color: #E2E8F0;
+}
+
+.spinner .increment-arrow-button:pressed, .spinner .decrement-arrow-button:pressed {
+    -fx-background-color: #CBD5E1;
+}
+
+/* ─── Inactive Rows — uniform bright red highlight ─── */
+.modern-table .table-row-cell.inactive-row,
+.modern-table .table-row-cell.inactive-row:odd,
+.modern-table .table-row-cell.inactive-row:hover {
+    -fx-background-color: #FFE4E6; /* Single uniform shade of light pinkish red */
+}
+.modern-table .table-row-cell.inactive-row:selected {
+    -fx-background-color: #FECDD3; /* A bit darker red highlight for selected rows */
+}
+.modern-table .table-row-cell.inactive-row .table-cell,
+.modern-table .table-row-cell.inactive-row:selected .table-cell {
+    -fx-text-fill: #DC2626; /* Single uniform shade of bright red text */
+}
+
+/* ─── Required Field Asterisk ─── */
+.required-asterisk {
+    -fx-text-fill: #DC2626;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+/* ─── Sidebar button min-height to prevent logout shift ─── */
+.sidebar-btn {
+    -fx-min-height: 40px;
+    -fx-pref-height: 40px;
+}
+
+/* ─── Persistent prompt text on focus ─── */
+.text-input:focused, .showing-prompt:focused {
+    -fx-prompt-text-fill: #94A3B8;
+}
+
+/* ─── Student Search Dropdown Context Menu ─── */
+.student-search-popup {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 8px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);
+    -fx-padding: 4px 0px 4px 0px;
+}
+.student-search-popup .menu-item {
+    -fx-padding: 8px 12px;
+}
+.student-search-popup .menu-item:hover, .student-search-popup .menu-item:focused {
+    -fx-background-color: #f8fafc;
+}
+.student-search-popup .menu-item:hover .label, .student-search-popup .menu-item:focused .label {
+    -fx-text-fill: black;
+}
+
+/* ─── Search Field with Embedded Icon ─── */
+.search-field-with-icon {
+    -fx-padding: 8px 12px 8px 30px !important;
+}
+
+
+
+
+/* Fix for DatePicker Month and Year text visibility */
+.date-picker-popup .month-year-pane .label {
+    -fx-text-fill: black;
+}
+.date-picker-popup .spinner .button .left-arrow,
+.date-picker-popup .spinner .button .right-arrow {
+    -fx-background-color: black;
+}

@@ -1,10 +1,14 @@
 package com.pup.byod.javafxbyodclient.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonAlias;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EventRequestDevice {
+    @JsonAlias({"event_device_id", "eventDeviceId"})
     private Integer eventDeviceId;
+
+    @JsonAlias({"event_request_id", "eventRequestId"})
     private Integer eventRequestId;
     private String deviceName;
     private String brand;
@@ -61,4 +65,15 @@ public class EventRequestDevice {
 
     public String getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
+
+    // Derived fields
+    private String currentDayStatus;
+    private String lastEventTime;
+
+    public String getCurrentDayStatus() { return currentDayStatus; }
+    public void setCurrentDayStatus(String currentDayStatus) { this.currentDayStatus = currentDayStatus; }
+
+    public String getLastEventTime() { return lastEventTime; }
+    public void setLastEventTime(String lastEventTime) { this.lastEventTime = lastEventTime; }
 }
+

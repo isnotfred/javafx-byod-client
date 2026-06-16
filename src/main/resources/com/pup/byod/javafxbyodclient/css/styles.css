@@ -105,3 +105,23 @@
 .refresh-btn:pressed {
     -fx-background-color: #1d4ed8;
 }
+
+/* Hero Banner Styles */
+.hero-banner {
+    -fx-background-color: linear-gradient(to right, #1e3a8a, #3b82f6);
+    -fx-padding: 24px 30px;
+    -fx-background-radius: 12px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 4);
+}
+
+.hero-welcome {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+}
+
+.hero-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #bfdbfe;
+    -fx-padding: 5px 0 0 0;
+}

@@ -19,6 +19,7 @@ public class ApiClient {
     private ApiClient() {
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
+                .cookieHandler(new java.net.CookieManager(null, java.net.CookiePolicy.ACCEPT_ALL))
                 .build();
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new JavaTimeModule());
@@ -135,11 +136,14 @@ public class ApiClient {
             return objectMapper.readValue(body, responseType);
         } else {
             // Extract error message if JSON, else throw general
-            String errMsg;
+            String errMsg = null;
             try {
-                // If it's a standard Spring Error JSON: {"message": "..."}
-                ErrorResponse error = objectMapper.readValue(body, ErrorResponse.class);
-                errMsg = error.getMessage();
+                com.fasterxml.jackson.databind.JsonNode root = objectMapper.readTree(body);
+                if (root.has("message")) {
+                    errMsg = root.get("message").asText();
+                } else {
+                    errMsg = body;
+                }
             } catch (Exception e) {
                 errMsg = body;
             }
@@ -148,12 +152,5 @@ public class ApiClient {
             }
             throw new RuntimeException(errMsg);
         }
-    }
-
-    // Helper static DTO class for mapping spring boot error responses
-    private static class ErrorResponse {
-        private String message;
-        public String getMessage() { return message; }
-        public void setMessage(String message) { this.message = message; }
     }
 }

@@ -1,6 +1,7 @@
 package com.pup.byod.javafxbyodclient.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AuditLog {
@@ -12,6 +13,8 @@ public class AuditLog {
     private String oldValues;
     private String newValues;
     private String ipAddress;
+    
+    @JsonProperty("createdAt")
     private String actionTime;
 
     // Getters and Setters

@@ -3,26 +3,367 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.SVGPath?>
 
-<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.pup.byod.javafxbyodclient.controller.TemporaryEventDeviceGuardScreenController"
-      spacing="10.0" VBox.vgrow="ALWAYS">
+<StackPane stylesheets="@../css/admin_dashboard_styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.pup.byod.javafxbyodclient.controller.TemporaryEventDeviceGuardScreenController"
+           HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+           
+    <!-- Layer 1: Admin View (Main Screen) -->
+    <VBox fx:id="adminView" spacing="15.0" visible="false" managed="false">
+        <padding>
+            <Insets top="5.0" right="5.0" bottom="5.0" left="5.0"/>
+        </padding>
+        
+        <!-- Hero Header Banner -->
+        <VBox styleClass="welcome-banner" spacing="4.0" alignment="CENTER_LEFT" maxWidth="Infinity">
+            <Label text="Temporary &amp; Event Device Management" styleClass="welcome-title"/>
+            <Label text="Register, verify, and track temporary hardware clearance for seminars, school events, and guest presenters." styleClass="welcome-subtitle"/>
+        </VBox>
+        
+        <!-- Directory Card -->
+        <VBox spacing="12.0" VBox.vgrow="ALWAYS"
+              style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 16px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 8, 0, 0, 2);">
+            
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <StackPane alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="300.0">
+                    <TextField fx:id="adminSearchField" promptText="Search student ID, Name or Event..." styleClass="modern-textfield, search-field-with-icon" prefHeight="38.0" maxWidth="Infinity"/>
+                    <Label text="🔍" mouseTransparent="true" style="-fx-padding: 0 0 0 10px; -fx-text-fill: #94A3B8; -fx-font-size: 13px;"/>
+                </StackPane>
+                <Button text="Refresh" onAction="#loadEventLogs" styleClass="action-btn, action-btn-secondary" prefHeight="38.0"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="New Event Request" onAction="#openAddOverlay" styleClass="action-btn, action-btn-warning" prefHeight="38.0"/>
+                <Button fx:id="editSelectedBtn" text="View Selected" onAction="#openEditOverlay" disable="true" styleClass="action-btn, action-btn-primary" prefHeight="38.0"/>
+            </HBox>
+            
+            <TableView fx:id="adminEventsTable" VBox.vgrow="ALWAYS" styleClass="modern-table" minHeight="300.0">
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                </columnResizePolicy>
+                <columns>
+                    <TableColumn fx:id="colAdminEventId" text="Req ID" prefWidth="80.0"/>
+                    <TableColumn fx:id="colAdminStudentId" text="Student ID" prefWidth="120.0"/>
+                    <TableColumn fx:id="colAdminEventName" text="Event Name" prefWidth="200.0"/>
+                    <TableColumn fx:id="colAdminStartDate" text="Start Date" prefWidth="120.0"/>
+                    <TableColumn fx:id="colAdminEndDate" text="End Date" prefWidth="120.0"/>
+                    <TableColumn fx:id="colAdminEventStatus" text="Status" prefWidth="100.0"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </VBox>
     
-    <Label text="Temporary Event Device Admission Scanner" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+    <!-- Layer 2: Guard View (Main Screen) -->
+    <VBox fx:id="guardView" spacing="20.0" alignment="TOP_CENTER" VBox.vgrow="ALWAYS" visible="false" managed="false">
+        <padding>
+            <Insets top="5.0" right="5.0" bottom="5.0" left="5.0"/>
+        </padding>
+        
+        <!-- Hero Header Banner -->
+        <VBox styleClass="welcome-banner" spacing="6.0" alignment="CENTER_LEFT" maxWidth="Infinity">
+            <Label text="Temporary &amp; Event Device Management" styleClass="welcome-title"/>
+            <Label text="Register, verify, and track temporary hardware clearance for seminars, school events, and guest presenters." styleClass="welcome-subtitle"/>
+        </VBox>
+        
+        <!-- Main Content Split Layout -->
+        <HBox spacing="20.0" VBox.vgrow="ALWAYS" alignment="TOP_CENTER" maxWidth="Infinity">
+            <!-- Left Column: Clearance Requests Table Card (Width: 380px) -->
+            <VBox spacing="15.0" prefWidth="380.0" minWidth="380.0" maxWidth="380.0" HBox.hgrow="NEVER"
+                  style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 20px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 8, 0, 0, 2);">
+                
+                <Label text="CLEARANCE LOGS" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #829AB1; -fx-text-transform: uppercase;"/>
+                
+                <HBox spacing="8.0" alignment="CENTER_LEFT">
+                <StackPane alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                    <TextField fx:id="searchField" promptText="Search ID or Event" styleClass="modern-textfield, search-field-with-icon" prefHeight="35.0" maxWidth="Infinity"/>
+                    <Label text="🔍" mouseTransparent="true" style="-fx-padding: 0 0 0 10px; -fx-text-fill: #94A3B8; -fx-font-size: 12px;"/>
+                </StackPane>
+                    <Button text="Refresh" onAction="#loadEventLogs" styleClass="action-btn, action-btn-secondary" prefHeight="35.0"/>
+                </HBox>
+                
+                <TableView fx:id="eventsTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                    </columnResizePolicy>
+                    <columns>
+                        <TableColumn fx:id="colStudentId" text="Student ID" prefWidth="150.0"/>
+                        <TableColumn fx:id="colEventName" text="Event Name" prefWidth="200.0"/>
+                    </columns>
+                </TableView>
+            </VBox>
+            
+            <!-- Right Column: Form ScrollPane (For Guards, this is read-only) -->
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" HBox.hgrow="ALWAYS"
+                        style="-fx-background-color: transparent; -fx-background: transparent;">
+                <content>
+                    <VBox spacing="20.0">
+                        <padding>
+                            <Insets right="12.0" left="2.0" bottom="15.0"/>
+                        </padding>
+                        
+                        <!-- Card Module 1: Event Details Form (Read-only) -->
+                        <VBox spacing="16.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 24px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 8, 0, 0, 2);">
+                            <Label text="EVENT DETAILS" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #0284C7; -fx-text-transform: uppercase;"/>
+                            
+                            <HBox spacing="20.0">
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                                    <Label text="Student ID:" styleClass="form-label"/>
+                                    <TextField fx:id="guardStudentIdField" disable="true" styleClass="modern-textfield" prefHeight="38.0"/>
+                                </VBox>
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                                    <Label text="Event Name:" styleClass="form-label"/>
+                                    <TextField fx:id="guardEventNameField" disable="true" styleClass="modern-textfield" prefHeight="38.0"/>
+                                </VBox>
+                            </HBox>
+                            
+                            <HBox spacing="20.0">
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                                    <Label text="Responsible Person:" styleClass="form-label"/>
+                                    <TextField fx:id="guardResponsiblePersonField" disable="true" styleClass="modern-textfield" prefHeight="38.0"/>
+                                </VBox>
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                                    <Label text="Organization / Department:" styleClass="form-label"/>
+                                    <TextField fx:id="guardOrganizationField" disable="true" styleClass="modern-textfield" prefHeight="38.0"/>
+                                </VBox>
+                            </HBox>
+                            
+                            <HBox spacing="20.0">
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                                    <Label text="Contact (Phone/Socials):" styleClass="form-label"/>
+                                    <TextField fx:id="guardContactField" disable="true" styleClass="modern-textfield" prefHeight="38.0"/>
+                                </VBox>
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                                    <Label text="Purpose:" styleClass="form-label"/>
+                                    <ComboBox fx:id="guardPurposeBox" disable="true" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0"/>
+                                </VBox>
+                            </HBox>
+                            
+                            <HBox spacing="20.0">
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                                    <Label text="Start Date:" styleClass="form-label"/>
+                                    <DatePicker fx:id="guardStartDatePicker" disable="true" styleClass="modern-date-picker" maxWidth="Infinity" prefHeight="38.0"/>
+                                </VBox>
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                                    <Label text="End Date:" styleClass="form-label"/>
+                                    <DatePicker fx:id="guardEndDatePicker" disable="true" styleClass="modern-date-picker" maxWidth="Infinity" prefHeight="38.0"/>
+                                </VBox>
+                            </HBox>
+                            
+                            <HBox spacing="20.0">
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                                    <Label text="Approval Doc Type:" styleClass="form-label"/>
+                                    <ComboBox fx:id="guardDocTypeBox" disable="true" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0"/>
+                                </VBox>
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                                    <Label text="Doc Reference No:" styleClass="form-label"/>
+                                    <TextField fx:id="guardDocRefField" disable="true" styleClass="modern-textfield" prefHeight="38.0"/>
+                                </VBox>
+                            </HBox>
+                        </VBox>
+                        
+                        <!-- Ingress/Egress Action Panel -->
+                        <HBox spacing="12.0" alignment="CENTER_LEFT" style="-fx-padding: 5px 0 20px 0;">
+                            <Button fx:id="ingressEgressBtn" text="Ingress/Egress" onAction="#handleOpenGuardModal" styleClass="action-btn, action-btn-warning" prefHeight="40.0" maxWidth="Infinity" HBox.hgrow="ALWAYS" disable="true"/>
+                        </HBox>
+                        
+                    </VBox>
+                </content>
+            </ScrollPane>
+        </HBox>
+    </VBox>
     
-    <HBox spacing="10.0" alignment="CENTER_LEFT">
-        <TextField fx:id="eventRequestIdField" promptText="Enter Event Request ID" prefWidth="200.0"/>
-        <Button text="Lookup Event Devices" onAction="#handleSearchEvent"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button text="Verify Selected Device" onAction="#handleVerify" style="-fx-text-fill: green; -fx-font-weight: bold;"/>
-    </HBox>
+    <!-- Layer 3: Centered Unified Event Form Overlay -->
+    <StackPane fx:id="formOverlay" visible="false" style="-fx-background-color: rgba(16, 42, 67, 0.45);" alignment="CENTER">
+        <padding>
+            <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
+        </padding>
+        
+        <!-- Unified Event Form Card -->
+        <VBox spacing="0.0" maxHeight="620.0" maxWidth="950.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 15, 0, 0, 8);">
+            
+            <!-- Sticky Header Section -->
+            <VBox spacing="10.0" style="-fx-padding: 20px 20px 10px 20px;">
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="Temporary Event Clearance Form" styleClass="module-subheader" style="-fx-font-family: 'Hanken Grotesk', 'Segoe UI Bold', 'Segoe UI', sans-serif; -fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #102A43;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="✕" onAction="#handleCloseOverlay" styleClass="overlay-close-btn"/>
+                </HBox>
+                <Separator/>
+            </VBox>
+            
+            <!-- Scrollable Content Section -->
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS"
+                        style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+                
+                <VBox spacing="15.0" style="-fx-padding: 0px 20px 20px 20px; -fx-background-color: transparent;">
+                    
+                    <!-- Card Module 1: Event Details Form -->
+                    <Label text="I. EVENT DETAILS" styleClass="form-label" style="-fx-text-fill: #0284C7; -fx-font-size: 13px;"/>
+                    
+                    <HBox spacing="20.0">
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                            <Label text="Student ID:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
+                            <TextField fx:id="formStudentIdField" promptText="e.g. 2021-00001" styleClass="modern-textfield" prefHeight="38.0"/>
+                        </VBox>
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                            <Label text="Event Name:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
+                            <TextField fx:id="eventNameField" promptText="e.g. IT Fair 2026" styleClass="modern-textfield" prefHeight="38.0"/>
+                        </VBox>
+                    </HBox>
+                    
+                    <HBox spacing="20.0">
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                            <Label text="Responsible Person:" styleClass="form-label"/>
+                            <TextField fx:id="responsiblePersonField" promptText="e.g. Prof. Smith" styleClass="modern-textfield" prefHeight="38.0"/>
+                        </VBox>
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                            <Label text="Organization / Department:" styleClass="form-label"/>
+                            <TextField fx:id="organizationField" promptText="e.g. ACM Student Chapter" styleClass="modern-textfield" prefHeight="38.0"/>
+                        </VBox>
+                    </HBox>
+                    
+                    <HBox spacing="20.0">
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                            <Label text="Contact (Phone/Socials):" styleClass="form-label"/>
+                            <TextField fx:id="contactField" promptText="e.g. 0917-1234567" styleClass="modern-textfield" prefHeight="38.0"/>
+                        </VBox>
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                            <Label text="Purpose:" styleClass="form-label"/>
+                            <StackPane>
+                                <ComboBox fx:id="purposeBox" promptText="Select Purpose" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0"/>
+                                <TextField fx:id="customPurposeField" promptText="Please specify purpose..." styleClass="modern-textfield" prefHeight="38.0" visible="false" managed="false"/>
+                            </StackPane>
+                        </VBox>
+                    </HBox>
+                    
+                    <HBox spacing="20.0">
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                            <Label text="Start Date:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
+                            <DatePicker fx:id="startDatePicker" styleClass="modern-date-picker" maxWidth="Infinity" prefHeight="38.0"/>
+                        </VBox>
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                            <Label text="End Date:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
+                            <DatePicker fx:id="endDatePicker" styleClass="modern-date-picker" maxWidth="Infinity" prefHeight="38.0"/>
+                        </VBox>
+                    </HBox>
+                    
+                    <HBox spacing="20.0">
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                            <Label text="Approval Doc Type:" styleClass="form-label"/>
+                            <ComboBox fx:id="docTypeBox" promptText="Select Doc Type" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0"/>
+                        </VBox>
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                            <Label text="Doc Reference No:" styleClass="form-label"/>
+                            <TextField fx:id="docRefField" promptText="e.g. REF-GPOA-101" styleClass="modern-textfield" prefHeight="38.0"/>
+                        </VBox>
+                    </HBox>
+                    
+                    <Separator/>
+                    
+                    <!-- Card Module 2: Devices Table -->
+                    <Label text="II. DEVICES LISTED FOR CLEARANCE" styleClass="form-label" style="-fx-text-fill: #0284C7; -fx-font-size: 13px;"/>
+                    
+                    <TableView fx:id="itemsTable" prefHeight="150.0" minHeight="120.0" styleClass="modern-table">
+                        <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                        </columnResizePolicy>
+                        <columns>
+                            <TableColumn fx:id="colSelect" text="Select" prefWidth="65.0"/>
+                            <TableColumn fx:id="colItemId" text="Item ID" prefWidth="75.0"/>
+                            <TableColumn fx:id="colItemName" text="Device Name" prefWidth="130.0"/>
+                            <TableColumn fx:id="colSerialNumber" text="Serial Number" prefWidth="130.0"/>
+                            <TableColumn fx:id="colType" text="Type" prefWidth="140.0"/>
+
+                            <TableColumn fx:id="colCurrentDayStatus" text="Today's Status" prefWidth="130.0"/>
+                        </columns>
+                    </TableView>
+                    
+                    <Separator/>
+                    
+                    <!-- Card Module 3: Add Temporary Device -->
+                    <VBox fx:id="addDeviceCard" spacing="16.0" style="-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 16px;">
+                        <Label text="ADD TEMPORARY DEVICE" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #475569; -fx-text-transform: uppercase;"/>
+                        
+                        <HBox spacing="20.0">
+                            <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                                <Label text="Device Name:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
+                                <TextField fx:id="deviceNameField" promptText="e.g. RPi 4 Model B" styleClass="modern-textfield" prefHeight="38.0"/>
+                            </VBox>
+                            <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                                <Label text="Brand:" styleClass="form-label"/>
+                                <TextField fx:id="brandField" promptText="e.g. Raspberry Pi" styleClass="modern-textfield" prefHeight="38.0"/>
+                            </VBox>
+                        </HBox>
+                        
+                        <HBox spacing="20.0">
+                            <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                                <Label text="Model:" styleClass="form-label"/>
+                                <TextField fx:id="modelField" promptText="e.g. 4B (8GB)" styleClass="modern-textfield" prefHeight="38.0"/>
+                            </VBox>
+                            <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                                <Label fx:id="serialNumberLabel" text="Serial Number:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
+                                <TextField fx:id="serialNumberField" promptText="Enter Serial Number" styleClass="modern-textfield" prefHeight="38.0"/>
+                            </VBox>
+                            <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                                <Label text="Device Type:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
+                                <ComboBox fx:id="deviceTypeBox" promptText="Select Type" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0"/>
+                            </VBox>
+                        </HBox>
+                        
+                        <HBox spacing="10.0" alignment="CENTER_RIGHT" style="-fx-padding: 5px 0 0 0;">
+                            <Button text="Remove Device" onAction="#handleRemoveItem" styleClass="action-btn, action-btn-danger" prefHeight="32.0" style="-fx-font-size: 12px;"/>
+                            <Button text="Add Device" onAction="#handleAddItem" styleClass="action-btn, action-btn-success" prefHeight="32.0" style="-fx-font-size: 12px;"/>
+                        </HBox>
+                    </VBox>
+                    
+                    <!-- Clearance Actions Panel -->
+                    <HBox spacing="12.0" alignment="CENTER_RIGHT" style="-fx-padding: 5px 0 0 0;">
+                        <Button fx:id="clearFormBtn" text="Clear Form" onAction="#handleClearForm" styleClass="action-btn, action-btn-secondary" prefHeight="38.0"/>
+                        <Button fx:id="submitBtn" text="Submit Event Registration" onAction="#handleSubmitRequest" styleClass="action-btn, action-btn-primary" prefHeight="38.0"/>
+                    </HBox>
+                    
+                </VBox>
+            </ScrollPane>
+        </VBox>
+    </StackPane>
     
-    <TableView fx:id="itemsTable" VBox.vgrow="ALWAYS">
-        <columns>
-            <TableColumn fx:id="colItemId" text="Item ID" prefWidth="80.0"/>
-            <TableColumn fx:id="colItemName" text="Device Name" prefWidth="250.0"/>
-            <TableColumn fx:id="colSerialNumber" text="Serial Number" prefWidth="200.0"/>
-            <TableColumn fx:id="colStatus" text="Status" prefWidth="120.0"/>
-        </columns>
-    </TableView>
-</VBox>
+    <!-- Layer 4: Guard Ingress/Egress Modal Overlay -->
+    <StackPane fx:id="guardModalOverlay" visible="false" style="-fx-background-color: rgba(16, 42, 67, 0.45);" alignment="CENTER">
+        <padding>
+            <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
+        </padding>
+        
+        <!-- Modal Card -->
+        <VBox spacing="15.0" maxHeight="500.0" maxWidth="850.0"
+              style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 24px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 15, 0, 0, 8);">
+            
+            <HBox alignment="CENTER_LEFT">
+                <Label text="Devices Listed for Clearance" style="-fx-font-family: 'Hanken Grotesk', 'Segoe UI Bold', 'Segoe UI', sans-serif; -fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #102A43;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="✕" onAction="#handleCloseGuardModal" styleClass="overlay-close-btn"/>
+            </HBox>
+            
+            <Separator/>
+            
+            <TableView fx:id="guardItemsTable" VBox.vgrow="ALWAYS" styleClass="modern-table" minHeight="200.0">
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                </columnResizePolicy>
+                <columns>
+                    <TableColumn fx:id="colGuardSelect" text="Select" prefWidth="65.0"/>
+                    <TableColumn fx:id="colGuardItemId" text="Item ID" prefWidth="75.0"/>
+                    <TableColumn fx:id="colGuardItemName" text="Device Name" prefWidth="130.0"/>
+                    <TableColumn fx:id="colGuardSerialNumber" text="Serial Number" prefWidth="130.0"/>
+                    <TableColumn fx:id="colGuardType" text="Type" prefWidth="140.0"/>
+                    <TableColumn fx:id="colGuardStatus" text="Manifest Status" prefWidth="130.0"/>
+                    <TableColumn fx:id="colGuardCurrentDayStatus" text="Today's Status" prefWidth="130.0"/>
+                </columns>
+            </TableView>
+            
+            <HBox spacing="12.0" alignment="CENTER_RIGHT">
+                <Button fx:id="logIngressBtn" text="Log Ingress" onAction="#handleConfirmEntry" styleClass="action-btn, action-btn-success" prefHeight="38.0" prefWidth="140.0"/>
+                <Button fx:id="logEgressBtn" text="Log Egress" onAction="#handleConfirmExit" styleClass="action-btn, action-btn-primary" prefHeight="38.0" prefWidth="140.0"/>
+            </HBox>
+        </VBox>
+    </StackPane>
+    
+</StackPane>

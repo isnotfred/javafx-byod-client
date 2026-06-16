@@ -4,29 +4,48 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://fxml.com/fxml/1"
       fx:controller="com.pup.byod.javafxbyodclient.controller.PendingRegistrationApprovalScreenController"
-      spacing="10.0" VBox.vgrow="ALWAYS">
+      spacing="15.0" VBox.vgrow="ALWAYS"
+      stylesheets="@../css/admin_dashboard_styles.css">
+      
+    <padding>
+        <Insets top="5.0" right="5.0" bottom="5.0" left="5.0"/>
+    </padding>
     
-    <Label text="Registration Approval Queue" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-    
-    <TableView fx:id="pendingTable" VBox.vgrow="ALWAYS">
-        <columns>
-            <TableColumn fx:id="colId" text="ID" prefWidth="50.0"/>
-            <TableColumn fx:id="colStudentName" text="Student Name" prefWidth="150.0"/>
-            <TableColumn fx:id="colDeviceName" text="Device Name" prefWidth="150.0"/>
-            <TableColumn fx:id="colSerialNumber" text="Serial Number" prefWidth="150.0"/>
-            <TableColumn fx:id="colPurpose" text="Purpose" prefWidth="150.0"/>
-        </columns>
-    </TableView>
-    
-    <VBox spacing="5.0">
-        <Label text="Rejection Remarks (Mandatory if rejecting):"/>
-        <TextArea fx:id="remarksArea" promptText="Enter reasons for rejection here..." prefHeight="80.0"/>
+    <!-- Hero Header Banner -->
+    <VBox styleClass="welcome-banner" spacing="4.0" alignment="CENTER_LEFT" maxWidth="Infinity">
+        <Label text="Registration Approval Queue" styleClass="welcome-title"/>
+        <Label text="Review, approve, or reject student BYOD hardware registration requests." styleClass="welcome-subtitle"/>
     </VBox>
     
-    <HBox spacing="10.0" alignment="CENTER_RIGHT">
-        <Button text="Approve" onAction="#handleApprove" style="-fx-text-fill: green; -fx-font-weight: bold;" prefWidth="100.0"/>
-        <Button text="Reject" onAction="#handleReject" style="-fx-text-fill: red;" prefWidth="100.0"/>
-    </HBox>
+    <!-- Table Card Container -->
+    <VBox spacing="10.0" VBox.vgrow="ALWAYS"
+          style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 16px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 8, 0, 0, 2);">
+        <Label text="Pending Approvals Registry" style="-fx-font-family: 'Hanken Grotesk', 'Segoe UI Bold', 'Segoe UI', sans-serif; -fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #102A43;"/>
+        <TableView fx:id="pendingTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="50.0"/>
+                <TableColumn fx:id="colStudentName" text="Student Name" prefWidth="150.0"/>
+                <TableColumn fx:id="colDeviceName" text="Device Name" prefWidth="150.0"/>
+                <TableColumn fx:id="colSerialNumber" text="Serial Number" prefWidth="150.0"/>
+                <TableColumn fx:id="colPurpose" text="Purpose" prefWidth="150.0"/>
+            </columns>
+        </TableView>
+    </VBox>
+    
+    <!-- Action Card Container -->
+    <VBox spacing="12.0"
+          style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 16px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 8, 0, 0, 2);">
+        <Label text="Rejection Remarks (Mandatory if rejecting):" styleClass="form-label"/>
+        <TextArea fx:id="remarksArea" promptText="Enter reasons for rejection here..." styleClass="modern-textarea" prefHeight="80.0"/>
+        
+        <HBox spacing="12.0" alignment="CENTER_RIGHT" style="-fx-padding: 5px 0 0 0;">
+            <Button text="Reject Request" onAction="#handleReject" styleClass="action-btn, action-btn-danger" prefWidth="150.0" prefHeight="38.0"/>
+            <Button text="Approve Request" onAction="#handleApprove" styleClass="action-btn, action-btn-success" prefWidth="150.0" prefHeight="38.0"/>
+        </HBox>
+    </VBox>
 </VBox>

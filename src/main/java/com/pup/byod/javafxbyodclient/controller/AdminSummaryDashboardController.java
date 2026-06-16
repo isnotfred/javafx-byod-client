@@ -10,12 +10,15 @@ import com.pup.byod.javafxbyodclient.util.NavigationManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToggleButton;
 import java.util.List;
 
 public class AdminSummaryDashboardController {
+    @FXML private Label welcomeLabel;
     @FXML private Label activeStudentsLabel;
     @FXML private Label registeredDevicesLabel;
     @FXML private Label pendingApprovalsLabel;
+    @FXML private Label pendingApprovalsBadge;
     @FXML private Label devicesOnCampusLabel;
 
     private final StudentService studentService = new StudentService();
@@ -23,6 +26,12 @@ public class AdminSummaryDashboardController {
 
     @FXML
     public void initialize() {
+        if (com.pup.byod.javafxbyodclient.session.SessionManager.getInstance().getCurrentUser() != null) {
+            String fullName = com.pup.byod.javafxbyodclient.session.SessionManager.getInstance().getCurrentUser().getFullName();
+            welcomeLabel.setText("Welcome back, " + fullName + "!");
+        } else {
+            welcomeLabel.setText("Welcome back!");
+        }
         refreshStats();
     }
 
@@ -34,62 +43,109 @@ public class AdminSummaryDashboardController {
         devicesOnCampusLabel.setText("...");
 
         new Thread(() -> {
+            String activeStudentsStr = "Error";
             try {
-                // Fetch students count
                 List<Student> students = studentService.getAllStudents();
                 long activeStudents = students.stream().filter(s -> "active".equalsIgnoreCase(s.getStatus())).count();
-
-                // Fetch devices count
-                List<Device> devices = deviceService.getAllDevices();
-                long registeredDevices = devices.size();
-
-                // Fetch pending approvals
-                List<PendingDevice> pending = deviceService.getPendingDevices();
-                long pendingCount = pending.size();
-
-                // Fetch devices currently on campus (where campusStatus = "entry")
-                List<DeviceCampusStatus> statuses = deviceService.getDeviceCampusStatus();
-                long devicesOnCampus = statuses.stream().filter(s -> "entry".equalsIgnoreCase(s.getCampusStatus())).count();
-
-                Platform.runLater(() -> {
-                    activeStudentsLabel.setText(String.valueOf(activeStudents));
-                    registeredDevicesLabel.setText(String.valueOf(registeredDevices));
-                    pendingApprovalsLabel.setText(String.valueOf(pendingCount));
-                    devicesOnCampusLabel.setText(String.valueOf(devicesOnCampus));
-                });
+                activeStudentsStr = String.valueOf(activeStudents);
             } catch (Exception e) {
                 e.printStackTrace();
-                Platform.runLater(() -> {
-                    activeStudentsLabel.setText("Error");
-                    registeredDevicesLabel.setText("Error");
-                    pendingApprovalsLabel.setText("Error");
-                    devicesOnCampusLabel.setText("Error");
-                });
             }
+
+            String registeredDevicesStr = "Error";
+            try {
+                List<Device> devices = deviceService.getAllDevices();
+                long registeredDevices = devices.size();
+                registeredDevicesStr = String.valueOf(registeredDevices);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            String pendingCountStr = "Error";
+            try {
+                List<PendingDevice> pending = deviceService.getPendingDevices();
+                long pendingCount = pending.size();
+                pendingCountStr = String.valueOf(pendingCount);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            String devicesOnCampusStr = "Error";
+            try {
+                List<DeviceCampusStatus> statuses = deviceService.getDeviceCampusStatus();
+                long devicesOnCampus = statuses.stream().filter(s -> "entry".equalsIgnoreCase(s.getCampusStatus())).count();
+                devicesOnCampusStr = String.valueOf(devicesOnCampus);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            final String fActiveStudents = activeStudentsStr;
+            final String fRegisteredDevices = registeredDevicesStr;
+            final String fPendingCount = pendingCountStr;
+            final String fDevicesOnCampus = devicesOnCampusStr;
+
+            Platform.runLater(() -> {
+                activeStudentsLabel.setText(fActiveStudents);
+                registeredDevicesLabel.setText(fRegisteredDevices);
+                pendingApprovalsLabel.setText(fPendingCount);
+                devicesOnCampusLabel.setText(fDevicesOnCampus);
+                if (pendingApprovalsBadge != null) {
+                    pendingApprovalsBadge.setText(fPendingCount);
+                    if ("0".equals(fPendingCount) || "Error".equals(fPendingCount)) {
+                        pendingApprovalsBadge.setVisible(false);
+                    } else {
+                        pendingApprovalsBadge.setVisible(true);
+                    }
+                }
+            });
         }).start();
     }
 
     @FXML
     public void goToStudents() {
         NavigationManager.getInstance().loadViewIntoContainer(
-            NavigationManager.getInstance().getContentArea(), "StudentManagementScreen.fxml");
+            NavigationManager.getInstance().getContentArea(), "RegistryManagementScreen.fxml");
+        syncSidebarSelection("Registry Management");
     }
 
     @FXML
     public void goToDevices() {
         NavigationManager.getInstance().loadViewIntoContainer(
-            NavigationManager.getInstance().getContentArea(), "DeviceManagementScreen.fxml");
+            NavigationManager.getInstance().getContentArea(), "TemporaryEventDeviceGuardScreen.fxml");
+        syncSidebarSelection("Event Requests");
     }
 
     @FXML
     public void goToApprovals() {
         NavigationManager.getInstance().loadViewIntoContainer(
             NavigationManager.getInstance().getContentArea(), "PendingRegistrationApprovalScreen.fxml");
+        syncSidebarSelection("Pending Approvals");
     }
 
     @FXML
     public void goToReports() {
         NavigationManager.getInstance().loadViewIntoContainer(
             NavigationManager.getInstance().getContentArea(), "ReportsScreen.fxml");
+        syncSidebarSelection("Analytical Reports");
+    }
+
+    private void syncSidebarSelection(String buttonText) {
+        try {
+            javafx.scene.layout.Pane container = NavigationManager.getInstance().getContentArea();
+            if (container != null && container.getScene() != null) {
+                javafx.scene.Scene scene = container.getScene();
+                for (javafx.scene.Node node : scene.getRoot().lookupAll(".sidebar-btn")) {
+                    if (node instanceof ToggleButton) {
+                        ToggleButton tb = (ToggleButton) node;
+                        if (buttonText.equals(tb.getText())) {
+                            tb.setSelected(true);
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
