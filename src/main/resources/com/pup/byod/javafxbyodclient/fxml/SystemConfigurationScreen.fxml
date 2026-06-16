@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.pup.byod.javafxbyodclient.controller.SystemConfigurationScreenController"
+      spacing="15.0" VBox.vgrow="ALWAYS"
+      stylesheets="@../css/admin_dashboard_styles.css">
+      
+    <padding>
+        <Insets top="5.0" right="5.0" bottom="5.0" left="5.0"/>
+    </padding>
+    
+    <!-- Hero Header Banner -->
+    <VBox styleClass="welcome-banner" spacing="4.0" alignment="CENTER_LEFT" maxWidth="Infinity">
+        <Label text="System Configuration &amp; Policies" styleClass="welcome-title"/>
+        <Label text="Adjust global rules, override allowances, and device limitation parameters of the BYOD network." styleClass="welcome-subtitle"/>
+    </VBox>
+    
+    <!-- Main Content Card -->
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+        <VBox spacing="20.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 24px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 10, 0, 0, 4);">
+        
+        <Label text="Global System Settings &amp; Policies" style="-fx-font-family: 'Hanken Grotesk', 'Segoe UI Bold', 'Segoe UI', sans-serif; -fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #102A43;"/>
+        <Separator/>
+        
+        <!-- Max Devices Per Student -->
+        <HBox spacing="20.0" alignment="CENTER_LEFT" style="-fx-padding: 5px 0;">
+            <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                <Label text="Max Devices Per Student" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #102A43;"/>
+                <Label text="Maximum number of active registered devices allowed per student (between 3 and 10)" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 12px; -fx-text-fill: #64748B;"/>
+            </VBox>
+            <Spinner fx:id="maxDevicesSpinner" prefWidth="120.0" prefHeight="38.0" styleClass="modern-spinner"/>
+        </HBox>
+        <Separator/>
+        
+        <!-- Allow Unregistered Devices -->
+        <HBox spacing="20.0" alignment="CENTER_LEFT" style="-fx-padding: 5px 0;">
+            <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                <Label text="Allow Unregistered Devices" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #102A43;"/>
+                <Label text="Whether unapproved devices can be checked in by guards" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 12px; -fx-text-fill: #64748B;"/>
+            </VBox>
+            <ToggleButton fx:id="allowUnregisteredSwitch" styleClass="switch-btn">
+                <graphic>
+                    <Region styleClass="thumb"/>
+                </graphic>
+            </ToggleButton>
+        </HBox>
+        <Separator/>
+        
+        <!-- Event Request Max Duration Days -->
+        <HBox spacing="20.0" alignment="CENTER_LEFT" style="-fx-padding: 5px 0;">
+            <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                <Label text="Event Request Max Duration Days" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #102A43;"/>
+                <Label text="Minimum duration allowed is 7 days" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 12px; -fx-text-fill: #64748B;"/>
+            </VBox>
+            <Spinner fx:id="eventDurationSpinner" prefWidth="120.0" prefHeight="38.0" styleClass="modern-spinner"/>
+        </HBox>
+        <Separator/>
+        
+        <!-- Auto Exit Cutoff Time -->
+        <HBox spacing="20.0" alignment="CENTER_LEFT" style="-fx-padding: 5px 0;">
+            <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                <Label text="Auto Exit Cutoff Time" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #102A43;"/>
+                <Label text="Scheduled time to automatically check out devices left on campus (8 PM, 9 PM, or 10 PM)" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 12px; -fx-text-fill: #64748B;"/>
+            </VBox>
+            <ComboBox fx:id="autoExitCombo" prefWidth="150.0" prefHeight="38.0" styleClass="modern-combo-box"/>
+        </HBox>
+        <Separator/>
+        
+        <HBox alignment="CENTER_RIGHT" style="-fx-padding: 20px 0 0 0;">
+            <Button fx:id="saveButton" text="Save Settings" onAction="#handleSaveSettings" styleClass="action-btn, action-btn-success" prefHeight="40.0" prefWidth="180.0"/>
+        </HBox>
+            
+        </VBox>
+    </ScrollPane>
+    
+</VBox>

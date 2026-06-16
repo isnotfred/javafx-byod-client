@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.pup.byod.javafxbyodclient.controller.ReportsScreenController"
+      spacing="15.0" VBox.vgrow="ALWAYS"
+      stylesheets="@../css/admin_dashboard_styles.css">
+      
+    <padding>
+        <Insets top="5.0" right="5.0" bottom="5.0" left="5.0"/>
+    </padding>
+    
+    <!-- Hero Header Banner -->
+    <VBox styleClass="welcome-banner" spacing="4.0" alignment="CENTER_LEFT" maxWidth="Infinity">
+        <Label text="Analytical Reports &amp; Incident Logs" styleClass="welcome-title"/>
+        <Label text="Generate institutional analytics, hardware presence statistics, and system incident overrides reports." styleClass="welcome-subtitle"/>
+    </VBox>
+    
+    <!-- Reports Card Container -->
+    <VBox spacing="15.0" VBox.vgrow="ALWAYS"
+          style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 16px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 8, 0, 0, 2);">
+        
+        <!-- Controls Filter Header -->
+        <HBox spacing="15.0" alignment="CENTER_LEFT">
+            <HBox spacing="8.0" alignment="CENTER_LEFT">
+                <Label text="Report Type:" styleClass="form-label"/>
+                <ComboBox fx:id="reportTypeBox" promptText="Select Report Type" prefWidth="220.0" styleClass="modern-combo-box" prefHeight="38.0"/>
+            </HBox>
+            
+            <HBox fx:id="startDateContainer" spacing="8.0" alignment="CENTER_LEFT">
+                <Label fx:id="startDateLabel" text="From:" styleClass="form-label"/>
+                <DatePicker fx:id="startDatePicker" styleClass="modern-date-picker" prefHeight="38.0"/>
+                <ComboBox fx:id="monthSelectBox" styleClass="modern-combo-box" prefHeight="38.0" prefWidth="130.0" visible="false" managed="false"/>
+                <ComboBox fx:id="yearSelectBox" styleClass="modern-combo-box" prefHeight="38.0" prefWidth="95.0" visible="false" managed="false"/>
+            </HBox>
+            
+            <HBox fx:id="endDateContainer" spacing="8.0" alignment="CENTER_LEFT">
+                <Label text="To:" styleClass="form-label"/>
+                <DatePicker fx:id="endDatePicker" styleClass="modern-date-picker" prefHeight="38.0"/>
+            </HBox>
+            
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Generate Report" onAction="#handleGenerateReport" styleClass="action-btn, action-btn-primary" prefHeight="38.0" prefWidth="180.0"/>
+        </HBox>
+        
+        <TabPane fx:id="reportsTabPane" VBox.vgrow="ALWAYS" tabClosingPolicy="UNAVAILABLE" styleClass="modern-tab-pane" minHeight="300.0">
+            <tabs>
+                <Tab text="Data Table">
+                    <content>
+                        <TableView fx:id="reportsTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+                            <!-- Columns are generated dynamically in the controller -->
+                        </TableView>
+                    </content>
+                </Tab>
+                <Tab text="Visual Analytics">
+                    <content>
+                        <StackPane fx:id="chartContainer" VBox.vgrow="ALWAYS" style="-fx-padding: 16px;">
+                            <Label text="Generate a report to view analytics" style="-fx-text-fill: #7284A8; -fx-font-size: 14px; -fx-font-family: 'Inter', sans-serif;"/>
+                        </StackPane>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+        
+    </VBox>
+    
+</VBox>
