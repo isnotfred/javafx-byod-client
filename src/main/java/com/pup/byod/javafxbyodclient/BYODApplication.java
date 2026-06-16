@@ -10,7 +10,6 @@ public class BYODApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         stage.setTitle("BYOD Device Management System");
-        stage.setMaximized(true);
         NavigationManager.getInstance().setPrimaryStage(stage);
         NavigationManager.getInstance().switchRootScene("LoginScreen.fxml");
     }

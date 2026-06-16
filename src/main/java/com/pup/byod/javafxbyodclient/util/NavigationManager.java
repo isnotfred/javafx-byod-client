@@ -67,17 +67,20 @@ public class NavigationManager {
                 }
             }
 
+            if ("LoginScreen.fxml".equals(fxmlFileName)) {
+                primaryStage.setMaximized(false);
+                primaryStage.setWidth(750);
+                primaryStage.setHeight(600);
+            } else {
+                primaryStage.setMaximized(true);
+            }
+
             if (!primaryStage.isShowing()) {
                 primaryStage.show();
             }
 
             if ("LoginScreen.fxml".equals(fxmlFileName)) {
-                primaryStage.setMaximized(false);
-                primaryStage.setWidth(750);
-                primaryStage.setHeight(600);
                 primaryStage.centerOnScreen();
-            } else {
-                primaryStage.setMaximized(true);
             }
         } catch (IOException e) {
             e.printStackTrace();
