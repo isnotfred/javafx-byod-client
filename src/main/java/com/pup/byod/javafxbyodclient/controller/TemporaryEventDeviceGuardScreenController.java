@@ -97,6 +97,7 @@ public class TemporaryEventDeviceGuardScreenController {
     @FXML private TextField modelField;
     @FXML private TextField serialNumberField;
     @FXML private ComboBox<String> deviceTypeBox;
+    @FXML private Label serialNumberLabel;
 
     // Actions
     @FXML private VBox addDeviceCard;
@@ -348,6 +349,39 @@ public class TemporaryEventDeviceGuardScreenController {
         
         com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(deviceNameField);
         com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(deviceTypeBox);
+
+        serialNumberField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) {
+                String type = deviceTypeBox.getValue();
+                if (type == null || !type.equals("Project Prototypes (Optional SN)")) {
+                    com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(serialNumberField, "Input needed");
+                } else {
+                    com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(serialNumberField);
+                }
+            }
+        });
+        serialNumberField.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (!com.pup.byod.javafxbyodclient.util.ValidationHelper.isEmpty(newVal)) {
+                com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(serialNumberField);
+            }
+        });
+
+        deviceTypeBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if ("Project Prototypes (Optional SN)".equals(newVal)) {
+                serialNumberField.setPromptText("Optional Serial Number");
+                com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(serialNumberField);
+                if (serialNumberLabel != null) {
+                    serialNumberLabel.setGraphic(null);
+                }
+            } else {
+                serialNumberField.setPromptText("Enter Serial Number");
+                if (serialNumberLabel != null) {
+                    javafx.scene.control.Label ast = new javafx.scene.control.Label("*");
+                    ast.setStyle("-fx-text-fill: red;");
+                    serialNumberLabel.setGraphic(ast);
+                }
+            }
+        });
     }
 
     private void setupDraftListeners() {
@@ -575,6 +609,10 @@ public class TemporaryEventDeviceGuardScreenController {
                 sel.selectedProperty().addListener((obs, oldVal, newVal) -> updateGuardActionButtonsState());
                 deviceList.add(sel);
             }
+            
+            // Apply smart pre-selection based on current campus status of event devices
+            applySmartSelection();
+
             if (ingressEgressBtn != null) {
                 ingressEgressBtn.setDisable(devices.isEmpty());
             }
@@ -642,9 +680,15 @@ public class TemporaryEventDeviceGuardScreenController {
 
         boolean v1 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(deviceNameField, "Input needed");
         boolean v2 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateComboBox(deviceTypeBox);
+        boolean v3 = true;
+        if (type == null || !type.equals("Project Prototypes (Optional SN)")) {
+            v3 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(serialNumberField, "Input needed");
+        } else {
+            com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(serialNumberField);
+        }
 
-        if (!v1 || !v2) {
-            AlertHelper.showWarning("Item Warning", "Missing inputs", "Please enter at least a device name and select a device type.");
+        if (!v1 || !v2 || !v3) {
+            AlertHelper.showWarning("Item Warning", "Missing inputs", "Please complete all required fields.");
             return;
         }
 
@@ -736,6 +780,7 @@ public class TemporaryEventDeviceGuardScreenController {
         
         com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(deviceNameField);
         com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(deviceTypeBox);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(serialNumberField);
 
         // Clear lists
         deviceList.clear();
@@ -1002,8 +1047,28 @@ public class TemporaryEventDeviceGuardScreenController {
         handleClearForm();
     }
 
+    private void applySmartSelection() {
+        boolean hasEntry = false;
+        for (EventDeviceSelection sel : deviceList) {
+            if ("entry".equalsIgnoreCase(sel.getCurrentDayStatus())) {
+                hasEntry = true;
+                break;
+            }
+        }
+
+        for (EventDeviceSelection sel : deviceList) {
+            boolean isEntry = "entry".equalsIgnoreCase(sel.getCurrentDayStatus());
+            if (hasEntry) {
+                sel.setSelected(isEntry);
+            } else {
+                sel.setSelected(!isEntry);
+            }
+        }
+    }
+
     @FXML
     public void handleOpenGuardModal() {
+        applySmartSelection();
         guardModalOverlay.setVisible(true);
         updateGuardActionButtonsState();
     }

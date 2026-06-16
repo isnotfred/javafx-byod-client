@@ -300,8 +300,8 @@
                                 <TextField fx:id="modelField" promptText="e.g. 4B (8GB)" styleClass="modern-textfield" prefHeight="38.0"/>
                             </VBox>
                             <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
-                                <Label text="Serial Number:" styleClass="form-label"/>
-                                <TextField fx:id="serialNumberField" promptText="Optional Serial Number" styleClass="modern-textfield" prefHeight="38.0"/>
+                                <Label fx:id="serialNumberLabel" text="Serial Number:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
+                                <TextField fx:id="serialNumberField" promptText="Enter Serial Number" styleClass="modern-textfield" prefHeight="38.0"/>
                             </VBox>
                             <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
                                 <Label text="Device Type:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
@@ -311,7 +311,7 @@
                         
                         <HBox spacing="10.0" alignment="CENTER_RIGHT" style="-fx-padding: 5px 0 0 0;">
                             <Button text="Remove Device" onAction="#handleRemoveItem" styleClass="action-btn, action-btn-danger" prefHeight="32.0" style="-fx-font-size: 12px;"/>
-                            <Button text="Add Device" onAction="#handleAddItem" styleClass="action-btn, action-btn-secondary" prefHeight="32.0" style="-fx-font-size: 12px;"/>
+                            <Button text="Add Device" onAction="#handleAddItem" styleClass="action-btn, action-btn-success" prefHeight="32.0" style="-fx-font-size: 12px;"/>
                         </HBox>
                     </VBox>
                     

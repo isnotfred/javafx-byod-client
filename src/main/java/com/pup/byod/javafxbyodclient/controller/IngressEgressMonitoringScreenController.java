@@ -395,9 +395,7 @@ public class IngressEgressMonitoringScreenController {
         for (DeviceSelection item : deviceList) {
             if (item.isSelected()) {
                 String status = item.getCampusStatus();
-                if ("pending".equalsIgnoreCase(item.getDevice().getRegistrationStatus())) {
-                    hasExit = true; 
-                } else if ("exit".equalsIgnoreCase(status)) {
+                if ("exit".equalsIgnoreCase(status)) {
                     hasExit = true;
                 } else if ("entry".equalsIgnoreCase(status) || "inside".equalsIgnoreCase(status)) {
                     hasEntry = true;
