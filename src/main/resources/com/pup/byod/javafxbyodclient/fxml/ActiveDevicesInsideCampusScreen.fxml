@@ -29,6 +29,10 @@
                 <Label text="Showing live entry and exit states for all registered user hardware" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 12px; -fx-text-fill: #64748B;"/>
             </VBox>
             <Region HBox.hgrow="ALWAYS"/>
+            <StackPane alignment="CENTER_LEFT" prefWidth="250.0">
+                <TextField fx:id="searchField" promptText="Search ID, student ID, serial..." styleClass="modern-textfield, search-field-with-icon" prefHeight="35.0" maxWidth="Infinity"/>
+                <Label text="🔍" mouseTransparent="true" style="-fx-padding: 0 0 0 10px; -fx-text-fill: #94A3B8; -fx-font-size: 13px;"/>
+            </StackPane>
             <Button text="Refresh View" onAction="#loadStatus" styleClass="action-btn, action-btn-warning" prefHeight="35.0"/>
         </HBox>
         

@@ -4,12 +4,17 @@ import com.pup.byod.javafxbyodclient.model.DeviceCampusStatus;
 import com.pup.byod.javafxbyodclient.service.DeviceService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import com.pup.byod.javafxbyodclient.util.CsvExportHelper;
 import com.pup.byod.javafxbyodclient.util.AlertHelper;
+import com.pup.byod.javafxbyodclient.util.PromptTextHelper;
 
 import java.util.List;
 
@@ -22,8 +27,11 @@ public class ActiveDevicesInsideCampusScreenController {
     @FXML private TableColumn<DeviceCampusStatus, String> colStatus;
     @FXML private TableColumn<DeviceCampusStatus, String> colLastTime;
 
+    @FXML private TextField searchField;
+
     private final DeviceService deviceService = new DeviceService();
     private final ObservableList<DeviceCampusStatus> statusList = FXCollections.observableArrayList();
+    private FilteredList<DeviceCampusStatus> filteredList;
 
     @FXML
     public void initialize() {
@@ -34,7 +42,10 @@ public class ActiveDevicesInsideCampusScreenController {
         colStatus.setCellValueFactory(new PropertyValueFactory<>("campusStatus"));
         colLastTime.setCellValueFactory(new PropertyValueFactory<>("lastEventTime"));
 
-        statusTable.setItems(statusList);
+        filteredList = new FilteredList<>(statusList, p -> true);
+        SortedList<DeviceCampusStatus> sortedData = new SortedList<>(filteredList);
+        sortedData.comparatorProperty().bind(statusTable.comparatorProperty());
+        statusTable.setItems(sortedData);
 
         // Restrict sorting strictly to Device ID
         colId.setSortable(true);
@@ -61,7 +72,39 @@ public class ActiveDevicesInsideCampusScreenController {
             }
         });
 
+        if (searchField != null) {
+            searchField.textProperty().addListener((obs, oldVal, newVal) -> {
+                applyFilter(newVal);
+            });
+            PromptTextHelper.setup(searchField);
+        }
+
         loadStatus();
+    }
+
+    private void applyFilter(String query) {
+        if (filteredList == null) return;
+        filteredList.setPredicate(status -> {
+            if (query == null || query.trim().isEmpty()) {
+                return true;
+            }
+            String lowerCaseFilter = query.toLowerCase().trim();
+
+            // Check Device ID (id)
+            if (status.getDeviceId() != null && String.valueOf(status.getDeviceId()).contains(lowerCaseFilter)) {
+                return true;
+            }
+            // Check Student Number (studentId)
+            if (status.getStudentId() != null && status.getStudentId().toLowerCase().contains(lowerCaseFilter)) {
+                return true;
+            }
+            // Check Device Serial Number (serialNumber)
+            if (status.getSerialNumber() != null && status.getSerialNumber().toLowerCase().contains(lowerCaseFilter)) {
+                return true;
+            }
+
+            return false;
+        });
     }
 
     @FXML
