@@ -44,7 +44,6 @@ public class RegistryManagementScreenController {
     @FXML private TextField firstNameField;
     @FXML private TextField lastNameField;
     @FXML private TextField courseYearLevelField;
-    @FXML private ComboBox<String> studentStatusBox;
 
     // Device controls
     @FXML private TableView<Device> deviceTable;
@@ -97,7 +96,6 @@ public class RegistryManagementScreenController {
         deviceTable.setItems(deviceList);
 
         // Populate Choice Boxes
-        studentStatusBox.getItems().addAll("active", "inactive");
         deviceStatusBox.getItems().addAll("active", "inactive");
 
         deviceTypeBox.getItems().addAll(
@@ -291,22 +289,24 @@ public class RegistryManagementScreenController {
         firstNameField.setText(selected.getFirstName());
         lastNameField.setText(selected.getLastName());
         courseYearLevelField.setText(selected.getCourseYearLevel());
-        studentStatusBox.setValue(selected.getStatus());
 
         // Clear device forms, then load devices for student
         handleClearDevice();
         deviceList.clear();
         loadDevicesForStudent(selected.getStudentId());
 
-        // Show deactivate button in edit mode, hide clear form
+        // Show deactivate/reactivate button in edit mode, hide clear form
         if (deactivateRecordBtn != null) {
             boolean isInactive = "inactive".equalsIgnoreCase(selected.getStatus());
+            deactivateRecordBtn.setVisible(true);
+            deactivateRecordBtn.setManaged(true);
             if (isInactive) {
-                deactivateRecordBtn.setVisible(false);
-                deactivateRecordBtn.setManaged(false);
+                deactivateRecordBtn.setText("Reactivate Student");
+                deactivateRecordBtn.getStyleClass().removeAll("action-btn-danger");
+                if (!deactivateRecordBtn.getStyleClass().contains("action-btn-success")) {
+                    deactivateRecordBtn.getStyleClass().add("action-btn-success");
+                }
             } else {
-                deactivateRecordBtn.setVisible(true);
-                deactivateRecordBtn.setManaged(true);
                 deactivateRecordBtn.setText("Deactivate Record");
                 deactivateRecordBtn.getStyleClass().removeAll("action-btn-success");
                 if (!deactivateRecordBtn.getStyleClass().contains("action-btn-danger")) {
@@ -559,44 +559,52 @@ public class RegistryManagementScreenController {
         Device selectedDevice = deviceTable.getSelectionModel().getSelectedItem();
 
         if (selectedStudent == null && selectedDevice == null) {
-            AlertHelper.showWarning("Deactivation", "No Selection", "Please select a student or device to deactivate.");
-            return;
-        }
-
-        // Prevent re-deactivation of already inactive students
-        if (selectedStudent != null && "inactive".equalsIgnoreCase(selectedStudent.getStatus())) {
-            AlertHelper.showWarning("Deactivate Record", "Already Inactive", "This student record is already deactivated.");
-            return;
-        }
-
-        if (!AlertHelper.showConfirmation("Deactivation", "Confirm Deactivation", "Are you sure you want to deactivate the selected student/device record? This action will permanently deactivate the student record. Deactivated records cannot be reactivated.")) {
+            AlertHelper.showWarning("Deactivation", "No Selection", "Please select a student or device to deactivate/reactivate.");
             return;
         }
 
         StringBuilder successMsg = new StringBuilder();
-        boolean deactivatedAny = false;
+        boolean changedAny = false;
 
         try {
             if (selectedDevice != null) {
-                deviceService.deactivateDevice(selectedDevice.getDeviceId());
-                successMsg.append("Device '").append(selectedDevice.getSerialNumber()).append("' deactivated (status marked inactive).\n");
-                deactivatedAny = true;
+                if (AlertHelper.showConfirmation("Deactivation", "Confirm Deactivation", "Are you sure you want to deactivate the selected device record?")) {
+                    deviceService.deactivateDevice(selectedDevice.getDeviceId());
+                    successMsg.append("Device '").append(selectedDevice.getSerialNumber()).append("' deactivated (status marked inactive).\n");
+                    changedAny = true;
+                }
             }
             if (selectedStudent != null) {
-                studentService.deactivateStudent(selectedStudent.getStudentId());
-                successMsg.append("Student '").append(selectedStudent.getStudentId()).append("' deactivated (status marked inactive).\n");
-                deactivatedAny = true;
+                boolean isInactive = "inactive".equalsIgnoreCase(selectedStudent.getStatus());
+                if (isInactive) {
+                    if (AlertHelper.showConfirmation("Reactivation", "Confirm Reactivation", "Are you sure you want to reactivate the selected student record?")) {
+                        Student s = new Student();
+                        s.setStudentId(selectedStudent.getStudentId());
+                        s.setFirstName(selectedStudent.getFirstName());
+                        s.setLastName(selectedStudent.getLastName());
+                        s.setCourseYearLevel(selectedStudent.getCourseYearLevel());
+                        s.setStatus("active");
+                        studentService.updateStudent(selectedStudent.getStudentId(), s);
+                        successMsg.append("Student '").append(selectedStudent.getStudentId()).append("' reactivated successfully.\n");
+                        changedAny = true;
+                    }
+                } else {
+                    if (AlertHelper.showConfirmation("Deactivation", "Confirm Deactivation", "Are you sure you want to deactivate the selected student record?")) {
+                        studentService.deactivateStudent(selectedStudent.getStudentId());
+                        successMsg.append("Student '").append(selectedStudent.getStudentId()).append("' deactivated (status marked inactive).\n");
+                        changedAny = true;
+                    }
+                }
             }
 
-            if (deactivatedAny) {
-                AlertHelper.showInfo("Deactivation Completed", "Success", successMsg.toString().trim());
+            if (changedAny) {
+                AlertHelper.showInfo("Operation Completed", "Success", successMsg.toString().trim());
+                formOverlay.setVisible(false); // Close overlay after successful update
+                loadStudents();
+                handleClearForm();
             }
-            
-            formOverlay.setVisible(false); // Close overlay after successful deactivation
-            loadStudents();
-            handleClearForm();
         } catch (Exception e) {
-            AlertHelper.showError("Error", "Deactivate Failed", e.getMessage());
+            AlertHelper.showError("Error", "Action Failed", e.getMessage());
         }
     }
 
@@ -697,7 +705,6 @@ public class RegistryManagementScreenController {
         String first = firstNameField.getText();
         String last = lastNameField.getText();
         String course = courseYearLevelField.getText();
-        String studentStatus = studentStatusBox.getValue();
 
         boolean v1 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(studentIdField, "Input needed");
         boolean v2 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(firstNameField, "Input needed");
@@ -714,7 +721,12 @@ public class RegistryManagementScreenController {
         s.setFirstName(first);
         s.setLastName(last);
         s.setCourseYearLevel(course);
-        s.setStatus(studentStatus);
+        if (isStudentEditMode) {
+            Student selected = studentTable.getSelectionModel().getSelectedItem();
+            s.setStatus(selected != null ? selected.getStatus() : "active");
+        } else {
+            s.setStatus("active");
+        }
 
         if (!AlertHelper.showConfirmation("Save Registry Record", "Confirm Save", "Are you sure you want to save the registry changes for student ID: " + studentId + "?")) {
             return;
@@ -769,7 +781,6 @@ public class RegistryManagementScreenController {
         firstNameField.clear();
         lastNameField.clear();
         courseYearLevelField.clear();
-        studentStatusBox.setValue("active");
         
         com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(studentIdField);
         com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(firstNameField);

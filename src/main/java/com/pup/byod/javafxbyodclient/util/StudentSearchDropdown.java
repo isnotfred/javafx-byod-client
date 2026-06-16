@@ -14,6 +14,10 @@ public class StudentSearchDropdown {
     private static final StudentService studentService = new StudentService();
 
     public static void attach(TextField textField, Consumer<Student> onStudentSelected) {
+        attach(textField, null, onStudentSelected);
+    }
+
+    public static void attach(TextField textField, java.util.function.Predicate<Student> filter, Consumer<Student> onStudentSelected) {
         ContextMenu autocompleteMenu = new ContextMenu();
         autocompleteMenu.getStyleClass().add("student-search-popup");
 
@@ -27,8 +31,12 @@ public class StudentSearchDropdown {
                             if (!textField.getText().trim().equals(currentText)) return;
                             
                             autocompleteMenu.getItems().clear();
+                            boolean hasItems = false;
                             if (!matches.isEmpty()) {
                                 for (Student s : matches) {
+                                    if (filter != null && !filter.test(s)) {
+                                        continue;
+                                    }
                                     MenuItem item = new MenuItem(s.getStudentId() + " - " + s.getFirstName() + " " + s.getLastName());
                                     item.setOnAction(e -> {
                                         textField.setText(s.getStudentId());
@@ -37,10 +45,13 @@ public class StudentSearchDropdown {
                                         }
                                     });
                                     autocompleteMenu.getItems().add(item);
+                                    hasItems = true;
                                 }
-                                if (textField.isFocused() && textField.getScene() != null && textField.getScene().getWindow() != null) {
+                                if (hasItems && textField.isFocused() && textField.getScene() != null && textField.getScene().getWindow() != null) {
                                     javafx.geometry.Bounds bounds = textField.localToScreen(textField.getBoundsInLocal());
                                     autocompleteMenu.show(textField, bounds.getMinX(), bounds.getMaxY());
+                                } else {
+                                    autocompleteMenu.hide();
                                 }
                             } else {
                                 autocompleteMenu.hide();

@@ -65,7 +65,7 @@ public class IngressEgressMonitoringScreenController {
     @FXML
     public void initialize() {
         // Setup Student ID Autocomplete & Prompt text behavior
-        com.pup.byod.javafxbyodclient.util.StudentSearchDropdown.attach(studentIdField, s -> handleStudentSearch());
+        com.pup.byod.javafxbyodclient.util.StudentSearchDropdown.attach(studentIdField, s -> !"inactive".equalsIgnoreCase(s.getStatus()), s -> handleStudentSearch());
         com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(studentIdField);
         
         studentIdField.setOnKeyPressed(event -> {
@@ -137,7 +137,11 @@ public class IngressEgressMonitoringScreenController {
                 if (!row.isEmpty() && event.getClickCount() == 1) {
                     DeviceSelection item = row.getItem();
                     Device d = item.getDevice();
-                    if (!"inactive".equalsIgnoreCase(d.getDeviceStatus()) && !"rejected".equalsIgnoreCase(d.getRegistrationStatus())) {
+                    boolean isInactive = "inactive".equalsIgnoreCase(d.getDeviceStatus());
+                    boolean isRejected = "rejected".equalsIgnoreCase(d.getRegistrationStatus());
+                    boolean isInside = "entry".equalsIgnoreCase(item.getCampusStatus()) || "inside".equalsIgnoreCase(item.getCampusStatus());
+                    
+                    if ((!isInactive && !isRejected) || ((isInactive || isRejected) && isInside)) {
                         item.setSelected(!item.isSelected());
                         deviceTable.refresh();
                         updateActionButtonsVisibility();
@@ -159,7 +163,9 @@ public class IngressEgressMonitoringScreenController {
         // Initialize Log Columns
         colLogId.setCellValueFactory(new PropertyValueFactory<>("logId"));
         colLogType.setCellValueFactory(new PropertyValueFactory<>("eventType"));
-        colLogTime.setCellValueFactory(new PropertyValueFactory<>("eventTime"));
+        colLogTime.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+            com.pup.byod.javafxbyodclient.util.DateFormatter.formatTimestamp(cellData.getValue().getEventTime())
+        ));
         colLogHandler.setCellValueFactory(new PropertyValueFactory<>("handledBy"));
         colLogNotes.setCellValueFactory(new PropertyValueFactory<>("notes"));
 
@@ -195,7 +201,7 @@ public class IngressEgressMonitoringScreenController {
             List<Student> results = studentService.searchStudents(studentId);
             Student found = null;
             for (Student s : results) {
-                if (s.getStudentId().equalsIgnoreCase(studentId)) {
+                if (s.getStudentId().equalsIgnoreCase(studentId) && !"inactive".equalsIgnoreCase(s.getStatus())) {
                     found = s;
                     break;
                 }
@@ -398,8 +404,12 @@ public class IngressEgressMonitoringScreenController {
         for (DeviceSelection item : deviceList) {
             if (item.isSelected()) {
                 String status = item.getCampusStatus();
+                boolean isInactive = "inactive".equalsIgnoreCase(item.getDevice().getDeviceStatus());
+                boolean isRejected = "rejected".equalsIgnoreCase(item.getDevice().getRegistrationStatus());
                 if ("exit".equalsIgnoreCase(status)) {
-                    hasExit = true;
+                    if (!isInactive && !isRejected) {
+                        hasExit = true;
+                    }
                 } else if ("entry".equalsIgnoreCase(status) || "inside".equalsIgnoreCase(status)) {
                     hasEntry = true;
                 }

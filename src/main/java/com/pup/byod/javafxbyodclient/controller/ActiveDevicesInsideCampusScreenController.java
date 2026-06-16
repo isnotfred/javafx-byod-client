@@ -40,7 +40,9 @@ public class ActiveDevicesInsideCampusScreenController {
         colName.setCellValueFactory(new PropertyValueFactory<>("deviceName"));
         colSerialNumber.setCellValueFactory(new PropertyValueFactory<>("serialNumber"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("campusStatus"));
-        colLastTime.setCellValueFactory(new PropertyValueFactory<>("lastEventTime"));
+        colLastTime.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+            com.pup.byod.javafxbyodclient.util.DateFormatter.formatTimestamp(cellData.getValue().getLastEventTime())
+        ));
 
         filteredList = new FilteredList<>(statusList, p -> true);
         SortedList<DeviceCampusStatus> sortedData = new SortedList<>(filteredList);

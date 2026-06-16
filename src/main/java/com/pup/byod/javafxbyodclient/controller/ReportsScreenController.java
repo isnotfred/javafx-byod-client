@@ -64,6 +64,22 @@ public class ReportsScreenController {
         endDatePicker.setValue(LocalDate.now());
         reportsTable.setPlaceholder(new Label("No report records found. Try adjusting filter dates."));
 
+        // Disable future dates in date pickers
+        startDatePicker.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                setDisable(empty || date.isAfter(LocalDate.now()));
+            }
+        });
+        endDatePicker.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                setDisable(empty || date.isAfter(LocalDate.now()));
+            }
+        });
+
         // Initialize Month and Year ComboBoxes
         monthSelectBox.getItems().addAll(
             "January", "February", "March", "April", "May", "June",
@@ -262,18 +278,32 @@ public class ReportsScreenController {
         if (map == null) return "";
         for (String key : keys) {
             if (map.containsKey(key) && map.get(key) != null) {
-                return map.get(key);
+                Object val = map.get(key);
+                if (val instanceof String && isTimestampKey(key)) {
+                    return com.pup.byod.javafxbyodclient.util.DateFormatter.formatTimestamp((String) val);
+                }
+                return val;
             }
         }
         // Fallback: try case-insensitive check
         for (String mapKey : map.keySet()) {
             for (String key : keys) {
                 if (mapKey.equalsIgnoreCase(key) && map.get(mapKey) != null) {
+                    Object val = map.get(mapKey);
+                    if (val instanceof String && isTimestampKey(key)) {
+                        return com.pup.byod.javafxbyodclient.util.DateFormatter.formatTimestamp((String) val);
+                    }
                     return map.get(mapKey);
                 }
             }
         }
         return "";
+    }
+
+    private boolean isTimestampKey(String key) {
+        if (key == null) return false;
+        String lower = key.toLowerCase();
+        return lower.contains("time") || lower.contains("at") || lower.contains("seen") || lower.equals("timestamp");
     }
 
     @FXML
@@ -301,6 +331,12 @@ public class ReportsScreenController {
                 }
                 return;
             }
+            if (start.isAfter(LocalDate.now())) {
+                if (!silent) {
+                    AlertHelper.showWarning("Report Generator", "Invalid Date", "Future dates are not allowed.");
+                }
+                return;
+            }
         } else if (MONTHLY_TRAFFIC.equals(reportType)) {
             if (monthSelectBox.getValue() == null || yearSelectBox.getValue() == null) {
                 if (!silent) {
@@ -312,6 +348,12 @@ public class ReportsScreenController {
             if (start == null || end == null) {
                 if (!silent) {
                     AlertHelper.showWarning("Report Generator", "Date Range Required", "Please specify both starting and ending dates.");
+                }
+                return;
+            }
+            if (start.isAfter(LocalDate.now()) || end.isAfter(LocalDate.now())) {
+                if (!silent) {
+                    AlertHelper.showWarning("Report Generator", "Invalid Date", "Future dates are not allowed.");
                 }
                 return;
             }
@@ -567,20 +609,39 @@ public class ReportsScreenController {
     }
 
     private String parseHourFromTime(String timeStr) {
-        if (timeStr == null || !timeStr.contains("T")) return "Unknown";
-        try {
-            int tIdx = timeStr.indexOf('T');
-            String timePart = timeStr.substring(tIdx + 1);
-            String[] parts = timePart.split(":");
-            if (parts.length >= 1) {
-                int hour = Integer.parseInt(parts[0]);
-                String ampm = hour >= 12 ? "PM" : "AM";
-                int displayHour = hour % 12;
-                if (displayHour == 0) displayHour = 12;
-                return String.format("%02d:00 %s", displayHour, ampm);
+        if (timeStr == null) return "Unknown";
+        if (timeStr.contains("T")) {
+            try {
+                int tIdx = timeStr.indexOf('T');
+                String timePart = timeStr.substring(tIdx + 1);
+                String[] parts = timePart.split(":");
+                if (parts.length >= 1) {
+                    int hour = Integer.parseInt(parts[0]);
+                    String ampm = hour >= 12 ? "PM" : "AM";
+                    int displayHour = hour % 12;
+                    if (displayHour == 0) displayHour = 12;
+                    return String.format("%02d:00 %s", displayHour, ampm);
+                }
+            } catch (Exception e) {
+                // Ignore
             }
-        } catch (Exception e) {
-            // Ignore
+        } else if (timeStr.contains(" ")) {
+            try {
+                String[] spaceParts = timeStr.split(" ");
+                if (spaceParts.length >= 3) {
+                    String timePart = spaceParts[1];
+                    String ampm = spaceParts[2];
+                    String[] parts = timePart.split(":");
+                    if (parts.length >= 1) {
+                        int hour = Integer.parseInt(parts[0]);
+                        int displayHour = hour % 12;
+                        if (displayHour == 0) displayHour = 12;
+                        return String.format("%02d:00 %s", displayHour, ampm.toUpperCase());
+                    }
+                }
+            } catch (Exception e) {
+                // Ignore
+            }
         }
         return "Unknown";
     }

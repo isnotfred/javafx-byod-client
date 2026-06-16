@@ -95,9 +95,6 @@
                         
                         <Label text="Course &amp; Section:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                         <TextField fx:id="courseYearLevelField" promptText="e.g. BSIT 3-1" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                        
-                        <Label text="Student Status:" GridPane.columnIndex="0" GridPane.rowIndex="4" styleClass="form-label"/>
-                        <ComboBox fx:id="studentStatusBox" promptText="Select Status" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
                     </GridPane>
                     
                     <Separator/>

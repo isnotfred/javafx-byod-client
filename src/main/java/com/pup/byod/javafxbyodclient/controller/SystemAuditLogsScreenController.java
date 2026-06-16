@@ -51,7 +51,9 @@ public class SystemAuditLogsScreenController {
         colOldValues.setCellValueFactory(new PropertyValueFactory<>("oldValues"));
         colNewValues.setCellValueFactory(new PropertyValueFactory<>("newValues"));
         colIpAddress.setCellValueFactory(new PropertyValueFactory<>("ipAddress"));
-        colTimestamp.setCellValueFactory(new PropertyValueFactory<>("actionTime"));
+        colTimestamp.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+            com.pup.byod.javafxbyodclient.util.DateFormatter.formatTimestamp(cellData.getValue().getActionTime())
+        ));
 
         // Performed By mapping from cached user details
         colPerformedBy.setCellValueFactory(cellData -> {
