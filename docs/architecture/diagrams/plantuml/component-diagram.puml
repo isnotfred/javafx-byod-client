@@ -1,6 +1,7 @@
 @startuml
 skinparam componentStyle rectangle
 
+actor "Super Admin" as SuperAdmin
 actor "Admin" as Admin
 actor "Guard" as Guard
 
@@ -9,13 +10,19 @@ component "Spring Boot REST API\nControllers and Services" as Backend
 component "DAO/JDBC Layer\nNamedParameterJdbcTemplate" as DAO
 database "Railway PostgreSQL\nTables, Views, Triggers, Functions" as DB
 component "Automatic Logout Scheduler" as Scheduler
-folder "Image Storage\nPolicy TBD" as Images
+component "Event Request UI\nRequest + Guard Panel" as EventUI
+component "Event Request API\nAuto-Approval, Review, Scanning,\nReconciliation, Reports" as EventAPI
+component "Event DAOs\nRequests, Manifests, Event Logs" as EventDAO
 
+SuperAdmin --> Frontend
 Admin --> Frontend
 Guard --> Frontend
 Frontend --> Backend : HTTPS JSON
 Backend --> DAO
+Frontend --> EventUI
+EventUI --> EventAPI : /api/v1/event-requests
+EventAPI --> EventDAO
+EventDAO --> DB : event_requests\nmanifest/log tables and views
 Scheduler --> Backend
 DAO --> DB : JDBC over TLS
-Frontend ..> Images : optional
 @enduml

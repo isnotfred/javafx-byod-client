@@ -18,7 +18,7 @@
 - DAOs must use parameterized SQL.
 - Audit writes use the database function `fn_write_audit_log()`.
 - Database trigger exceptions are converted to safe HTTP errors.
-- Event request device gate-log integration is unresolved and must not be assumed.
+- Event request devices use dedicated `/api/v1/event-requests/devices/log-entry` and `/log-exit` operations backed by `event_device_logs`.
 
 ## Future Integrations Only
 

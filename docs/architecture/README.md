@@ -68,4 +68,5 @@ Formal DFD documentation is maintained in `../system-analysis/14-data-flow-diagr
 | `diagrams/mermaid/dfd-level-1-system.mmd` | System-level DFD for major backend processes and data stores. |
 | `diagrams/mermaid/dfd-level-2-gate-monitoring.mmd` | Detailed DFD for search, eligibility, entry/exit logging, and audit. |
 | `diagrams/mermaid/dfd-level-2-pending-registration.mmd` | Detailed DFD for guard pending submission and admin decision. |
-| `diagrams/mermaid/dfd-level-2-event-requests.mmd` | Detailed DFD for event request headers, line items, verification, and review. |
+| `diagrams/mermaid/dfd-level-2-event-requests.mmd` | Detailed DFD for auto-approval/manual review, event scanning, reconciliation, and reporting. |
+| `diagrams/mermaid/event-request-lifecycle-state.mmd` | Event request auto-approval, manual review, scanning, and reconciliation states. |

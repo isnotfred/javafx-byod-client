@@ -1,0 +1,45 @@
+flowchart TB
+    SuperAdmin["Super Admin"]
+
+    P100(("10.0 Capture User Mgmt Screen Input"))
+    P101(("10.1 Onboard New User"))
+    P102(("10.2 Update User"))
+    P103(("10.3 Change User Role"))
+    P104(("10.4 Deactivate User"))
+    P110(("11.0 Capture System Config Screen Input"))
+    P111(("11.1 Read System Settings"))
+    P112(("11.2 Update System Setting"))
+    P8(("8. Write Audit Logs"))
+
+    D1[("D1 users")]
+    D7[("D7 audit_logs")]
+    D8[("D8 system_settings")]
+
+    SuperAdmin -->|"onboard data"| P100
+    P100 -->|"new user data"| P101
+    P101 -->|"insert user with status pending"| D1
+    P101 -->|"ADMIN_CREATED or GUARD_CREATED"| P8
+
+    P100 -->|"update data"| P102
+    P102 -->|"update full name or status"| D1
+    P102 -->|"ADMIN_UPDATED or GUARD_UPDATED"| P8
+
+    P100 -->|"role change data"| P103
+    P103 -->|"update role"| D1
+    P103 -->|"USER_ROLE_CHANGED"| P8
+
+    P100 -->|"deactivate command"| P104
+    P104 -->|"set status inactive"| D1
+    P104 -->|"ADMIN_DEACTIVATED or GUARD_DEACTIVATED_BY_SUPER"| P8
+
+    SuperAdmin -->|"config update data"| P110
+    P110 -->|"read all settings"| P111
+    P111 -->|"settings read"| D8
+    P111 -->|"settings list"| P110
+    P110 -->|"updated setting data"| P112
+    P112 -->|"update setting value"| D8
+    P112 -->|"SYSTEM_CONFIG_UPDATED"| P8
+
+    P8 -->|"audit row"| D7
+    P100 -->|"operation result"| SuperAdmin
+    P110 -->|"config result"| SuperAdmin

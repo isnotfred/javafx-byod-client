@@ -1,0 +1,14 @@
+stateDiagram-v2
+    [*] --> Draft : Creator enters request
+    Draft --> Approved : Normal API submit / auto-approve
+    Draft --> PendingApproval : Manual queue (database status pending)
+    PendingApproval --> Approved : Admin approves
+    PendingApproval --> Returned : Admin returns with remarks
+    PendingApproval --> Rejected : Admin rejects with remarks
+    Returned --> PendingApproval : Creator corrects and resubmits (database status pending)
+    Approved --> Inside : Guard logs event-device entry
+    Inside --> Outside : Guard logs event-device exit
+    Outside --> Inside : Re-entry during active dates
+    Inside --> Reconciled : Manual closeout
+    Outside --> Reconciled : Event closeout
+    Reconciled --> [*]

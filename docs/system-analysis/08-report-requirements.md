@@ -1,90 +1,90 @@
 # 08 - Report Requirements
 
-## General Report Rules
+## Overview
 
-- Reports are generated from saved database records and schema views.
-- Admin users can generate all reports.
-- Guards may view active devices and recent gate activity only when allowed by UI policy.
-- Date ranges must be valid before backend query execution.
-- Large reports must filter in SQL before data is returned to JavaFX.
+All reports are accessible to admin users. Super Admin may also view reports where system-level visibility is needed. Reports read from saved database tables and views; they do not modify any records. Reports shall support export or print functionality.
 
-## Daily Entry/Exit Report
+## Report Types
 
-| Item | Requirement |
+### Daily Device Traffic Summary
+
+| Item | Detail |
 | --- | --- |
-| Purpose | Show all entry and exit events for a selected day. |
-| User | `admin`; guard view optional. |
-| Filters | Date, user, student, device type, purpose, event type, automatic exit flag. |
-| Columns | Event time, event type, student ID, student name, device ID, device type, brand/model, serial number, purpose, handled by, logout type, automatic exit flag, notes. |
-| Data Sources | `device_logs`, `devices`, `students`, `users`. |
+| Purpose | Summarized view of device entries and exits for a selected day. |
+| Access | admin |
+| Filters | Date, student name, device category, status. |
+| Data Sources | device_logs, devices, students |
+| Key Columns | Student name, device category, serial number, event type (entry/exit), event time, handled by, auto exit flag. |
+| Notes | Entries with auto_exit = TRUE should be clearly marked as system-generated. |
 
-## Monthly Monitoring Report
+### Monthly Device Traffic Summary
 
-| Item | Requirement |
+| Item | Detail |
 | --- | --- |
-| Purpose | Summarize monitoring activity for a month. |
-| User | `admin`. |
-| Filters | Month, year, device purpose, device type. |
-| Columns | Date, total entries, total exits, automatic exits, unique devices, rejected/inactive attempts if tracked by application logs. |
-| Data Sources | `device_logs`, `devices`. |
+| Purpose | Aggregated count of device entries and exits per month, broken down by category and student. |
+| Access | admin |
+| Filters | Month, year, device category. |
+| Data Sources | device_logs, devices, students |
+| Key Columns | Month, student name, device category, total entries, total exits, total auto exits. |
 
-## Active Devices Report
+### Pending Registration Report
 
-| Item | Requirement |
+| Item | Detail |
 | --- | --- |
-| Purpose | Identify devices currently inside campus. |
-| User | `admin`; guard view allowed. |
-| Filters | Entry date, student, device type, purpose, user who handled entry. |
-| Columns | Device ID, student ID, student name, device type, serial number, purpose, latest event time, derived campus status. |
-| Data Sources | `v_device_campus_status`, `devices`, `students`, latest-log query where needed. |
+| Purpose | List all devices currently in registration_status = 'pending' with submission detail. |
+| Access | admin |
+| Filters | Date submitted range, student ID/name, serial number. |
+| Data Sources | v_pending_devices, devices, students |
+| Key Columns | Device ID, student ID, student name, device category, serial number, submitted at, remarks (proof details). |
 
-## Registered Devices Per Student Report
+### Active Devices on Campus
 
-| Item | Requirement |
+| Item | Detail |
 | --- | --- |
-| Purpose | Show devices registered under each student. |
-| User | `admin`. |
-| Filters | Student ID/name, course/year level, device type, registration status, device status. |
-| Columns | Student ID, student name, course/year level, device ID, device name, type, brand/model, serial number, purpose, registration status, device status, created at. |
-| Data Sources | `students`, `devices`. |
+| Purpose | Real-time snapshot of all devices currently logged as inside campus. |
+| Access | admin |
+| Filters | Device category, purpose, student name, entry date. |
+| Data Sources | v_device_campus_status filtered to campus_status = 'inside' |
+| Key Columns | Device ID, student name, device category, serial number, purpose, latest entry time, handled by. |
 
-## Pending Registrations Report
+### Device Frequency Report
 
-| Item | Requirement |
+| Item | Detail |
 | --- | --- |
-| Purpose | Review device registrations waiting for admin decision. |
-| User | `admin`. |
-| Filters | Date submitted, student, device type, purpose. |
-| Columns | Device ID, student ID, student name, course/year level, device name, type, brand/model, serial number, purpose, image path, submitted at, remarks. |
-| Data Sources | `v_pending_devices`, `devices`. |
+| Purpose | Historical data showing which devices are brought in most frequently, supporting resource planning. |
+| Access | admin |
+| Filters | Date range, device category, student name. |
+| Data Sources | device_logs, devices, students |
+| Key Columns | Device ID, student name, device category, serial number, total entry count, last entry date. |
+| Notes | Ordered by entry count descending. Useful for identifying high-frequency or overdue devices. |
 
-## Rejected/Inactive Devices Report
+### Incident / Override Report
 
-| Item | Requirement |
+| Item | Detail |
 | --- | --- |
-| Purpose | Support review of rejected registrations and inactive devices. |
-| User | `admin`. |
-| Filters | Registration status, device status, updated date, student, device type, serial number. |
-| Columns | Device ID, student ID, student name, device type, serial number, registration status, device status, remarks, reviewed by, reviewed at, updated at. |
-| Data Sources | `devices`, `students`, `users`. |
+| Purpose | Summary of admin overrides, dispute resolutions, rejected registrations, and deactivations for audit and administrative purposes. |
+| Access | admin |
+| Filters | Date range, action type, student name, device ID. |
+| Data Sources | audit_logs, devices, students |
+| Key Columns | Audit ID, action type, performed by, target table, target ID, old values, new values, created at. |
+| Notes | Filtered to action types relevant to overrides and rejections: DEVICE_REJECTED, DEVICE_DEACTIVATED, STUDENT_DEACTIVATED, USER_DEACTIVATED, USER_ROLE_CHANGED, SYSTEM_CONFIG_UPDATED. |
 
-## Event Request Report
+### Event Device Reconciliation Report
 
-| Item | Requirement |
+| Item | Detail |
 | --- | --- |
-| Purpose | Track event access requests separately from permanent BYOD devices. |
-| User | `admin`. |
-| Filters | Event name, organization, responsible student, date range, request status, device status. |
-| Columns | Request ID, event name, organization, responsible person, student ID, approval document type, approval document reference, start date, end date, request status, device count, line-item device type, quantity, verified by, verified at. |
-| Data Sources | `event_requests`, `event_request_devices`, `v_active_event_requests`, `students`, `users`. |
-| Limitation | Direct gate entry/exit history for event line items is not available unless a future schema relationship is added. |
+| Purpose | Identify event manifest devices that remain inside, have not been reconciled, or need closeout review. |
+| Access | admin, super_admin |
+| Filters | Event date range, event name, student ID, organization, manifest status, current-day status. |
+| Data Sources | event_requests, event_request_devices, event_device_logs, v_event_device_status |
+| Key Columns | Request ID, event name, responsible student/person, event device ID, device details, serial number, manifest status, current-day status, latest event time, handled by. |
+| Notes | Reconciled devices persist event_request_devices.device_status = 'returned'. Entry status at closeout identifies potentially unreturned hardware. |
 
-## Device History Report
+## Report Validation Rules
 
-| Item | Requirement |
+| Rule | Description |
 | --- | --- |
-| Purpose | Show complete gate history for one permanent BYOD device. |
-| User | `admin`. |
-| Filters | Device ID or serial number, date range. |
-| Columns | Log ID, event time, event type, student ID, device ID, serial number, handled by, logout type, automatic exit flag, notes. |
-| Data Sources | `device_logs`, `devices`, `students`, `users`. |
+| Date Range Required | All time-series reports must have a start date and end date. Start date must not be after end date. |
+| SQL-Side Filtering | Reports must apply filters in the database query before returning data to the frontend. |
+| Read-Only | Reports display data only. No records are created, updated, or deleted during report generation. |
+| Export / Print | Each report screen must provide an export or print action for submission to campus administrators. |

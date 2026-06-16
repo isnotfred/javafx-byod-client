@@ -14,6 +14,7 @@ flowchart TB
     D3[("D3 devices")]
     D6[("D6 device_logs")]
     D7[("D7 audit_logs")]
+    D8[("D8 system_settings")]
     V1[("V1 v_device_campus_status")]
 
     Guard -->|"student ID, name, or serial number"| P50
@@ -21,10 +22,12 @@ flowchart TB
     P50 -->|"search request"| P51
     P51 -->|"student lookup"| D2
     P51 -->|"device lookup"| D3
+    P51 -->|"no device found -> no log -> end"| P55
     P51 -->|"matching device and owner"| P52
     P52 -->|"latest derived status read"| V1
     P52 -->|"device state and last event"| P53
-    P53 -->|"approved, active, alternating event validation"| D3
+    P53 -->|"approved/pending, active validation"| D3
+    P53 -->|"allow_unregistered_devices read for pending entry"| D8
     P53 -->|"latest event validation"| D6
     P53 -->|"valid entry or exit request"| P54
     P54 -->|"immutable event row"| D6

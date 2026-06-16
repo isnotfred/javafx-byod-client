@@ -13,7 +13,7 @@ sequenceDiagram
     API->>Service: submit pending device
     Service->>Service: validate student, serial, type, purpose
     Service->>DAO: insert/link student and insert pending device
-    DAO->>DB: INSERT students if needed; INSERT devices registration_status=pending
+    DAO->>DB: INSERT students if needed, then INSERT pending device
     Service->>Audit: fn_write_audit_log DEVICE_REGISTERED
     API-->>UI: Pending device saved
 

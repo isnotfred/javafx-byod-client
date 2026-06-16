@@ -18,6 +18,7 @@ The uploaded schema already defines indexes for:
 - Device owner, serial number, registration status, and pending queue.
 - Event request owner/status/date range.
 - Event request line items by parent request.
+- Latest event-device log by manifest row.
 - Latest device log lookup.
 - Open entry lookup for automatic logout.
 - Audit lookup by user/time, target, and timestamp.
@@ -26,6 +27,7 @@ The uploaded schema already defines indexes for:
 
 - Use `v_pending_devices` for approval queues.
 - Use `v_active_event_requests` for event request queues.
+- Use `v_event_device_status` for event-device guard and reconciliation views.
 - Use `v_device_campus_status` or equivalent latest-log query for active-device screens.
 - Apply report filters in SQL.
 - Avoid loading all historical logs into JavaFX tables.

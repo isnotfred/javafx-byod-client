@@ -1,50 +1,63 @@
 flowchart TB
-    Admin["Admin"]
+    Submitter["Admin or Authorized Submitter"]
+    Admin["Admin Reviewer"]
     Guard["Guard"]
     Student["Student"]
     Policy["Campus Administration Process"]
 
-    P40(("4.0 Capture Event Request Screen Input"))
-    P41(("4.1 Capture Event Request"))
-    P42(("4.2 Validate Event Request"))
-    P43(("4.3 Store Event Header and Line Items"))
-    P44(("4.4 Verify Event Device Line Item"))
-    P45(("4.5 Review Event Request"))
-    P46(("4.6 Read Active Event Requests"))
-    P8(("8. Write Audit Logs"))
-
+    P40(("4.0 Capture Event Request UI"))
+    P41(("4.1 Validate Header, Duration, and Manifest"))
+    P42(("4.2 Store and Auto-Approve Submission"))
+    P43(("4.3 Review Manual Queue"))
+    P44(("4.4 Resubmit Returned Request"))
+    P45(("4.5 Read Guard Request and Manifest"))
+    P46(("4.6 Log Event Device Entry/Exit"))
+    P47(("4.7 Reconcile Event Device"))
+    P48(("4.8 Generate Reconciliation Report"))
     D2[("D2 students")]
     D4[("D4 event_requests")]
     D5[("D5 event_request_devices")]
-    D7[("D7 audit_logs")]
+    D8[("D8 system_settings")]
+    D9[("D9 event_device_logs")]
     V3[("V3 v_active_event_requests")]
+    V4[("V4 v_event_device_status")]
 
-    Student -->|"responsible student details"| Guard
-    Policy -->|"event access rules and document requirements"| P42
-    Admin -->|"event request data"| P40
-    Guard -->|"event request data"| P40
-    P40 -->|"event request form data"| P41
-    P41 -->|"header and line-item data"| P42
-    P42 -->|"responsible student check"| D2
-    P42 -->|"validated request data"| P43
-    P43 -->|"event header"| D4
-    P43 -->|"event device line items"| D5
-    P43 -->|"EVENT_REQUEST_CREATED"| P8
+    Student -->|"identity, event, and device details"| Submitter
+    Policy -->|"document and access rules"| P41
+    Submitter -->|"request data"| P40
+    P40 -->|"schema-defined header and positive-quantity manifest"| P41
+    P41 -->|"student check"| D2
+    P41 -->|"duration setting read"| D8
+    P41 -->|"validated request"| P42
+    P42 -->|"approved request header"| D4
+    P42 -->|"approved manifest rows"| D5
 
-    Guard -->|"verification result"| P40
-    P40 -->|"verification result"| P44
-    P44 -->|"verified_by and verified_at"| D5
+    Admin -->|"approve, return, or reject with remarks"| P43
+    P43 <-->|"manual request status and reviewer data"| D4
+    P43 -->|"cascade manifest status"| D5
 
-    Admin -->|"approve, reject, or mark returned"| P40
-    P40 -->|"review decision data"| P45
-    P45 -->|"request status and reviewer data"| D4
-    P45 -->|"EVENT_REQUEST_APPROVED, RETURNED, or REJECTED"| P8
+    Submitter -->|"correct returned request"| P44
+    P44 -->|"PendingApproval persisted as pending"| D4
+    P44 -->|"updated manifest"| D5
 
-    Admin -->|"active request queue request"| P40
-    Guard -->|"active request queue request"| P40
-    P40 -->|"active request queue request"| P46
-    P46 -->|"active event request read"| V3
-    P46 -->|"active event requests with device counts"| P40
-    P40 -->|"active event requests with device counts"| Admin
-    P40 -->|"active event requests with device counts"| Guard
-    P8 -->|"audit row"| D7
+    Guard -->|"student ID or event name lookup"| P45
+    P45 -->|"active request read"| V3
+    P45 -->|"manifest status read"| V4
+    P45 -->|"request and manifest result"| Guard
+
+    Guard -->|"selected entry or exit action"| P46
+    P46 -->|"approved request and active date read"| D4
+    P46 -->|"manifest eligibility read"| D5
+    P46 <-->|"immutable entry/exit rows"| D9
+    P46 -->|"latest status read"| V4
+
+    Guard -->|"verify/reconcile action"| P47
+    Admin -->|"verify/reconcile action"| P47
+    P47 -->|"device_status returned"| D5
+
+    Admin -->|"report filters"| P48
+    P48 -->|"request and manifest reads"| D4
+    P48 --> D5
+    P48 -->|"entry/exit history"| D9
+    P48 -->|"latest status"| V4
+    P48 -->|"outstanding and reconciled devices"| Admin

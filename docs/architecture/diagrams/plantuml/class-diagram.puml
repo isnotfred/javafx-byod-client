@@ -4,6 +4,7 @@ skinparam classAttributeIconSize 0
 class User {
   userId
   username
+  email
   passwordHash
   fullName
   role
@@ -39,22 +40,46 @@ class EventRequest {
   responsiblePerson
   organization
   eventName
+  eventPurpose
   approvalDocType
   approvalDocRef
   startDate
   endDate
   status
+  isSubmitted
+  isAccommodated
+  reviewedBy
+  reviewedAt
+  remarks
+  createdAt
+  updatedAt
 }
 
 class EventRequestDevice {
   eventDeviceId
   eventRequestId
+  deviceName
+  brand
+  model
   deviceType
   serialNumber
   quantity
   verifiedBy
   verifiedAt
   deviceStatus
+  remarks
+  createdAt
+  updatedAt
+}
+
+class EventDeviceLog {
+  eventLogId
+  eventDeviceId
+  eventType
+  eventTime
+  handledBy
+  notes
+  createdAt
 }
 
 class DeviceLog {
@@ -78,32 +103,57 @@ class AuditLog {
   newValues
 }
 
+class SystemSetting {
+  settingKey
+  settingValue
+  description
+  updatedAt
+}
+
 class AuthController
+class ProfileController
+class UserController
+class SystemSettingController
 class DeviceController
 class EventRequestController
 class DeviceLogController
 class AuthService
+class UserService
+class SystemSettingService
 class DeviceService
 class EventRequestService
 class DeviceLogService
 class DeviceDAO
 class EventRequestDAO
+class EventDeviceLogDAO
 class DeviceLogDAO
 class AuditLogDAO
+class UserDAO
+class SystemSettingDAO
 
 Student "1" -- "0..*" Device
 Student "1" -- "0..*" EventRequest
 EventRequest "1" -- "0..*" EventRequestDevice
+EventRequestDevice "1" -- "0..*" EventDeviceLog
 Device "1" -- "0..*" DeviceLog
 User "1" -- "0..*" AuditLog
 User "1" -- "0..*" DeviceLog
+User "1" -- "0..*" EventDeviceLog
 
 AuthController --> AuthService
+ProfileController --> UserService
+UserController --> UserService
+SystemSettingController --> SystemSettingService
 DeviceController --> DeviceService
 EventRequestController --> EventRequestService
 DeviceLogController --> DeviceLogService
 DeviceService --> DeviceDAO
 EventRequestService --> EventRequestDAO
+EventRequestService --> EventDeviceLogDAO
 DeviceLogService --> DeviceLogDAO
 DeviceLogService --> AuditLogDAO
+UserService --> UserDAO
+UserService --> AuditLogDAO
+SystemSettingService --> SystemSettingDAO
+SystemSettingService --> AuditLogDAO
 @enduml

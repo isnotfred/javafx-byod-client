@@ -1,4 +1,5 @@
 flowchart LR
+    SuperAdmin["Super Admin"]
     Admin["Admin"]
     Guard["Guard"]
     Student["Student\n(indirect)"]
@@ -7,10 +8,12 @@ flowchart LR
     DB[("PostgreSQL\nRailway")]
     Policy["Campus Administration Process"]
 
-    Admin -->|"manage records, approvals, reports"| Frontend
+    SuperAdmin -->|"manage users, roles, and settings"| Frontend
+    Admin -->|"manage records, approvals, reports, audit"| Frontend
     Guard -->|"search, pending submission, entry/exit"| Frontend
     Student -->|"presents device/details"| Guard
     Frontend -->|"HTTPS JSON"| Backend
     Backend -->|"JDBC over TLS"| DB
+    Policy -->|"defines user and system policy"| SuperAdmin
     Policy -->|"defines operating rules"| Admin
     Policy -->|"defines gate rules"| Guard

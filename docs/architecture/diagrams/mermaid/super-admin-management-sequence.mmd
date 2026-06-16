@@ -1,0 +1,21 @@
+sequenceDiagram
+    actor SuperAdmin as Super Admin
+    participant UI as JavaFX User and Settings Screens
+    participant API as Spring Boot Administration API
+    participant Service as UserService / SystemSettingService
+    participant DB as PostgreSQL
+    participant Audit as AuditLogDAO
+
+    SuperAdmin->>UI: Onboard, update, change role, or deactivate user
+    UI->>API: User management command
+    API->>Service: enforce super_admin role
+    Service->>DB: Insert or update users
+    Service->>Audit: Write user lifecycle audit
+    API-->>UI: User operation result
+
+    SuperAdmin->>UI: Update system setting
+    UI->>API: PUT /system-settings/{key}
+    API->>Service: validate non-blank value
+    Service->>DB: Update system_settings
+    Service->>Audit: Write SYSTEM_CONFIG_UPDATED
+    API-->>UI: Setting update result

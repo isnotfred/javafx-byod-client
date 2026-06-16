@@ -1,24 +1,30 @@
 sequenceDiagram
-    actor User as Admin or Guard
-    participant UI as JavaFX Event Request Screen
-    participant API as Spring Boot EventRequestController
+    actor Creator as Admin or Authorized Submitter
+    actor Reviewer as Admin
+    actor Gate as Guard
+    participant UI as JavaFX Event Screens
+    participant API as EventRequestController
     participant Service as EventRequestService
-    participant DAO as EventRequestDAO / EventRequestDeviceDAO
     participant DB as PostgreSQL
-    participant Audit as AuditLogDAO
 
-    User->>UI: Enter event header and device line items
-    UI->>API: POST /event-requests
-    API->>Service: create event request
-    Service->>Service: validate document type, dates, line items
-    Service->>DAO: save request and line items
-    DAO->>DB: INSERT event_requests; INSERT event_request_devices
-    Service->>Audit: fn_write_audit_log EVENT_REQUEST_CREATED
-    API-->>UI: Event request saved
+    Creator->>UI: Enter schema-defined header and positive-quantity manifest rows
+    UI->>API: POST /api/v1/event-requests
+    API->>Service: create request
+    Service->>DB: Read event_request_max_duration_days
+    Service->>Service: Validate document, dates, duration, manifest
+    Service->>DB: INSERT request and devices as approved
+    API-->>UI: Approved request
 
-    User->>UI: Verify event device line item
-    UI->>API: PUT /event-requests/{id}
-    API->>Service: update verification/status
-    Service->>DAO: update event_request_devices or event_requests
-    DAO->>DB: UPDATE event_request_devices / event_requests
-    API-->>UI: Updated request state
+    opt Manually queued or returned request
+        Reviewer->>API: PUT /{id}/approve, /return, or /reject
+        API->>Service: Validate role and required remarks
+        Service->>DB: Update request and cascade device state
+    end
+
+    Gate->>API: GET /guard and /{id}/devices
+    API->>DB: Read v_active_event_requests and v_event_device_status
+    Gate->>API: POST /devices/log-entry or /log-exit
+    API->>Service: Validate approved request and active dates
+    Service->>DB: INSERT event_device_logs
+    Gate->>API: PUT /devices/{eventDeviceId}/verify
+    Service->>DB: Set manifest device_status = returned

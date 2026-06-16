@@ -16,8 +16,9 @@ Inactive accounts are denied before dashboard access.
 | Manage permanent BYOD devices | Yes | No |
 | Submit pending device registration | Yes | Yes |
 | Approve/reject pending device | Yes | No |
-| Manage event requests | Yes | Submit/verify where allowed |
-| Log approved active device entry/exit | Yes | Yes |
+| Manage event requests | Create as admin/submitter; review/reconcile | Create only when authorized as submitter; scan/verify/reconcile |
+| Log eligible permanent device entry/exit | Yes | Yes |
+| Log approved active event-device entry/exit | No; may view and reconcile | Yes |
 | Generate reports | Yes | Limited operational views only if allowed |
 | Manage users | Yes | No |
 | View full audit history | Yes | No by default |
@@ -46,7 +47,7 @@ Audit writes use `fn_write_audit_log()` and standardized `action_type` values. R
 - Student create/update/deactivate.
 - Device register/update/approve/reject/deactivate.
 - Gate entry, exit, automatic exit.
-- Event request create/approve/return/reject.
+- Event request action types defined by the final schema: create, approve, return, and reject.
 - Automatic logout batch.
 
 ## Diagram

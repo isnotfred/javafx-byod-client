@@ -1,5 +1,5 @@
 flowchart TB
-    User["Admin / Guard"]
+    User["Super Admin / Admin / Guard"]
 
     subgraph Frontend["JavaFX Desktop Frontend"]
         UI["FXML Views / Controllers"]
@@ -14,8 +14,7 @@ flowchart TB
         Scheduler["Automatic Logout Scheduler"]
     end
 
-    DB[("PostgreSQL on Railway\nTables, Views, Triggers, Functions")]
-    Images[("Image Storage\nPolicy TBD")]
+    DB[("PostgreSQL on Railway\nTables, Views, Triggers, Functions, system_settings")]
 
     User --> UI
     UI --> ApiClient
@@ -25,4 +24,3 @@ flowchart TB
     Scheduler --> Services
     Services --> DAOs
     DAOs -->|"JDBC over TLS"| DB
-    UI -. optional .-> Images

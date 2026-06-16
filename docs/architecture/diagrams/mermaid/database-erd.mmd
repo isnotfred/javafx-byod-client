@@ -2,16 +2,19 @@ erDiagram
     students ||--o{ devices : owns
     students ||--o{ event_requests : submits
     event_requests ||--o{ event_request_devices : contains
+    event_request_devices ||--o{ event_device_logs : records
     devices ||--o{ device_logs : records
     users ||--o{ devices : reviews
     users ||--o{ event_requests : reviews
     users ||--o{ event_request_devices : verifies
+    users ||--o{ event_device_logs : handles
     users ||--o{ device_logs : handles
     users ||--o{ audit_logs : performs
 
     users {
         int user_id PK
         string username
+        string email
         string password_hash
         string full_name
         string role
@@ -60,6 +63,9 @@ erDiagram
         boolean is_accommodated
         int reviewed_by FK
         datetime reviewed_at
+        string remarks
+        datetime created_at
+        datetime updated_at
     }
     event_request_devices {
         int event_device_id PK
@@ -73,6 +79,18 @@ erDiagram
         int verified_by FK
         datetime verified_at
         string device_status
+        string remarks
+        datetime created_at
+        datetime updated_at
+    }
+    event_device_logs {
+        int event_log_id PK
+        int event_device_id FK
+        string event_type
+        datetime event_time
+        int handled_by FK
+        string notes
+        datetime created_at
     }
     device_logs {
         int log_id PK
@@ -96,4 +114,10 @@ erDiagram
         json new_values
         string ip_address
         datetime created_at
+    }
+    system_settings {
+        string setting_key PK
+        string setting_value
+        string description
+        datetime updated_at
     }

@@ -35,6 +35,6 @@
 ## Recovery Guidance
 
 - Failed validation must not write partial records.
-- Multi-step approve/reject, event request, and gate operations must be transactional.
+- Multi-step auto-approval, manual review, event scanning, reconciliation, and permanent gate operations must be transactional.
 - Automatic logout should roll back failed batch units or record failures for admin review.
 - Database trigger failures should be treated as authoritative.

@@ -1,4 +1,5 @@
 flowchart LR
+    SuperAdmin["External Entity: Super Admin"]
     Admin["External Entity: Admin"]
     Guard["External Entity: Guard"]
     Student["External Entity: Student"]
@@ -7,9 +8,11 @@ flowchart LR
     System(("0. BYOD Device Management System"))
     DB[("Railway PostgreSQL Data Stores")]
 
-    Admin -->|"student/device/user/report/audit requests"| System
+    SuperAdmin -->|"user mgmt, system config, role mgmt requests"| System
+    System -->|"user lists, config panels, audit confirmations"| SuperAdmin
+    Admin -->|"student/device/report/audit requests"| System
     System -->|"admin dashboards, approvals, reports, audit views"| Admin
-    Guard -->|"search, pending registration, event request, entry/exit data"| System
+    Guard -->|"search, pending registration, authorized event submission, entry/exit data"| System
     System -->|"eligibility results, warnings, active-device data"| Guard
     Student -->|"student identity and device details"| Guard
     Policy -->|"event, access, and closing-time rules"| System

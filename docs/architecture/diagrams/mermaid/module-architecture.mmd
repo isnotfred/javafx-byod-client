@@ -1,16 +1,22 @@
 flowchart TB
     Auth["Authentication\n/auth/login"]
-    Users["User Management\n/users"]
+    Password["Password Recovery\n/auth/password-reset"]
+    Profile["Profile Management\n/profile"]
+    Users["Super Admin User Management\n/users"]
+    Settings["System Configuration\n/system-settings"]
     Students["Student Management\n/students"]
     Devices["Device Management\n/devices"]
-    Events["Event Requests\n/event-requests"]
+    Events["Event Requests and Event Gate Logs\n/api/v1/event-requests"]
     Logs["Gate Logs\n/device-logs"]
     Audit["Audit\n/audit-logs"]
     Reports["Reports\nendpoint TBD"]
     DB[("PostgreSQL")]
 
     Auth --> DB
+    Password --> DB
+    Profile --> DB
     Users --> DB
+    Settings --> DB
     Students --> DB
     Devices --> DB
     Events --> DB
@@ -22,3 +28,6 @@ flowchart TB
     Logs -. writes audit .-> Audit
     Devices -. writes audit .-> Audit
     Events -. writes audit .-> Audit
+    Profile -. writes audit .-> Audit
+    Users -. writes audit .-> Audit
+    Settings -. writes audit .-> Audit

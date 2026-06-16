@@ -1,14 +1,20 @@
 flowchart TB
     Login["Login Request"]
     Auth["Backend AuthService"]
+    Status{"users.status"}
     Role{"users.role"}
-    Admin["admin access\nstudents, devices, approvals, reports, users, audit"]
-    Guard["guard access\nsearch, pending submission, event support, entry/exit, active devices"]
+    SuperAdmin["super_admin access\nusers, roles, system settings, profile"]
+    Admin["admin access\nstudents, devices, approvals, reports, audit, profile"]
+    Guard["guard access\nsearch, pending submission, authorized event submission,\nevent scanning, entry/exit, active devices"]
     Deny["Access Denied"]
 
     Login --> Auth
-    Auth --> Role
+    Auth --> Status
+    Status -->|"active"| Role
+    Status -->|"inactive or pending"| Deny
+    Role -->|"super_admin"| SuperAdmin
     Role -->|"admin"| Admin
     Role -->|"guard"| Guard
-    Admin -->|"admin-only allowed"| Admin
-    Guard -->|"admin-only requested"| Deny
+    SuperAdmin -->|"gate or approval operation"| Deny
+    Admin -->|"user or settings management"| Deny
+    Guard -->|"admin or super-admin operation"| Deny

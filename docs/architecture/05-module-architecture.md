@@ -8,7 +8,7 @@
 | User Management | User Management | `UserController`, `UserService`, `UserDAO` | `users`, `audit_logs` | `/users` |
 | Student Management | Student Management, lookup panels | `StudentController`, `StudentService`, `StudentDAO` | `students`, `audit_logs` | `/students` |
 | Device Management | Device Management, Pending Approval | `DeviceController`, `DeviceService`, `DeviceDAO` | `devices`, `v_pending_devices`, `v_device_campus_status`, `audit_logs` | `/devices` |
-| Event Requests | Event Request | `EventRequestController`, `EventRequestService`, event DAOs | `event_requests`, `event_request_devices`, `v_active_event_requests`, `audit_logs` | `/event-requests` |
+| Event Requests | Event Request, Temporary Event Device Guard Panel | `EventRequestController`, `EventRequestService`, event DAOs | `event_requests`, `event_request_devices`, `event_device_logs`, `v_active_event_requests`, `v_event_device_status` | `/api/v1/event-requests` |
 | Gate Monitoring | Guard Dashboard, Ingress/Egress, Active Devices | `DeviceLogController`, `DeviceLogService`, `DeviceLogDAO` | `device_logs`, `devices`, `v_device_campus_status`, `audit_logs` | `/device-logs` |
 | Reports | Reports | Report service methods across DAOs | Reporting tables/views | Existing endpoint groups until report endpoints are specified |
 | Audit | Logs/Audit view | `AuditLogController`, `AuditLogService`, `AuditLogDAO` | `audit_logs`, `fn_write_audit_log()` | `/audit-logs` |
@@ -22,9 +22,9 @@
 5. PostgreSQL constraints/triggers enforce final data rules.
 6. Backend returns JSON and HTTP status for JavaFX display.
 
-## Known Design Limitation
+## Event Device Boundary
 
-`event_request_devices` are not directly related to `device_logs` in the uploaded schema. The Event Requests module can track request/verification/return data, but event-device gate history needs a future schema decision.
+Temporary event devices use `event_device_logs`, not permanent `device_logs`. Each manifest row has a positive quantity that defaults to 1, and each log references the whole manifest row.
 
 ## Diagram
 

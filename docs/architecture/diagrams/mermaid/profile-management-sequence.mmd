@@ -1,0 +1,15 @@
+sequenceDiagram
+    actor User as Super Admin, Admin, or Guard
+    participant UI as JavaFX Profile Screen
+    participant API as Spring Boot Profile API
+    participant Service as UserService
+    participant DB as PostgreSQL
+    participant Audit as AuditLogDAO
+
+    User->>UI: Submit username or password change
+    UI->>API: PUT /profile
+    API->>Service: validate authenticated user and input
+    Service->>DB: Check username uniqueness or current password
+    Service->>DB: Update username or password_hash
+    Service->>Audit: Write USER_UPDATED
+    API-->>UI: Updated profile result

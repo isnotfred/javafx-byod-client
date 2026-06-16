@@ -63,23 +63,23 @@
 | Decision | Derive inside/outside from latest `device_logs` using `v_device_campus_status` or equivalent queries. |
 | Consequences | Gate screens and reports must not update device rows for presence changes. |
 
-## ADR-008 Block Pending Devices From Gate Logs
+## ADR-008 Allow Policy-Eligible Pending Devices
 
 | Field | Value |
 | --- | --- |
 | Status | Accepted |
-| Context | The uploaded trigger `trg_device_logs_approved_only` allows logs only for approved active devices. |
-| Decision | Pending devices require admin approval before entry/exit logging. |
-| Consequences | Older temporary pending-entry behavior is removed from the current baseline. |
+| Context | The final trigger accepts active devices whose registration status is approved or pending. |
+| Decision | Permit active pending-device check-in only when `allow_unregistered_devices` is true. |
+| Consequences | Backend service checks the setting before inserting the pending device's entry event; rejected and inactive devices remain blocked. |
 
 ## ADR-009 Track Event Access With Request Tables
 
 | Field | Value |
 | --- | --- |
-| Status | Accepted with open gap |
-| Context | Uploaded schema uses `event_requests` and `event_request_devices`. |
-| Decision | Treat event device rows as request and verification records. |
-| Consequences | Direct event-device gate logging requires a future schema decision. |
+| Status | Accepted |
+| Context | The final schema adds `event_device_logs` and `v_event_device_status`. |
+| Decision | Preserve the schema rule that each manifest row has quantity > 0 with default 1, and store event entry/exit history separately from permanent `device_logs`. |
+| Consequences | Guards scan the manifest row referenced by event_device_logs; grouped quantities require a defined whole-row operational meaning. |
 
 ## ADR-010 Use Database-Enforced Audit Writer
 
