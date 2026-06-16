@@ -50,7 +50,7 @@
                 </HBox>
                 
                 <VBox spacing="5.0">
-                    <Label fx:id="serialNumberLabel" text="Serial Number:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
+                    <Label text="Serial Number:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                     <TextField fx:id="serialNumberField" promptText="e.g. SN-12345" styleClass="modern-textfield" prefHeight="38.0"/>
                 </VBox>
                 

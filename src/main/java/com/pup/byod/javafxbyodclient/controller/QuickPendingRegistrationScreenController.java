@@ -25,7 +25,6 @@ public class QuickPendingRegistrationScreenController {
     @FXML private ComboBox<String> purposeBox;
     @FXML private TextField remarksField;
     @FXML private Button registerBtn;
-    @FXML private javafx.scene.control.Label serialNumberLabel;
 
     private final DeviceService deviceService = new DeviceService();
     private final StudentService studentService = new StudentService();
@@ -58,38 +57,7 @@ public class QuickPendingRegistrationScreenController {
         
         com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(studentIdField);
         com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(deviceNameField);
-        serialNumberField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal) {
-                String type = deviceTypeBox.getValue();
-                if (type == null || !type.equals("Project Prototypes (Optional SN)")) {
-                    com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(serialNumberField, "Input needed");
-                } else {
-                    com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(serialNumberField);
-                }
-            }
-        });
-        serialNumberField.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (!com.pup.byod.javafxbyodclient.util.ValidationHelper.isEmpty(newVal)) {
-                com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(serialNumberField);
-            }
-        });
-
-        deviceTypeBox.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if ("Project Prototypes (Optional SN)".equals(newVal)) {
-                serialNumberField.setPromptText("Optional Serial Number");
-                com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(serialNumberField);
-                if (serialNumberLabel != null) {
-                    serialNumberLabel.setGraphic(null);
-                }
-            } else {
-                serialNumberField.setPromptText("e.g. SN-12345");
-                if (serialNumberLabel != null) {
-                    javafx.scene.control.Label ast = new javafx.scene.control.Label("*");
-                    ast.setStyle("-fx-text-fill: red;");
-                    serialNumberLabel.setGraphic(ast);
-                }
-            }
-        });
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(serialNumberField);
         com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(deviceTypeBox);
         com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(purposeBox);
     }
@@ -110,12 +78,7 @@ public class QuickPendingRegistrationScreenController {
 
         boolean v1 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(studentIdField, "Input needed");
         boolean v2 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(deviceNameField, "Input needed");
-        boolean v3 = true;
-        if (type == null || !type.equals("Project Prototypes (Optional SN)")) {
-            v3 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(serialNumberField, "Input needed");
-        } else {
-            com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(serialNumberField);
-        }
+        boolean v3 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(serialNumberField, "Input needed");
         boolean v4 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateComboBox(deviceTypeBox);
         boolean v5 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateComboBox(purposeBox);
 

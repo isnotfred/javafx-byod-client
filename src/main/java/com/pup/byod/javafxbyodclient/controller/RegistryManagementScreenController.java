@@ -64,7 +64,6 @@ public class RegistryManagementScreenController {
     @FXML private ComboBox<String> devicePurposeBox;
     @FXML private ComboBox<String> deviceStatusBox;
     @FXML private Button stageDeviceBtn;
-    @FXML private Label serialNumberLabel;
 
     private final StudentService studentService = new StudentService();
     private final DeviceService deviceService = new DeviceService();
@@ -182,38 +181,7 @@ public class RegistryManagementScreenController {
         com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(courseYearLevelField);
         
         com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(deviceNameField);
-        serialNumberField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal) {
-                String type = deviceTypeBox.getValue();
-                if (type == null || !type.equals("Project Prototypes (Optional SN)")) {
-                    com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(serialNumberField, "Input needed");
-                } else {
-                    com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(serialNumberField);
-                }
-            }
-        });
-        serialNumberField.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (!com.pup.byod.javafxbyodclient.util.ValidationHelper.isEmpty(newVal)) {
-                com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(serialNumberField);
-            }
-        });
-
-        deviceTypeBox.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if ("Project Prototypes (Optional SN)".equals(newVal)) {
-                serialNumberField.setPromptText("Optional Serial Number");
-                com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(serialNumberField);
-                if (serialNumberLabel != null) {
-                    serialNumberLabel.setGraphic(null);
-                }
-            } else {
-                serialNumberField.setPromptText("e.g. SN-DELL-12345");
-                if (serialNumberLabel != null) {
-                    javafx.scene.control.Label ast = new javafx.scene.control.Label("*");
-                    ast.setStyle("-fx-text-fill: red;");
-                    serialNumberLabel.setGraphic(ast);
-                }
-            }
-        });
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(serialNumberField);
         com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(deviceTypeBox);
         com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(devicePurposeBox);
         com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(deviceStatusBox);
@@ -460,8 +428,7 @@ public class RegistryManagementScreenController {
                             studentService.createStudent(s);
                         } catch(Exception ignored) { }
                         
-                        boolean isSNRequired = !"Project Prototypes (Optional SN)".equals(dType);
-                        if ((!isSNRequired || !sNum.isEmpty()) && !dName.isEmpty()) {
+                        if(!sNum.isEmpty() && !dName.isEmpty()) {
                             Device d = new Device();
                             d.setStudentId(sId);
                             d.setDeviceName(dName);
@@ -611,12 +578,7 @@ public class RegistryManagementScreenController {
         String deviceStatusVal = deviceStatusBox.getValue();
 
         boolean v1 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(deviceNameField, "Input needed");
-        boolean v2 = true;
-        if (type == null || !type.equals("Project Prototypes (Optional SN)")) {
-            v2 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(serialNumberField, "Input needed");
-        } else {
-            com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(serialNumberField);
-        }
+        boolean v2 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(serialNumberField, "Input needed");
         boolean v3 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateComboBox(deviceTypeBox);
         boolean v4 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateComboBox(devicePurposeBox);
         boolean v5 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateComboBox(deviceStatusBox);

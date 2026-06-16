@@ -54,23 +54,14 @@ public class TemporaryEventDeviceGuardScreenController {
     @FXML private ComboBox<String> guardDocTypeBox;
     @FXML private TextField guardDocRefField;
 
-    @FXML private TableView<EventDeviceSelection> guardIngressItemsTable;
-    @FXML private TableColumn<EventDeviceSelection, Boolean> colGuardIngressSelect;
-    @FXML private TableColumn<EventDeviceSelection, Integer> colGuardIngressItemId;
-    @FXML private TableColumn<EventDeviceSelection, String> colGuardIngressItemName;
-    @FXML private TableColumn<EventDeviceSelection, String> colGuardIngressSerialNumber;
-    @FXML private TableColumn<EventDeviceSelection, String> colGuardIngressType;
-    @FXML private TableColumn<EventDeviceSelection, String> colGuardIngressStatus;
-    @FXML private TableColumn<EventDeviceSelection, String> colGuardIngressCurrentDayStatus;
-
-    @FXML private TableView<EventDeviceSelection> guardEgressItemsTable;
-    @FXML private TableColumn<EventDeviceSelection, Boolean> colGuardEgressSelect;
-    @FXML private TableColumn<EventDeviceSelection, Integer> colGuardEgressItemId;
-    @FXML private TableColumn<EventDeviceSelection, String> colGuardEgressItemName;
-    @FXML private TableColumn<EventDeviceSelection, String> colGuardEgressSerialNumber;
-    @FXML private TableColumn<EventDeviceSelection, String> colGuardEgressType;
-    @FXML private TableColumn<EventDeviceSelection, String> colGuardEgressStatus;
-    @FXML private TableColumn<EventDeviceSelection, String> colGuardEgressCurrentDayStatus;
+    @FXML private TableView<EventDeviceSelection> guardItemsTable;
+    @FXML private TableColumn<EventDeviceSelection, Boolean> colGuardSelect;
+    @FXML private TableColumn<EventDeviceSelection, Integer> colGuardItemId;
+    @FXML private TableColumn<EventDeviceSelection, String> colGuardItemName;
+    @FXML private TableColumn<EventDeviceSelection, String> colGuardSerialNumber;
+    @FXML private TableColumn<EventDeviceSelection, String> colGuardType;
+    @FXML private TableColumn<EventDeviceSelection, String> colGuardStatus;
+    @FXML private TableColumn<EventDeviceSelection, String> colGuardCurrentDayStatus;
 
     // Left Section: Event Logs Table (Guards)
     @FXML private TextField searchField;
@@ -106,7 +97,6 @@ public class TemporaryEventDeviceGuardScreenController {
     @FXML private TextField modelField;
     @FXML private TextField serialNumberField;
     @FXML private ComboBox<String> deviceTypeBox;
-    @FXML private Label serialNumberLabel;
 
     // Actions
     @FXML private VBox addDeviceCard;
@@ -115,10 +105,8 @@ public class TemporaryEventDeviceGuardScreenController {
     @FXML private Button submitBtn;
     @FXML private Button logIngressBtn;
     @FXML private Button logEgressBtn;
-    @FXML private Button btnGuardLogIngress;
-    @FXML private Button btnGuardLogEgress;
-    @FXML private StackPane guardIngressModalOverlay;
-    @FXML private StackPane guardEgressModalOverlay;
+    @FXML private Button ingressEgressBtn;
+    @FXML private StackPane guardModalOverlay;
 
     private boolean isEditMode = false;
 
@@ -187,51 +175,52 @@ public class TemporaryEventDeviceGuardScreenController {
         colCurrentDayStatus.setCellValueFactory(new PropertyValueFactory<>("currentDayStatus"));
         itemsTable.setItems(deviceList);
 
-        // Configure guard ingress devices table
-        colGuardIngressSelect.setCellValueFactory(f -> {
+        // Configure guard devices table
+        colGuardSelect.setCellValueFactory(f -> {
             f.getValue().selectedProperty().addListener((obs, oldV, newV) -> {
-                guardIngressItemsTable.getSelectionModel().clearSelection();
-                guardIngressItemsTable.refresh();
+                guardItemsTable.getSelectionModel().clearSelection();
+                guardItemsTable.refresh();
                 updateGuardActionButtonsState();
             });
             return f.getValue().selectedProperty();
         });
-        colGuardIngressSelect.setCellFactory(javafx.scene.control.cell.CheckBoxTableCell.forTableColumn(colGuardIngressSelect));
-        colGuardIngressItemId.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("eventDeviceId"));
-        colGuardIngressItemName.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("deviceName"));
-        colGuardIngressSerialNumber.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("serialNumber"));
-        colGuardIngressType.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("deviceType"));
-        colGuardIngressStatus.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("deviceStatus"));
-        colGuardIngressCurrentDayStatus.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("currentDayStatus"));
-        javafx.collections.transformation.FilteredList<EventDeviceSelection> ingressFilteredList = 
-            new javafx.collections.transformation.FilteredList<>(deviceList, 
-                item -> !"entry".equalsIgnoreCase(item.getCurrentDayStatus()));
-        guardIngressItemsTable.setItems(ingressFilteredList);
-        guardIngressItemsTable.setEditable(true);
-        guardIngressItemsTable.setRowFactory(tv -> createGuardRowFactory(guardIngressItemsTable));
+        colGuardSelect.setCellFactory(javafx.scene.control.cell.CheckBoxTableCell.forTableColumn(colGuardSelect));
+        colGuardItemId.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("eventDeviceId"));
+        colGuardItemName.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("deviceName"));
+        colGuardSerialNumber.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("serialNumber"));
+        colGuardType.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("deviceType"));
+        colGuardStatus.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("deviceStatus"));
+        colGuardCurrentDayStatus.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("currentDayStatus"));
+        guardItemsTable.setItems(deviceList);
+        guardItemsTable.setEditable(true);
 
-        // Configure guard egress devices table
-        colGuardEgressSelect.setCellValueFactory(f -> {
-            f.getValue().selectedProperty().addListener((obs, oldV, newV) -> {
-                guardEgressItemsTable.getSelectionModel().clearSelection();
-                guardEgressItemsTable.refresh();
-                updateGuardActionButtonsState();
+        guardItemsTable.setRowFactory(tv -> {
+            javafx.scene.control.TableRow<EventDeviceSelection> row = new javafx.scene.control.TableRow<EventDeviceSelection>() {
+                @Override
+                protected void updateItem(EventDeviceSelection item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setStyle("");
+                    } else {
+                        if (item.isSelected()) {
+                            setStyle("-fx-background-color: #E1F5FE; -fx-text-fill: black;");
+                        } else {
+                            setStyle("-fx-background-color: transparent; -fx-text-fill: black;");
+                        }
+                    }
+                }
+            };
+            row.setOnMouseClicked(event -> {
+                if (!row.isEmpty() && event.getButton() == javafx.scene.input.MouseButton.PRIMARY && event.getClickCount() == 1) {
+                    EventDeviceSelection item = row.getItem();
+                    item.setSelected(!item.isSelected());
+                    row.getTableView().getSelectionModel().clearSelection();
+                    row.getTableView().refresh();
+                    updateGuardActionButtonsState();
+                }
             });
-            return f.getValue().selectedProperty();
+            return row;
         });
-        colGuardEgressSelect.setCellFactory(javafx.scene.control.cell.CheckBoxTableCell.forTableColumn(colGuardEgressSelect));
-        colGuardEgressItemId.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("eventDeviceId"));
-        colGuardEgressItemName.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("deviceName"));
-        colGuardEgressSerialNumber.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("serialNumber"));
-        colGuardEgressType.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("deviceType"));
-        colGuardEgressStatus.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("deviceStatus"));
-        colGuardEgressCurrentDayStatus.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("currentDayStatus"));
-        javafx.collections.transformation.FilteredList<EventDeviceSelection> egressFilteredList = 
-            new javafx.collections.transformation.FilteredList<>(deviceList, 
-                item -> "entry".equalsIgnoreCase(item.getCurrentDayStatus()));
-        guardEgressItemsTable.setItems(egressFilteredList);
-        guardEgressItemsTable.setEditable(true);
-        guardEgressItemsTable.setRowFactory(tv -> createGuardRowFactory(guardEgressItemsTable));
 
         // Populate dropdowns
         purposeBox.getItems().addAll(
@@ -359,39 +348,6 @@ public class TemporaryEventDeviceGuardScreenController {
         
         com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(deviceNameField);
         com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(deviceTypeBox);
-
-        serialNumberField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal) {
-                String type = deviceTypeBox.getValue();
-                if (type == null || !type.equals("Project Prototypes (Optional SN)")) {
-                    com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(serialNumberField, "Input needed");
-                } else {
-                    com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(serialNumberField);
-                }
-            }
-        });
-        serialNumberField.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (!com.pup.byod.javafxbyodclient.util.ValidationHelper.isEmpty(newVal)) {
-                com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(serialNumberField);
-            }
-        });
-
-        deviceTypeBox.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if ("Project Prototypes (Optional SN)".equals(newVal)) {
-                serialNumberField.setPromptText("Optional Serial Number");
-                com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(serialNumberField);
-                if (serialNumberLabel != null) {
-                    serialNumberLabel.setGraphic(null);
-                }
-            } else {
-                serialNumberField.setPromptText("Enter Serial Number");
-                if (serialNumberLabel != null) {
-                    javafx.scene.control.Label ast = new javafx.scene.control.Label("*");
-                    ast.setStyle("-fx-text-fill: red;");
-                    serialNumberLabel.setGraphic(ast);
-                }
-            }
-        });
     }
 
     private void setupDraftListeners() {
@@ -619,20 +575,14 @@ public class TemporaryEventDeviceGuardScreenController {
                 sel.selectedProperty().addListener((obs, oldVal, newVal) -> updateGuardActionButtonsState());
                 deviceList.add(sel);
             }
-            if (btnGuardLogIngress != null) {
-                btnGuardLogIngress.setDisable(devices.isEmpty());
-            }
-            if (btnGuardLogEgress != null) {
-                btnGuardLogEgress.setDisable(devices.isEmpty());
+            if (ingressEgressBtn != null) {
+                ingressEgressBtn.setDisable(devices.isEmpty());
             }
         } catch (Exception e) {
             AlertHelper.showError("Load Error", "Failed to load devices", e.getMessage());
             deviceList.clear();
-            if (btnGuardLogIngress != null) {
-                btnGuardLogIngress.setDisable(true);
-            }
-            if (btnGuardLogEgress != null) {
-                btnGuardLogEgress.setDisable(true);
+            if (ingressEgressBtn != null) {
+                ingressEgressBtn.setDisable(true);
             }
         }
 
@@ -692,15 +642,9 @@ public class TemporaryEventDeviceGuardScreenController {
 
         boolean v1 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(deviceNameField, "Input needed");
         boolean v2 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateComboBox(deviceTypeBox);
-        boolean v3 = true;
-        if (type == null || !type.equals("Project Prototypes (Optional SN)")) {
-            v3 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(serialNumberField, "Input needed");
-        } else {
-            com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(serialNumberField);
-        }
 
-        if (!v1 || !v2 || !v3) {
-            AlertHelper.showWarning("Item Warning", "Missing inputs", "Please complete all required fields.");
+        if (!v1 || !v2) {
+            AlertHelper.showWarning("Item Warning", "Missing inputs", "Please enter at least a device name and select a device type.");
             return;
         }
 
@@ -804,11 +748,8 @@ public class TemporaryEventDeviceGuardScreenController {
         setInputFieldsDisabled(false);
 
 
-        if (btnGuardLogIngress != null) {
-            btnGuardLogIngress.setDisable(true);
-        }
-        if (btnGuardLogEgress != null) {
-            btnGuardLogEgress.setDisable(true);
+        if (ingressEgressBtn != null) {
+            ingressEgressBtn.setDisable(true);
         }
     }
 
@@ -964,8 +905,6 @@ public class TemporaryEventDeviceGuardScreenController {
                 sel.setSelected(false);
             }
             
-            handleCloseIngressModal();
-            
             // Refresh table details to get the new status
             EventRequest selectedRequest = eventsTable.getSelectionModel().getSelectedItem();
             if (selectedRequest != null) {
@@ -999,8 +938,6 @@ public class TemporaryEventDeviceGuardScreenController {
             for (EventDeviceSelection sel : deviceList) {
                 sel.setSelected(false);
             }
-            
-            handleCloseEgressModal();
             
             // Refresh table details to get the new status
             EventRequest selectedRequest = eventsTable.getSelectionModel().getSelectedItem();
@@ -1066,33 +1003,14 @@ public class TemporaryEventDeviceGuardScreenController {
     }
 
     @FXML
-    public void handleOpenIngressModal() {
-        for (EventDeviceSelection sel : deviceList) {
-            String status = sel.getCurrentDayStatus();
-            sel.setSelected(!"entry".equalsIgnoreCase(status));
-        }
-        guardIngressModalOverlay.setVisible(true);
+    public void handleOpenGuardModal() {
+        guardModalOverlay.setVisible(true);
         updateGuardActionButtonsState();
     }
 
     @FXML
-    public void handleCloseIngressModal() {
-        guardIngressModalOverlay.setVisible(false);
-    }
-
-    @FXML
-    public void handleOpenEgressModal() {
-        for (EventDeviceSelection sel : deviceList) {
-            String status = sel.getCurrentDayStatus();
-            sel.setSelected("entry".equalsIgnoreCase(status));
-        }
-        guardEgressModalOverlay.setVisible(true);
-        updateGuardActionButtonsState();
-    }
-
-    @FXML
-    public void handleCloseEgressModal() {
-        guardEgressModalOverlay.setVisible(false);
+    public void handleCloseGuardModal() {
+        guardModalOverlay.setVisible(false);
     }
 
     private void updateGuardActionButtonsState() {
@@ -1100,55 +1018,38 @@ public class TemporaryEventDeviceGuardScreenController {
             return;
         }
 
-        boolean anySelectedIngress = false;
-        boolean invalidIngress = false;
-        
-        boolean anySelectedEgress = false;
-        boolean invalidEgress = false;
+        boolean hasSelectedEntry = false;
+        boolean hasSelectedExit = false;
+        boolean anySelected = false;
 
         for (EventDeviceSelection sel : deviceList) {
             if (sel.isSelected()) {
+                anySelected = true;
                 String status = sel.getCurrentDayStatus();
                 if ("entry".equalsIgnoreCase(status)) {
-                    anySelectedEgress = true;
-                    invalidIngress = true;
-                } else {
-                    anySelectedIngress = true;
-                    invalidEgress = true;
+                    hasSelectedEntry = true;
+                } else if ("exit".equalsIgnoreCase(status)) {
+                    hasSelectedExit = true;
                 }
             }
         }
 
-        logIngressBtn.setDisable(!anySelectedIngress || invalidIngress);
-        logEgressBtn.setDisable(!anySelectedEgress || invalidEgress);
-    }
-
-    private TableRow<EventDeviceSelection> createGuardRowFactory(TableView<EventDeviceSelection> tableView) {
-        TableRow<EventDeviceSelection> row = new TableRow<EventDeviceSelection>() {
-            @Override
-            protected void updateItem(EventDeviceSelection item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setStyle("");
-                } else {
-                    if (item.isSelected()) {
-                        setStyle("-fx-background-color: #E1F5FE; -fx-text-fill: black;");
-                    } else {
-                        setStyle("-fx-background-color: transparent; -fx-text-fill: black;");
-                    }
-                }
-            }
-        };
-        row.setOnMouseClicked(event -> {
-            if (!row.isEmpty() && event.getButton() == javafx.scene.input.MouseButton.PRIMARY && event.getClickCount() == 1) {
-                EventDeviceSelection item = row.getItem();
-                item.setSelected(!item.isSelected());
-                row.getTableView().getSelectionModel().clearSelection();
-                row.getTableView().refresh();
-                updateGuardActionButtonsState();
-            }
-        });
-        return row;
+        if (!anySelected) {
+            logIngressBtn.setDisable(true);
+            logEgressBtn.setDisable(true);
+        } else if (hasSelectedEntry && hasSelectedExit) {
+            logIngressBtn.setDisable(true);
+            logEgressBtn.setDisable(true);
+        } else if (hasSelectedExit && !hasSelectedEntry) {
+            logIngressBtn.setDisable(false);
+            logEgressBtn.setDisable(true);
+        } else if (hasSelectedEntry && !hasSelectedExit) {
+            logIngressBtn.setDisable(true);
+            logEgressBtn.setDisable(false);
+        } else {
+            logIngressBtn.setDisable(true);
+            logEgressBtn.setDisable(true);
+        }
     }
 
     @FXML

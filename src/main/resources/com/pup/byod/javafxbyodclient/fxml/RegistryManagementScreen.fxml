@@ -138,7 +138,7 @@
                         <Label text="Device Model:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="form-label"/>
                         <TextField fx:id="modelField" promptText="e.g. XPS 15 9520" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                         
-                        <Label fx:id="serialNumberLabel" text="Device Serial Number:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
+                        <Label text="Device Serial Number:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                         <TextField fx:id="serialNumberField" promptText="e.g. SN-DELL-12345" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
                         
                         <Label text="Device Type:" GridPane.columnIndex="0" GridPane.rowIndex="4" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>

@@ -162,8 +162,7 @@
                         
                         <!-- Ingress/Egress Action Panel -->
                         <HBox spacing="12.0" alignment="CENTER_LEFT" style="-fx-padding: 5px 0 20px 0;">
-                            <Button fx:id="btnGuardLogIngress" text="Log Ingress" onAction="#handleOpenIngressModal" styleClass="action-btn, action-btn-success" prefHeight="40.0" maxWidth="Infinity" HBox.hgrow="ALWAYS" disable="true"/>
-                            <Button fx:id="btnGuardLogEgress" text="Log Egress" onAction="#handleOpenEgressModal" styleClass="action-btn, action-btn-primary" prefHeight="40.0" maxWidth="Infinity" HBox.hgrow="ALWAYS" disable="true"/>
+                            <Button fx:id="ingressEgressBtn" text="Ingress/Egress" onAction="#handleOpenGuardModal" styleClass="action-btn, action-btn-warning" prefHeight="40.0" maxWidth="Infinity" HBox.hgrow="ALWAYS" disable="true"/>
                         </HBox>
                         
                     </VBox>
@@ -301,8 +300,8 @@
                                 <TextField fx:id="modelField" promptText="e.g. 4B (8GB)" styleClass="modern-textfield" prefHeight="38.0"/>
                             </VBox>
                             <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
-                                <Label fx:id="serialNumberLabel" text="Serial Number:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
-                                <TextField fx:id="serialNumberField" promptText="Enter Serial Number" styleClass="modern-textfield" prefHeight="38.0"/>
+                                <Label text="Serial Number:" styleClass="form-label"/>
+                                <TextField fx:id="serialNumberField" promptText="Optional Serial Number" styleClass="modern-textfield" prefHeight="38.0"/>
                             </VBox>
                             <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
                                 <Label text="Device Type:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
@@ -312,7 +311,7 @@
                         
                         <HBox spacing="10.0" alignment="CENTER_RIGHT" style="-fx-padding: 5px 0 0 0;">
                             <Button text="Remove Device" onAction="#handleRemoveItem" styleClass="action-btn, action-btn-danger" prefHeight="32.0" style="-fx-font-size: 12px;"/>
-                            <Button text="Add Device" onAction="#handleAddItem" styleClass="action-btn, action-btn-success" prefHeight="32.0" style="-fx-font-size: 12px;"/>
+                            <Button text="Add Device" onAction="#handleAddItem" styleClass="action-btn, action-btn-secondary" prefHeight="32.0" style="-fx-font-size: 12px;"/>
                         </HBox>
                     </VBox>
                     
@@ -327,67 +326,41 @@
         </VBox>
     </StackPane>
     
-    <!-- Layer 4: Guard Ingress Modal Overlay -->
-    <StackPane fx:id="guardIngressModalOverlay" visible="false" style="-fx-background-color: rgba(16, 42, 67, 0.45);" alignment="CENTER">
+    <!-- Layer 4: Guard Ingress/Egress Modal Overlay -->
+    <StackPane fx:id="guardModalOverlay" visible="false" style="-fx-background-color: rgba(16, 42, 67, 0.45);" alignment="CENTER">
         <padding>
             <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
         </padding>
+        
+        <!-- Modal Card -->
         <VBox spacing="15.0" maxHeight="500.0" maxWidth="850.0"
               style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 24px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 15, 0, 0, 8);">
+            
             <HBox alignment="CENTER_LEFT">
-                <Label text="Devices Listed for Ingress" style="-fx-font-family: 'Hanken Grotesk', 'Segoe UI Bold', 'Segoe UI', sans-serif; -fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #102A43;"/>
+                <Label text="Devices Listed for Clearance" style="-fx-font-family: 'Hanken Grotesk', 'Segoe UI Bold', 'Segoe UI', sans-serif; -fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #102A43;"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Button text="✕" onAction="#handleCloseIngressModal" styleClass="overlay-close-btn"/>
+                <Button text="✕" onAction="#handleCloseGuardModal" styleClass="overlay-close-btn"/>
             </HBox>
+            
             <Separator/>
-            <TableView fx:id="guardIngressItemsTable" VBox.vgrow="ALWAYS" styleClass="modern-table" minHeight="200.0">
+            
+            <TableView fx:id="guardItemsTable" VBox.vgrow="ALWAYS" styleClass="modern-table" minHeight="200.0">
                 <columnResizePolicy>
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                 </columnResizePolicy>
                 <columns>
-                    <TableColumn fx:id="colGuardIngressSelect" text="Select" prefWidth="65.0"/>
-                    <TableColumn fx:id="colGuardIngressItemId" text="Item ID" prefWidth="75.0"/>
-                    <TableColumn fx:id="colGuardIngressItemName" text="Device Name" prefWidth="130.0"/>
-                    <TableColumn fx:id="colGuardIngressSerialNumber" text="Serial Number" prefWidth="130.0"/>
-                    <TableColumn fx:id="colGuardIngressType" text="Type" prefWidth="140.0"/>
-                    <TableColumn fx:id="colGuardIngressStatus" text="Manifest Status" prefWidth="130.0"/>
-                    <TableColumn fx:id="colGuardIngressCurrentDayStatus" text="Today's Status" prefWidth="130.0"/>
+                    <TableColumn fx:id="colGuardSelect" text="Select" prefWidth="65.0"/>
+                    <TableColumn fx:id="colGuardItemId" text="Item ID" prefWidth="75.0"/>
+                    <TableColumn fx:id="colGuardItemName" text="Device Name" prefWidth="130.0"/>
+                    <TableColumn fx:id="colGuardSerialNumber" text="Serial Number" prefWidth="130.0"/>
+                    <TableColumn fx:id="colGuardType" text="Type" prefWidth="140.0"/>
+                    <TableColumn fx:id="colGuardStatus" text="Manifest Status" prefWidth="130.0"/>
+                    <TableColumn fx:id="colGuardCurrentDayStatus" text="Today's Status" prefWidth="130.0"/>
                 </columns>
             </TableView>
+            
             <HBox spacing="12.0" alignment="CENTER_RIGHT">
                 <Button fx:id="logIngressBtn" text="Log Ingress" onAction="#handleConfirmEntry" styleClass="action-btn, action-btn-success" prefHeight="38.0" prefWidth="140.0"/>
-            </HBox>
-        </VBox>
-    </StackPane>
-
-    <!-- Layer 5: Guard Egress Modal Overlay -->
-    <StackPane fx:id="guardEgressModalOverlay" visible="false" style="-fx-background-color: rgba(16, 42, 67, 0.45);" alignment="CENTER">
-        <padding>
-            <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
-        </padding>
-        <VBox spacing="15.0" maxHeight="500.0" maxWidth="850.0"
-              style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 24px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 15, 0, 0, 8);">
-            <HBox alignment="CENTER_LEFT">
-                <Label text="Devices Listed for Egress" style="-fx-font-family: 'Hanken Grotesk', 'Segoe UI Bold', 'Segoe UI', sans-serif; -fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #102A43;"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Button text="✕" onAction="#handleCloseEgressModal" styleClass="overlay-close-btn"/>
-            </HBox>
-            <Separator/>
-            <TableView fx:id="guardEgressItemsTable" VBox.vgrow="ALWAYS" styleClass="modern-table" minHeight="200.0">
-                <columnResizePolicy>
-                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                </columnResizePolicy>
-                <columns>
-                    <TableColumn fx:id="colGuardEgressSelect" text="Select" prefWidth="65.0"/>
-                    <TableColumn fx:id="colGuardEgressItemId" text="Item ID" prefWidth="75.0"/>
-                    <TableColumn fx:id="colGuardEgressItemName" text="Device Name" prefWidth="130.0"/>
-                    <TableColumn fx:id="colGuardEgressSerialNumber" text="Serial Number" prefWidth="130.0"/>
-                    <TableColumn fx:id="colGuardEgressType" text="Type" prefWidth="140.0"/>
-                    <TableColumn fx:id="colGuardEgressStatus" text="Manifest Status" prefWidth="130.0"/>
-                    <TableColumn fx:id="colGuardEgressCurrentDayStatus" text="Today's Status" prefWidth="130.0"/>
-                </columns>
-            </TableView>
-            <HBox spacing="12.0" alignment="CENTER_RIGHT">
                 <Button fx:id="logEgressBtn" text="Log Egress" onAction="#handleConfirmExit" styleClass="action-btn, action-btn-primary" prefHeight="38.0" prefWidth="140.0"/>
             </HBox>
         </VBox>
