@@ -51,18 +51,18 @@
                 <Label fx:id="registeredDevicesLabel" text="0" styleClass="stat-value, stat-value-purple"/>
             </VBox>
             
-            <!-- Card 3: Pending Approvals -->
+            <!-- Card 3: Active Events -->
             <VBox styleClass="stat-card" spacing="12.0" HBox.hgrow="ALWAYS">
                 <HBox alignment="CENTER_LEFT">
-                    <Label text="Pending Approvals" styleClass="stat-title"/>
+                    <Label text="Active Events" styleClass="stat-title"/>
                     <Region HBox.hgrow="ALWAYS"/>
                     <StackPane styleClass="stat-icon-container, stat-icon-yellow">
-                        <!-- Clean Clock SVG -->
-                        <SVGPath content="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8zm.5-13H11v6l5.2 3.1.8-1.3-4.5-2.7V7z" 
+                        <!-- Clean Calendar SVG -->
+                        <SVGPath content="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm-2-7h-4v4h4v-4z" 
                                  styleClass="stat-icon-yellow-svg"/>
                     </StackPane>
                 </HBox>
-                <Label fx:id="pendingApprovalsLabel" text="0" styleClass="stat-value, stat-value-orange"/>
+                <Label fx:id="activeEventsLabel" text="0" styleClass="stat-value, stat-value-orange"/>
             </VBox>
             
             <!-- Card 4: Devices On Campus (Gold Border, Lighter Yellow Container) -->
@@ -126,21 +126,21 @@
                 </graphic>
             </Button>
             
-            <!-- Review Approvals -->
-            <Button onAction="#goToApprovals" maxWidth="Infinity" styleClass="shortcut-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <!-- Gate Ingress/Egress -->
+            <Button onAction="#goToIngressEgress" maxWidth="Infinity" styleClass="shortcut-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
                 <graphic>
                     <HBox spacing="16.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                         <StackPane alignment="TOP_RIGHT">
                             <StackPane styleClass="shortcut-icon-container">
-                                <!-- Shield Check/Circle Check SVG -->
-                                <SVGPath content="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" 
+                                <!-- Gate/Scan SVG -->
+                                <SVGPath content="M19 3H5c-1.1 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 11.59L9.41 12 8 13.41l4 4 6-6-1.41-1.42L12 14.59z" 
                                          styleClass="shortcut-icon"/>
                             </StackPane>
-                            <Label fx:id="pendingApprovalsBadge" text="0" styleClass="shortcut-badge"/>
+                            <Label fx:id="activeEventsBadge" text="0" styleClass="shortcut-badge"/>
                         </StackPane>
                         <VBox spacing="4.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
-                            <Label text="Review Approvals" styleClass="shortcut-title"/>
-                            <Label text="Approve or reject pending BYOD registration requests" styleClass="shortcut-desc"/>
+                            <Label text="Gate Ingress/Egress" styleClass="shortcut-title"/>
+                            <Label text="Scan and log device check-ins/check-outs at the gate" styleClass="shortcut-desc"/>
                         </VBox>
                     </HBox>
                 </graphic>

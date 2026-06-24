@@ -13,7 +13,7 @@
     -fx-border-color: transparent #0C1E30 transparent transparent;
     -fx-border-width: 0 1px 0 0;
     -fx-border-style: solid;
-    -fx-min-width: 240px;
+    -fx-min-width: 260px;
     -fx-padding: 24px 16px;
 }
 /* Sidebar Title and Logo */
@@ -69,6 +69,14 @@
     -fx-cursor: hand;
     -fx-alignment: center-left;
     -fx-graphic-text-gap: 12px;
+}
+
+.sidebar-icon-container {
+    -fx-min-width: 24px;
+    -fx-max-width: 24px;
+    -fx-min-height: 24px;
+    -fx-max-height: 24px;
+    -fx-alignment: center;
 }
 
 .sidebar-btn .sidebar-icon {
@@ -517,9 +525,17 @@
 .modern-table .table-row-cell:odd {
     -fx-background-color: #FAFAFA;
 }
-.modern-table .table-row-cell:selected {
-    -fx-background-color: #E0F2FE;
-    -fx-text-fill: #102A43;
+.modern-table .table-row-cell:selected,
+.modern-table .table-row-cell:filled:selected,
+.modern-table:focused .table-row-cell:selected,
+.modern-table:focused .table-row-cell:filled:selected {
+    -fx-background-color: #E0F2FE !important;
+}
+.modern-table .table-row-cell:selected .table-cell,
+.modern-table .table-row-cell:filled:selected .table-cell,
+.modern-table:focused .table-row-cell:selected .table-cell,
+.modern-table:focused .table-row-cell:filled:selected .table-cell {
+    -fx-text-fill: #102A43 !important;
 }
 .modern-table .table-cell {
     -fx-text-fill: #334155;

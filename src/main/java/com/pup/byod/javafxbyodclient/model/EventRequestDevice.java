@@ -5,10 +5,10 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EventRequestDevice {
-    @JsonAlias({"event_device_id", "eventDeviceId"})
+    @JsonAlias({"requestDeviceId", "request_device_id", "event_device_id", "eventDeviceId"})
     private Integer eventDeviceId;
 
-    @JsonAlias({"event_request_id", "eventRequestId"})
+    @JsonAlias({"requestId", "request_id", "event_request_id", "eventRequestId"})
     private Integer eventRequestId;
     private String deviceName;
     private String brand;

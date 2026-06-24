@@ -1,9 +1,11 @@
 package com.pup.byod.javafxbyodclient.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonAlias;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Device {
+    @JsonAlias({"requestDeviceId", "request_device_id", "deviceId", "device_id"})
     private Integer deviceId;
     private String studentId;
     private String deviceName;

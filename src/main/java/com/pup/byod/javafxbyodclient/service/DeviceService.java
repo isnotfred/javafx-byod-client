@@ -13,7 +13,7 @@ public class DeviceService {
     private final ApiClient apiClient = ApiClient.getInstance();
 
     public List<Device> getAllDevices() throws Exception {
-        Device[] devices = apiClient.get("/api/v1/devices", Device[].class);
+        Device[] devices = apiClient.get("/api/requests/campus-status", Device[].class);
         return Arrays.asList(devices);
     }
 
@@ -22,12 +22,24 @@ public class DeviceService {
     }
 
     public Device getDeviceBySerialNumber(String serialNumber) throws Exception {
-        return apiClient.get("/api/v1/devices/serial/" + serialNumber, Device.class);
+        DeviceCampusStatus status = apiClient.get("/api/requests/campus-status/" + serialNumber, DeviceCampusStatus.class);
+        Device d = new Device();
+        d.setDeviceId(status.getDeviceId());
+        d.setStudentId(status.getStudentId());
+        d.setDeviceName(status.getDeviceName());
+        d.setBrand(status.getBrand());
+        d.setModel(status.getModel());
+        d.setSerialNumber(status.getSerialNumber());
+        d.setDeviceType(status.getDeviceType());
+        d.setDeviceStatus(status.getCampusStatus());
+        return d;
     }
 
     public List<Device> getDevicesByStudentId(String studentId) throws Exception {
-        Device[] devices = apiClient.get("/api/v1/devices/student/" + studentId, Device[].class);
-        return Arrays.asList(devices);
+        Device[] devices = apiClient.get("/api/requests/campus-status", Device[].class);
+        return java.util.Arrays.stream(devices)
+                .filter(d -> studentId.equals(d.getStudentId()))
+                .collect(java.util.stream.Collectors.toList());
     }
 
     public List<PendingDevice> getPendingDevices() throws Exception {
@@ -36,7 +48,7 @@ public class DeviceService {
     }
 
     public List<DeviceCampusStatus> getDeviceCampusStatus() throws Exception {
-        DeviceCampusStatus[] status = apiClient.get("/api/v1/devices/campus-status", DeviceCampusStatus[].class);
+        DeviceCampusStatus[] status = apiClient.get("/api/requests/campus-status", DeviceCampusStatus[].class);
         return Arrays.asList(status);
     }
 

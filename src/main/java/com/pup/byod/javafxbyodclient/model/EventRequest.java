@@ -1,10 +1,12 @@
 package com.pup.byod.javafxbyodclient.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EventRequest {
+    @JsonAlias({"requestId", "event_request_id", "eventRequestId"})
     private Integer eventRequestId;
     private String studentId;
     private String responsiblePerson;

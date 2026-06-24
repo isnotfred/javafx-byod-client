@@ -62,13 +62,13 @@ public class AdminDashboardController {
     }
 
     @FXML
-    public void showPendingApprovals() {
-        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "PendingRegistrationApprovalScreen.fxml");
+    public void showEventRequests() {
+        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "TemporaryEventDeviceGuardScreen.fxml");
     }
 
     @FXML
-    public void showEventRequests() {
-        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "TemporaryEventDeviceGuardScreen.fxml");
+    public void showIngressEgress() {
+        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "IngressEgressMonitoringScreen.fxml");
     }
 
     @FXML
@@ -84,11 +84,6 @@ public class AdminDashboardController {
     @FXML
     public void showReports() {
         NavigationManager.getInstance().loadViewIntoContainer(contentArea, "ReportsScreen.fxml");
-    }
-
-    @FXML
-    public void showSystemAuditLogs() {
-        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "SystemAuditLogsScreen.fxml");
     }
 
     @FXML

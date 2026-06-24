@@ -2,10 +2,11 @@ package com.pup.byod.javafxbyodclient.controller;
 
 import com.pup.byod.javafxbyodclient.model.Device;
 import com.pup.byod.javafxbyodclient.model.DeviceCampusStatus;
-import com.pup.byod.javafxbyodclient.model.PendingDevice;
+import com.pup.byod.javafxbyodclient.model.ActiveEventRequest;
 import com.pup.byod.javafxbyodclient.model.Student;
 import com.pup.byod.javafxbyodclient.service.DeviceService;
 import com.pup.byod.javafxbyodclient.service.StudentService;
+import com.pup.byod.javafxbyodclient.service.EventRequestService;
 import com.pup.byod.javafxbyodclient.util.NavigationManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -17,12 +18,13 @@ public class AdminSummaryDashboardController {
     @FXML private Label welcomeLabel;
     @FXML private Label activeStudentsLabel;
     @FXML private Label registeredDevicesLabel;
-    @FXML private Label pendingApprovalsLabel;
-    @FXML private Label pendingApprovalsBadge;
+    @FXML private Label activeEventsLabel;
+    @FXML private Label activeEventsBadge;
     @FXML private Label devicesOnCampusLabel;
 
     private final StudentService studentService = new StudentService();
     private final DeviceService deviceService = new DeviceService();
+    private final EventRequestService eventRequestService = new EventRequestService();
 
     @FXML
     public void initialize() {
@@ -39,7 +41,7 @@ public class AdminSummaryDashboardController {
     public void refreshStats() {
         activeStudentsLabel.setText("...");
         registeredDevicesLabel.setText("...");
-        pendingApprovalsLabel.setText("...");
+        activeEventsLabel.setText("...");
         devicesOnCampusLabel.setText("...");
 
         new Thread(() -> {
@@ -61,11 +63,11 @@ public class AdminSummaryDashboardController {
                 e.printStackTrace();
             }
 
-            String pendingCountStr = "Error";
+            String activeEventsCountStr = "Error";
             try {
-                List<PendingDevice> pending = deviceService.getPendingDevices();
-                long pendingCount = pending.size();
-                pendingCountStr = String.valueOf(pendingCount);
+                List<ActiveEventRequest> activeEvents = eventRequestService.getActiveEventRequests();
+                long activeEventsCount = activeEvents.size();
+                activeEventsCountStr = String.valueOf(activeEventsCount);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -81,20 +83,20 @@ public class AdminSummaryDashboardController {
 
             final String fActiveStudents = activeStudentsStr;
             final String fRegisteredDevices = registeredDevicesStr;
-            final String fPendingCount = pendingCountStr;
+            final String fActiveEventsCount = activeEventsCountStr;
             final String fDevicesOnCampus = devicesOnCampusStr;
 
             Platform.runLater(() -> {
                 activeStudentsLabel.setText(fActiveStudents);
                 registeredDevicesLabel.setText(fRegisteredDevices);
-                pendingApprovalsLabel.setText(fPendingCount);
+                activeEventsLabel.setText(fActiveEventsCount);
                 devicesOnCampusLabel.setText(fDevicesOnCampus);
-                if (pendingApprovalsBadge != null) {
-                    pendingApprovalsBadge.setText(fPendingCount);
-                    if ("0".equals(fPendingCount) || "Error".equals(fPendingCount)) {
-                        pendingApprovalsBadge.setVisible(false);
+                if (activeEventsBadge != null) {
+                    activeEventsBadge.setText(fActiveEventsCount);
+                    if ("0".equals(fActiveEventsCount) || "Error".equals(fActiveEventsCount)) {
+                        activeEventsBadge.setVisible(false);
                     } else {
-                        pendingApprovalsBadge.setVisible(true);
+                        activeEventsBadge.setVisible(true);
                     }
                 }
             });
@@ -116,10 +118,10 @@ public class AdminSummaryDashboardController {
     }
 
     @FXML
-    public void goToApprovals() {
+    public void goToIngressEgress() {
         NavigationManager.getInstance().loadViewIntoContainer(
-            NavigationManager.getInstance().getContentArea(), "PendingRegistrationApprovalScreen.fxml");
-        syncSidebarSelection("Pending Approvals");
+            NavigationManager.getInstance().getContentArea(), "IngressEgressMonitoringScreen.fxml");
+        syncSidebarSelection("Gate Ingress/Egress");
     }
 
     @FXML

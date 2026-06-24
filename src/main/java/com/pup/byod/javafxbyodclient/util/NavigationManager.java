@@ -5,6 +5,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.Node;
+import javafx.scene.control.TextInputControl;
 
 import java.io.IOException;
 import java.net.URL;
@@ -32,6 +35,29 @@ public class NavigationManager {
         return instance;
     }
 
+    private void attachFocusClearFilter(Scene scene) {
+        scene.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            if (event.getTarget() instanceof Node) {
+                Node node = (Node) event.getTarget();
+                boolean insideInput = false;
+                Node temp = node;
+                while (temp != null) {
+                    if (temp instanceof TextInputControl) {
+                        insideInput = true;
+                        break;
+                    }
+                    temp = temp.getParent();
+                }
+                if (!insideInput) {
+                    Parent sceneRoot = scene.getRoot();
+                    if (sceneRoot != null) {
+                        sceneRoot.requestFocus();
+                    }
+                }
+            }
+        });
+    }
+
     public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
     }
@@ -57,6 +83,7 @@ public class NavigationManager {
             } else {
                 scene.setRoot(root);
             }
+            attachFocusClearFilter(scene);
             
             // Add style sheet if it exists
             URL cssUrl = getClass().getResource("/com/pup/byod/javafxbyodclient/css/styles.css");
@@ -126,6 +153,7 @@ public class NavigationManager {
             stage.initOwner(primaryStage);
             stage.setTitle(title);
             Scene scene = new Scene(root);
+            attachFocusClearFilter(scene);
 
             URL cssUrl = getClass().getResource("/com/pup/byod/javafxbyodclient/css/styles.css");
             if (cssUrl != null) {
