@@ -8,6 +8,7 @@ public class Student {
     private String firstName;
     private String lastName;
     private String courseYearLevel;
+    private String contactNumber;
     private String course;
     private Integer yearLevel;
     private String status;
@@ -46,4 +47,7 @@ public class Student {
 
     public String getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
+
+    public String getContactNumber() { return contactNumber; }
+    public void setContactNumber(String contactNumber) { this.contactNumber = contactNumber; }
 }

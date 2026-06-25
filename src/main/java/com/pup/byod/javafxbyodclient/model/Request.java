@@ -12,9 +12,6 @@ public class Request {
     private String eventName;
     private String organization;
     private String responsiblePerson;
-    private String approvalDocType;
-    private String approvalDocRef;
-    
     private String purpose;
     private String startDate;
     private String endDate;
@@ -49,12 +46,6 @@ public class Request {
 
     public String getResponsiblePerson() { return responsiblePerson; }
     public void setResponsiblePerson(String responsiblePerson) { this.responsiblePerson = responsiblePerson; }
-
-    public String getApprovalDocType() { return approvalDocType; }
-    public void setApprovalDocType(String approvalDocType) { this.approvalDocType = approvalDocType; }
-
-    public String getApprovalDocRef() { return approvalDocRef; }
-    public void setApprovalDocRef(String approvalDocRef) { this.approvalDocRef = approvalDocRef; }
 
     public String getPurpose() { return purpose; }
     public void setPurpose(String purpose) { this.purpose = purpose; }
@@ -94,4 +85,8 @@ public class Request {
 
     public String getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
+
+    private java.util.List<RequestDevice> lineItems;
+    public java.util.List<RequestDevice> getLineItems() { return lineItems; }
+    public void setLineItems(java.util.List<RequestDevice> lineItems) { this.lineItems = lineItems; }
 }

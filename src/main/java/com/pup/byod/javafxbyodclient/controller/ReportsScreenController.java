@@ -33,22 +33,22 @@ public class ReportsScreenController {
 
     private static final String DAILY_TRAFFIC = "Daily Traffic Report";
     private static final String MONTHLY_TRAFFIC = "Monthly Traffic Report";
-    private static final String PENDING_REGISTRATIONS = "Pending Registrations Report";
+    private static final String MISSED_CHECKOUTS = "Missed Checkouts Report";
     private static final String ACTIVE_DEVICES = "Active Devices Report";
     private static final String DEVICE_FREQUENCY = "Device Frequency Report";
     private static final String INCIDENT_OVERRIDES = "Incident Overrides Report";
-    private static final String UNRECONCILED_EVENT_DEVICES = "Unreconciled Event Devices";
+    private static final String PURPOSE_BREAKDOWN = "Purpose Breakdown Report";
 
     @FXML
     public void initialize() {
         reportTypeBox.getItems().addAll(
             DAILY_TRAFFIC,
             MONTHLY_TRAFFIC,
-            PENDING_REGISTRATIONS,
+            MISSED_CHECKOUTS,
             ACTIVE_DEVICES,
             DEVICE_FREQUENCY,
             INCIDENT_OVERRIDES,
-            UNRECONCILED_EVENT_DEVICES
+            PURPOSE_BREAKDOWN
         );
         reportsTable.setItems(reportList);
 
@@ -128,13 +128,13 @@ public class ReportsScreenController {
             
             endDateContainer.setVisible(false);
             endDateContainer.setManaged(false);
-        } else if (PENDING_REGISTRATIONS.equals(reportType) || ACTIVE_DEVICES.equals(reportType) || UNRECONCILED_EVENT_DEVICES.equals(reportType)) {
+        } else if (ACTIVE_DEVICES.equals(reportType) || PURPOSE_BREAKDOWN.equals(reportType)) {
             startDateContainer.setVisible(false);
             startDateContainer.setManaged(false);
             
             endDateContainer.setVisible(false);
             endDateContainer.setManaged(false);
-        } else { // DEVICE_FREQUENCY and INCIDENT_OVERRIDES
+        } else { // DEVICE_FREQUENCY, INCIDENT_OVERRIDES, MISSED_CHECKOUTS
             startDateContainer.setVisible(true);
             startDateContainer.setManaged(true);
             startDateLabel.setText("From:");
@@ -165,105 +165,86 @@ public class ReportsScreenController {
         switch (reportType) {
             case DAILY_TRAFFIC:
                 reportsTable.getColumns().addAll(
-                    createColumn("Log ID", "logId"),
-                    createColumn("Event Type", "eventType"),
-                    createColumn("Event Time", "eventTime"),
-                    createColumn("Student ID", "studentId"),
-                    createColumn("Student Name", "studentName"),
-                    createColumn("Course/Year", "courseYearLevel"),
-                    createColumn("Device Name", "deviceName"),
-                    createColumn("Serial Number", "serialNumber"),
-                    createColumn("Device Type", "deviceType"),
-                    createColumn("Reg. Status", "registrationStatus"),
-                    createColumn("Handled By", "handledByName"),
-                    createColumn("Notes", "notes")
+                    createColumn("Log ID", "logId", "transactionId", "transaction_id"),
+                    createColumn("Student ID", "studentId", "student_id"),
+                    createColumn("Student Name", "studentName", "student_name"),
+                    createColumn("Course/Year", "courseYearLevel", "course_year_level"),
+                    createColumn("Device Name", "deviceName", "device_name"),
+                    createColumn("Serial Number", "serialNumber", "serial_number"),
+                    createColumn("Checked-In", "ingressTime", "ingress_time"),
+                    createColumn("Checked-Out", "egressTime", "egress_time")
                 );
                 break;
             case MONTHLY_TRAFFIC:
                 reportsTable.getColumns().addAll(
-                    createColumn("Month", "reportMonth"),
-                    createColumn("Device Category", "deviceCategory"),
-                    createColumn("Student ID", "studentId"),
-                    createColumn("Student Name", "studentName"),
-                    createColumn("Course/Year", "courseYearLevel"),
-                    createColumn("Entries", "entryCount"),
-                    createColumn("Exits", "exitCount"),
-                    createColumn("Total Events", "totalEvents")
+                    createColumn("Month", "reportMonth", "report_month"),
+                    createColumn("Device Category", "deviceCategory", "device_category"),
+                    createColumn("Student ID", "studentId", "student_id"),
+                    createColumn("Student Name", "studentName", "student_name"),
+                    createColumn("Course/Year", "courseYearLevel", "course_year_level"),
+                    createColumn("Entries/Total", "totalEvents", "total_events"),
+                    createColumn("Exits", "exitCount", "exit_count"),
+                    createColumn("Missed Checkouts", "missedCount", "missed_count")
                 );
                 break;
-            case PENDING_REGISTRATIONS:
+            case MISSED_CHECKOUTS:
                 reportsTable.getColumns().addAll(
-                    createColumn("Device ID", "deviceId"),
-                    createColumn("Student ID", "studentId"),
-                    createColumn("Student Name", "studentName"),
-                    createColumn("Course/Year", "courseYearLevel"),
-                    createColumn("Device Name", "deviceName"),
-                    createColumn("Brand", "brand"),
-                    createColumn("Model", "model"),
-                    createColumn("Serial Number", "serialNumber"),
-                    createColumn("Device Type", "deviceType"),
-                    createColumn("Purpose", "devicePurpose"),
-                    createColumn("Submitted At", "submittedAt"),
-                    createColumn("Submitted By", "submittedBy")
+                    createColumn("Log ID", "transactionId", "transaction_id"),
+                    createColumn("Student ID", "studentId", "student_id"),
+                    createColumn("Student Name", "studentName", "student_name"),
+                    createColumn("Device Name", "deviceName", "device_name"),
+                    createColumn("Serial Number", "serialNumber", "serial_number"),
+                    createColumn("Log Date", "logDate", "log_date"),
+                    createColumn("Ingress Time", "ingressTime", "ingress_time"),
+                    createColumn("Notes", "notes")
                 );
                 break;
             case ACTIVE_DEVICES:
                 reportsTable.getColumns().addAll(
-                    createColumn("Device ID", "deviceId"),
-                    createColumn("Student ID", "studentId"),
-                    createColumn("Student Name", "studentName"),
-                    createColumn("Course/Year", "courseYearLevel"),
-                    createColumn("Device Name", "deviceName"),
+                    createColumn("Device ID", "requestDeviceId", "request_device_id", "deviceId"),
+                    createColumn("Student ID", "studentId", "student_id"),
+                    createColumn("Student Name", "studentName", "student_name"),
+                    createColumn("Course/Year", "courseYearLevel", "course_year_level"),
+                    createColumn("Device Name", "deviceName", "device_name"),
                     createColumn("Brand", "brand"),
                     createColumn("Model", "model"),
-                    createColumn("Serial Number", "serialNumber"),
-                    createColumn("Device Type", "deviceType"),
-                    createColumn("Entered At", "enteredAt")
+                    createColumn("Serial Number", "serialNumber", "serial_number"),
+                    createColumn("Device Type", "deviceType", "device_type"),
+                    createColumn("Entered At", "enteredAt", "lastEventTime", "last_event_time")
                 );
                 break;
             case DEVICE_FREQUENCY:
                 reportsTable.getColumns().addAll(
-                    createColumn("Device ID", "deviceId"),
-                    createColumn("Student ID", "studentId"),
-                    createColumn("Student Name", "studentName"),
-                    createColumn("Course/Year", "courseYearLevel"),
-                    createColumn("Device Name", "deviceName"),
-                    createColumn("Device Type", "deviceType"),
+                    createColumn("Device ID", "requestDeviceId", "request_device_id", "deviceId"),
+                    createColumn("Student ID", "studentId", "student_id"),
+                    createColumn("Student Name", "studentName", "student_name"),
+                    createColumn("Course/Year", "courseYearLevel", "course_year_level"),
+                    createColumn("Device Name", "deviceName", "device_name"),
+                    createColumn("Device Type", "deviceType", "device_type"),
                     createColumn("Brand", "brand"),
                     createColumn("Model", "model"),
-                    createColumn("Entry Count", "entryCount"),
-                    createColumn("Exit Count", "exitCount"),
-                    createColumn("First Seen", "firstSeen"),
-                    createColumn("Last Seen", "lastSeen")
+                    createColumn("Entry Count", "entryCount", "entry_count"),
+                    createColumn("Exit Count", "exitCount", "exit_count"),
+                    createColumn("First Seen", "firstSeen", "first_seen"),
+                    createColumn("Last Seen", "lastSeen", "last_seen")
                 );
                 break;
             case INCIDENT_OVERRIDES:
                 reportsTable.getColumns().addAll(
-                    createColumn("Audit ID", "auditId"),
-                    createColumn("Timestamp", "createdAt"),
-                    createColumn("Incident Action", "actionType"),
-                    createColumn("Target Table", "targetTable"),
-                    createColumn("Target ID", "targetId"),
-                    createColumn("IP Address", "ipAddress"),
-                    createColumn("Operator Name", "performedBy"),
-                    createColumn("Role", "performerRole"),
-                    createColumn("Old Values", "oldValues"),
-                    createColumn("New Values", "newValues")
+                    createColumn("Audit ID", "auditId", "audit_id"),
+                    createColumn("Timestamp", "createdAt", "created_at"),
+                    createColumn("Incident Action", "actionType", "action_type"),
+                    createColumn("Target Table", "targetTable", "target_table"),
+                    createColumn("Target ID", "targetId", "target_id"),
+                    createColumn("IP Address", "ipAddress", "ip_address")
                 );
                 break;
-            case UNRECONCILED_EVENT_DEVICES:
+            case PURPOSE_BREAKDOWN:
                 reportsTable.getColumns().addAll(
-                    createColumn("Device ID", "eventDeviceId"),
-                    createColumn("Request ID", "eventRequestId"),
-                    createColumn("Device Name", "deviceName"),
-                    createColumn("Brand", "brand"),
-                    createColumn("Model", "model"),
-                    createColumn("Serial Number", "serialNumber"),
-                    createColumn("Device Type", "deviceType"),
-                    createColumn("Quantity", "quantity"),
-                    createColumn("Status", "deviceStatus"),
-                    createColumn("Daily Status", "currentDayStatus"),
-                    createColumn("Last Event", "lastEventTime")
+                    createColumn("Request Purpose", "purpose"),
+                    createColumn("Request Count", "requestCount", "request_count"),
+                    createColumn("Total Approved Devices", "totalDevicesApproved", "total_devices_approved"),
+                    createColumn("Percentage Volume", "percentage")
                 );
                 break;
         }
@@ -280,6 +261,9 @@ public class ReportsScreenController {
             if (map.containsKey(key) && map.get(key) != null) {
                 Object val = map.get(key);
                 if (val instanceof String && isTimestampKey(key)) {
+                    if (isTimeOnlyKey(key)) {
+                        return formatTimeOnly((String) val);
+                    }
                     return com.pup.byod.javafxbyodclient.util.DateFormatter.formatTimestamp((String) val);
                 }
                 return val;
@@ -291,6 +275,9 @@ public class ReportsScreenController {
                 if (mapKey.equalsIgnoreCase(key) && map.get(mapKey) != null) {
                     Object val = map.get(mapKey);
                     if (val instanceof String && isTimestampKey(key)) {
+                        if (isTimeOnlyKey(key)) {
+                            return formatTimeOnly((String) val);
+                        }
                         return com.pup.byod.javafxbyodclient.util.DateFormatter.formatTimestamp((String) val);
                     }
                     return map.get(mapKey);
@@ -304,6 +291,55 @@ public class ReportsScreenController {
         if (key == null) return false;
         String lower = key.toLowerCase();
         return lower.contains("time") || lower.contains("at") || lower.contains("seen") || lower.equals("timestamp");
+    }
+
+    private boolean isTimeOnlyKey(String key) {
+        if (key == null) return false;
+        String lower = key.toLowerCase();
+        return lower.contains("ingress") || lower.contains("egress");
+    }
+
+    private String formatTimeOnly(String timestampStr) {
+        if (timestampStr == null || timestampStr.isEmpty() || "null".equalsIgnoreCase(timestampStr)) return "-";
+        try {
+            java.time.temporal.TemporalAccessor temporal;
+            if (timestampStr.contains("Z") || timestampStr.contains("+") || (timestampStr.lastIndexOf("-") > 10)) {
+                temporal = java.time.OffsetDateTime.parse(timestampStr);
+            } else if (timestampStr.contains("T")) {
+                temporal = java.time.LocalDateTime.parse(timestampStr);
+            } else {
+                return timestampStr;
+            }
+            
+            java.time.LocalTime time;
+            if (temporal instanceof java.time.OffsetDateTime) {
+                time = ((java.time.OffsetDateTime) temporal).atZoneSameInstant(java.time.ZoneId.systemDefault()).toLocalTime();
+            } else {
+                time = ((java.time.LocalDateTime) temporal).toLocalTime();
+            }
+            
+            java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("h:mm a");
+            return time.format(formatter);
+        } catch (Exception e) {
+            return timestampStr;
+        }
+    }
+
+    private String getRawValueFromMap(Map<String, Object> map, String... keys) {
+        if (map == null) return "";
+        for (String key : keys) {
+            if (map.containsKey(key) && map.get(key) != null) {
+                return map.get(key).toString();
+            }
+        }
+        for (String mapKey : map.keySet()) {
+            for (String key : keys) {
+                if (mapKey.equalsIgnoreCase(key) && map.get(mapKey) != null) {
+                    return map.get(mapKey).toString();
+                }
+            }
+        }
+        return "";
     }
 
     @FXML
@@ -344,7 +380,7 @@ public class ReportsScreenController {
                 }
                 return;
             }
-        } else if (DEVICE_FREQUENCY.equals(reportType) || INCIDENT_OVERRIDES.equals(reportType)) {
+        } else if (DEVICE_FREQUENCY.equals(reportType) || INCIDENT_OVERRIDES.equals(reportType) || MISSED_CHECKOUTS.equals(reportType)) {
             if (start == null || end == null) {
                 if (!silent) {
                     AlertHelper.showWarning("Report Generator", "Date Range Required", "Please specify both starting and ending dates.");
@@ -367,16 +403,16 @@ public class ReportsScreenController {
                 int month = monthSelectBox.getSelectionModel().getSelectedIndex() + 1;
                 Integer year = yearSelectBox.getValue();
                 records = reportService.getMonthlyTrafficReport(year != null ? year : LocalDate.now().getYear(), month);
-            } else if (PENDING_REGISTRATIONS.equals(reportType)) {
-                records = reportService.getPendingRegistrationReport();
+            } else if (MISSED_CHECKOUTS.equals(reportType)) {
+                records = reportService.getMissedCheckoutReport(start.toString(), end.toString());
             } else if (ACTIVE_DEVICES.equals(reportType)) {
                 records = reportService.getActiveDevicesReport();
             } else if (DEVICE_FREQUENCY.equals(reportType)) {
                 records = reportService.getDeviceFrequencyReport(start.toString(), end.toString());
             } else if (INCIDENT_OVERRIDES.equals(reportType)) {
                 records = reportService.getIncidentsReport(start.toString(), end.toString());
-            } else {
-                records = reportService.getUnreconciledEventDevicesReport();
+            } else { // PURPOSE_BREAKDOWN
+                records = reportService.getPurposeBreakdownReport();
             }
 
             reportList.setAll(records);
@@ -422,15 +458,19 @@ public class ReportsScreenController {
             Map<String, Long> exitCountsByHour = new TreeMap<>();
 
             for (Map<String, Object> record : records) {
-                String eventTime = String.valueOf(getValueFromMap(record, "eventTime"));
-                String eventType = String.valueOf(getValueFromMap(record, "eventType"));
-                String hourStr = parseHourFromTime(eventTime);
-                if ("Unknown".equals(hourStr)) continue;
+                String eventTime = getRawValueFromMap(record, "ingressTime", "ingress_time");
+                String exitTime = getRawValueFromMap(record, "egressTime", "egress_time");
+                
+                String inHour = parseHourFromTime(eventTime);
+                if (!"Unknown".equals(inHour)) {
+                    entryCountsByHour.put(inHour, entryCountsByHour.getOrDefault(inHour, 0L) + 1);
+                }
 
-                if ("entry".equalsIgnoreCase(eventType)) {
-                    entryCountsByHour.put(hourStr, entryCountsByHour.getOrDefault(hourStr, 0L) + 1);
-                } else if ("exit".equalsIgnoreCase(eventType)) {
-                    exitCountsByHour.put(hourStr, exitCountsByHour.getOrDefault(hourStr, 0L) + 1);
+                if (exitTime != null && !exitTime.isEmpty() && !"null".equalsIgnoreCase(exitTime)) {
+                    String outHour = parseHourFromTime(exitTime);
+                    if (!"Unknown".equals(outHour)) {
+                        exitCountsByHour.put(outHour, exitCountsByHour.getOrDefault(outHour, 0L) + 1);
+                    }
                 }
             }
 
@@ -473,11 +513,11 @@ public class ReportsScreenController {
 
             Map<String, Integer> categoryEvents = new HashMap<>();
             for (Map<String, Object> record : records) {
-                String category = String.valueOf(getValueFromMap(record, "deviceCategory"));
+                String category = String.valueOf(getValueFromMap(record, "deviceCategory", "device_category"));
                 if (category == null || category.trim().isEmpty() || "null".equals(category)) {
                     category = "Unknown Category";
                 }
-                int total = getNumericInt(record, "totalEvents", "total_events", "total", "totalTraffic");
+                int total = getNumericInt(record, "totalEvents", "total_events");
                 categoryEvents.put(category, categoryEvents.getOrDefault(category, 0) + total);
             }
 
@@ -488,26 +528,31 @@ public class ReportsScreenController {
             pieChart.setData(pieData);
             chartContainer.getChildren().add(pieChart);
 
-        } else if (PENDING_REGISTRATIONS.equals(reportType)) {
-            PieChart pieChart = new PieChart();
-            pieChart.setTitle("Pending Approvals by Device Type");
-            pieChart.setAnimated(false);
+        } else if (MISSED_CHECKOUTS.equals(reportType)) {
+            CategoryAxis xAxis = new CategoryAxis();
+            xAxis.setLabel("Date");
+            NumberAxis yAxis = new NumberAxis();
+            yAxis.setLabel("Missed Count");
 
-            Map<String, Integer> typeCounts = new HashMap<>();
+            BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
+            barChart.setTitle("Missed Checkouts by Log Date");
+            barChart.setAnimated(false);
+
+            XYChart.Series<String, Number> series = new XYChart.Series<>();
+            series.setName("Stale Ingress Scans");
+
+            Map<String, Integer> dateCounts = new TreeMap<>();
             for (Map<String, Object> record : records) {
-                String devType = String.valueOf(getValueFromMap(record, "deviceType"));
-                if (devType == null || devType.trim().isEmpty() || "null".equals(devType)) {
-                    devType = "Unknown Type";
-                }
-                typeCounts.put(devType, typeCounts.getOrDefault(devType, 0) + 1);
+                String date = String.valueOf(getValueFromMap(record, "logDate", "log_date"));
+                dateCounts.put(date, dateCounts.getOrDefault(date, 0) + 1);
             }
 
-            ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
-            typeCounts.forEach((devType, count) -> {
-                pieData.add(new PieChart.Data(devType + " (" + count + ")", count));
+            dateCounts.forEach((date, count) -> {
+                series.getData().add(new XYChart.Data<>(date, count));
             });
-            pieChart.setData(pieData);
-            chartContainer.getChildren().add(pieChart);
+
+            barChart.getData().add(series);
+            chartContainer.getChildren().add(barChart);
 
         } else if (ACTIVE_DEVICES.equals(reportType)) {
             PieChart pieChart = new PieChart();
@@ -516,7 +561,7 @@ public class ReportsScreenController {
 
             Map<String, Integer> typeCounts = new HashMap<>();
             for (Map<String, Object> record : records) {
-                String devType = String.valueOf(getValueFromMap(record, "deviceType"));
+                String devType = String.valueOf(getValueFromMap(record, "deviceType", "device_type"));
                 if (devType == null || devType.trim().isEmpty() || "null".equals(devType)) {
                     devType = "Unknown Type";
                 }
@@ -545,18 +590,18 @@ public class ReportsScreenController {
 
             List<Map<String, Object>> sortedRecords = new ArrayList<>(records);
             sortedRecords.sort((r1, r2) -> {
-                int count1 = getNumericInt(r1, "entryCount");
-                int count2 = getNumericInt(r2, "entryCount");
+                int count1 = getNumericInt(r1, "entryCount", "entry_count");
+                int count2 = getNumericInt(r2, "entryCount", "entry_count");
                 return Integer.compare(count2, count1);
             });
 
             int limit = Math.min(10, sortedRecords.size());
             for (int i = 0; i < limit; i++) {
                 Map<String, Object> record = sortedRecords.get(i);
-                String studentName = String.valueOf(getValueFromMap(record, "studentName"));
-                String deviceName = String.valueOf(getValueFromMap(record, "deviceName"));
+                String studentName = String.valueOf(getValueFromMap(record, "studentName", "student_name"));
+                String deviceName = String.valueOf(getValueFromMap(record, "deviceName", "device_name"));
                 String label = studentName + " (" + deviceName + ")";
-                int entryCount = getNumericInt(record, "entryCount");
+                int entryCount = getNumericInt(record, "entryCount", "entry_count");
                 series.getData().add(new XYChart.Data<>(label, entryCount));
             }
 
@@ -566,11 +611,8 @@ public class ReportsScreenController {
         } else if (INCIDENT_OVERRIDES.equals(reportType)) {
             Map<String, Integer> freqMap = new HashMap<>();
             for (Map<String, Object> record : records) {
-                Object val = getValueFromMap(record, "actionType", "action", "type");
+                Object val = getValueFromMap(record, "actionType", "action_type");
                 String action = val != null ? val.toString() : "Unknown";
-                if (action.trim().isEmpty()) {
-                    action = "Unknown";
-                }
                 freqMap.put(action, freqMap.getOrDefault(action, 0) + 1);
             }
 
@@ -585,35 +627,37 @@ public class ReportsScreenController {
 
             pieChart.setData(pieData);
             chartContainer.getChildren().add(pieChart);
-        } else if (UNRECONCILED_EVENT_DEVICES.equals(reportType)) {
+            
+        } else if (PURPOSE_BREAKDOWN.equals(reportType)) {
             PieChart pieChart = new PieChart();
-            pieChart.setTitle("Unreconciled Event Devices by Device Type");
+            pieChart.setTitle("Request Purpose Breakdown");
             pieChart.setAnimated(false);
 
-            Map<String, Integer> typeCounts = new HashMap<>();
+            ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
             for (Map<String, Object> record : records) {
-                String devType = String.valueOf(getValueFromMap(record, "deviceType"));
-                if (devType == null || devType.trim().isEmpty() || "null".equals(devType)) {
-                    devType = "Unknown Type";
-                }
-                typeCounts.put(devType, typeCounts.getOrDefault(devType, 0) + 1);
+                String purpose = String.valueOf(getValueFromMap(record, "purpose"));
+                int count = getNumericInt(record, "requestCount", "request_count");
+                pieData.add(new PieChart.Data(purpose + " (" + count + ")", count));
             }
 
-            ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
-            typeCounts.forEach((devType, count) -> {
-                pieData.add(new PieChart.Data(devType + " (" + count + ")", count));
-            });
             pieChart.setData(pieData);
             chartContainer.getChildren().add(pieChart);
         }
     }
 
     private String parseHourFromTime(String timeStr) {
-        if (timeStr == null) return "Unknown";
+        if (timeStr == null || timeStr.trim().isEmpty() || "null".equalsIgnoreCase(timeStr)) return "Unknown";
         if (timeStr.contains("T")) {
             try {
                 int tIdx = timeStr.indexOf('T');
                 String timePart = timeStr.substring(tIdx + 1);
+                // Strip timezone info if any
+                int zIdx = timePart.indexOf('Z');
+                if (zIdx < 0) zIdx = timePart.indexOf('+');
+                if (zIdx < 0) zIdx = timePart.lastIndexOf('-'); // if offset like -08:00
+                if (zIdx > 0) {
+                    timePart = timePart.substring(0, zIdx);
+                }
                 String[] parts = timePart.split(":");
                 if (parts.length >= 1) {
                     int hour = Integer.parseInt(parts[0]);
@@ -627,17 +671,44 @@ public class ReportsScreenController {
             }
         } else if (timeStr.contains(" ")) {
             try {
-                String[] spaceParts = timeStr.split(" ");
-                if (spaceParts.length >= 3) {
-                    String timePart = spaceParts[1];
-                    String ampm = spaceParts[2];
+                String[] spaceParts = timeStr.split("\\s+");
+                String timePart = null;
+                String ampm = null;
+                for (String part : spaceParts) {
+                    if (part.contains(":")) {
+                        timePart = part;
+                    } else if (part.equalsIgnoreCase("AM") || part.equalsIgnoreCase("PM")) {
+                        ampm = part.toUpperCase();
+                    }
+                }
+                if (timePart != null) {
                     String[] parts = timePart.split(":");
                     if (parts.length >= 1) {
                         int hour = Integer.parseInt(parts[0]);
+                        if (ampm == null) {
+                            ampm = hour >= 12 ? "PM" : "AM";
+                        } else {
+                            hour = hour % 12;
+                            if (hour == 0) hour = 12;
+                            return String.format("%02d:00 %s", hour, ampm);
+                        }
                         int displayHour = hour % 12;
                         if (displayHour == 0) displayHour = 12;
-                        return String.format("%02d:00 %s", displayHour, ampm.toUpperCase());
+                        return String.format("%02d:00 %s", displayHour, ampm);
                     }
+                }
+            } catch (Exception e) {
+                // Ignore
+            }
+        } else if (timeStr.contains(":")) {
+            try {
+                String[] parts = timeStr.split(":");
+                if (parts.length >= 1) {
+                    int hour = Integer.parseInt(parts[0]);
+                    String ampm = hour >= 12 ? "PM" : "AM";
+                    int displayHour = hour % 12;
+                    if (displayHour == 0) displayHour = 12;
+                    return String.format("%02d:00 %s", displayHour, ampm);
                 }
             } catch (Exception e) {
                 // Ignore
@@ -659,4 +730,3 @@ public class ReportsScreenController {
         }
     }
 }
-

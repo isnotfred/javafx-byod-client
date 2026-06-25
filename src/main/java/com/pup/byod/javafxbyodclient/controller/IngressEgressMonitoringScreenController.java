@@ -145,19 +145,28 @@ public class IngressEgressMonitoringScreenController {
                 return;
             }
 
-            // Fetch requests and check if student has any approved requests
+            // Fetch requests and check if student has any active requests today
+            LocalDate today = LocalDate.now();
             List<Request> allRequests = requestService.getRequestsByStudentId(found.getStudentId());
             List<Request> approvedRequests = new ArrayList<>();
             for (Request r : allRequests) {
                 if ("approved".equalsIgnoreCase(r.getStatus())) {
-                    approvedRequests.add(r);
+                    try {
+                        LocalDate start = LocalDate.parse(r.getStartDate());
+                        LocalDate end = LocalDate.parse(r.getEndDate());
+                        if (!today.isBefore(start) && !today.isAfter(end)) {
+                            approvedRequests.add(r);
+                        }
+                    } catch (Exception e) {
+                        approvedRequests.add(r);
+                    }
                 }
             }
 
             if (approvedRequests.isEmpty()) {
                 // Do NOT update student details below as per request
-                statusLabel.setText("STATUS: NO APPROVED REQUESTS");
-                AlertHelper.showWarning("Search Result", "No Approved Requests", "This student has no active or approved requests.");
+                statusLabel.setText("STATUS: NO ACTIVE REQUESTS");
+                AlertHelper.showWarning("Search Result", "No Active Requests", "This student has no active approved requests for today.");
                 return;
             }
 

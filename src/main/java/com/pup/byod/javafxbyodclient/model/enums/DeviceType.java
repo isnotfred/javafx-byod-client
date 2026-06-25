@@ -5,7 +5,8 @@ public enum DeviceType {
     COMPONENTS_AND_PERIPHERALS("Components & Peripherals"),
     DISPLAY_AND_PROJECTION("Display & Projection"),
     PROJECT_PROTOTYPES("Project Prototypes (Optional SN)"),
-    APPLIANCES("Appliances (TLE)");
+    APPLIANCES("Appliances (TLE)"),
+    OTHER("Other");
 
     private final String displayName;
 

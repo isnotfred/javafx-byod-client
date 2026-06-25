@@ -38,4 +38,12 @@ public class LogService {
         body.put("notes", notes);
         apiClient.post("/api/transactions/scan", body, Object.class);
     }
+
+    public int reconcileMissedCheckouts() throws Exception {
+        Map res = apiClient.post("/api/transactions/reconcile", null, Map.class);
+        if (res != null && res.containsKey("markedAsMissed")) {
+            return ((Number) res.get("markedAsMissed")).intValue();
+        }
+        return 0;
+    }
 }

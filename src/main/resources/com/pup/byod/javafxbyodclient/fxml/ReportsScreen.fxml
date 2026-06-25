@@ -51,6 +51,9 @@
                 <Tab text="Data Table">
                     <content>
                         <TableView fx:id="reportsTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                            </columnResizePolicy>
                             <!-- Columns are generated dynamically in the controller -->
                         </TableView>
                     </content>

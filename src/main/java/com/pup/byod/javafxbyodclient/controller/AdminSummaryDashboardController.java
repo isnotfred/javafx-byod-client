@@ -1,17 +1,21 @@
 package com.pup.byod.javafxbyodclient.controller;
 
-import com.pup.byod.javafxbyodclient.model.Device;
 import com.pup.byod.javafxbyodclient.model.DeviceCampusStatus;
-import com.pup.byod.javafxbyodclient.model.PendingDevice;
 import com.pup.byod.javafxbyodclient.model.Student;
-import com.pup.byod.javafxbyodclient.service.DeviceService;
+import com.pup.byod.javafxbyodclient.model.Request;
 import com.pup.byod.javafxbyodclient.service.StudentService;
+import com.pup.byod.javafxbyodclient.service.RequestService;
+import com.pup.byod.javafxbyodclient.service.LogService;
+import com.pup.byod.javafxbyodclient.service.ReportService;
 import com.pup.byod.javafxbyodclient.util.NavigationManager;
+import com.pup.byod.javafxbyodclient.util.AlertHelper;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public class AdminSummaryDashboardController {
     @FXML private Label welcomeLabel;
@@ -22,7 +26,9 @@ public class AdminSummaryDashboardController {
     @FXML private Label devicesOnCampusLabel;
 
     private final StudentService studentService = new StudentService();
-    private final DeviceService deviceService = new DeviceService();
+    private final RequestService requestService = new RequestService();
+    private final LogService logService = new LogService();
+    private final ReportService reportService = new ReportService();
 
     @FXML
     public void initialize() {
@@ -52,27 +58,27 @@ public class AdminSummaryDashboardController {
                 e.printStackTrace();
             }
 
-            String registeredDevicesStr = "Error";
+            String approvedRequestsStr = "Error";
             try {
-                List<Device> devices = deviceService.getAllDevices();
-                long registeredDevices = devices.size();
-                registeredDevicesStr = String.valueOf(registeredDevices);
+                List<Request> requests = requestService.getAllRequests();
+                long approved = requests.stream().filter(r -> "approved".equalsIgnoreCase(r.getStatus())).count();
+                approvedRequestsStr = String.valueOf(approved);
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            String pendingCountStr = "Error";
+            String missedCheckoutsStr = "Error";
             try {
-                List<PendingDevice> pending = deviceService.getPendingDevices();
-                long pendingCount = pending.size();
-                pendingCountStr = String.valueOf(pendingCount);
+                // Fetch missed checkouts from a generic past date up to today
+                List<Map<String, Object>> missed = reportService.getMissedCheckoutReport("2020-01-01", LocalDate.now().toString());
+                missedCheckoutsStr = String.valueOf(missed.size());
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
             String devicesOnCampusStr = "Error";
             try {
-                List<DeviceCampusStatus> statuses = deviceService.getDeviceCampusStatus();
+                List<DeviceCampusStatus> statuses = requestService.getCampusStatus();
                 long devicesOnCampus = statuses.stream().filter(s -> "entry".equalsIgnoreCase(s.getCampusStatus())).count();
                 devicesOnCampusStr = String.valueOf(devicesOnCampus);
             } catch (Exception e) {
@@ -80,18 +86,18 @@ public class AdminSummaryDashboardController {
             }
 
             final String fActiveStudents = activeStudentsStr;
-            final String fRegisteredDevices = registeredDevicesStr;
-            final String fPendingCount = pendingCountStr;
+            final String fApprovedRequests = approvedRequestsStr;
+            final String fMissedCheckouts = missedCheckoutsStr;
             final String fDevicesOnCampus = devicesOnCampusStr;
 
             Platform.runLater(() -> {
                 activeStudentsLabel.setText(fActiveStudents);
-                registeredDevicesLabel.setText(fRegisteredDevices);
-                pendingApprovalsLabel.setText(fPendingCount);
+                registeredDevicesLabel.setText(fApprovedRequests);
+                pendingApprovalsLabel.setText(fMissedCheckouts);
                 devicesOnCampusLabel.setText(fDevicesOnCampus);
                 if (pendingApprovalsBadge != null) {
-                    pendingApprovalsBadge.setText(fPendingCount);
-                    if ("0".equals(fPendingCount) || "Error".equals(fPendingCount)) {
+                    pendingApprovalsBadge.setText(fMissedCheckouts);
+                    if ("0".equals(fMissedCheckouts) || "Error".equals(fMissedCheckouts)) {
                         pendingApprovalsBadge.setVisible(false);
                     } else {
                         pendingApprovalsBadge.setVisible(true);
@@ -102,31 +108,54 @@ public class AdminSummaryDashboardController {
     }
 
     @FXML
+    public void handleReconcile() {
+        if (!AlertHelper.showConfirmation("Reconciliation", "Confirm Reconciliation", 
+                "Are you sure you want to run daily checkout reconciliation? This will check out all stale devices from prior days.")) {
+            return;
+        }
+        new Thread(() -> {
+            try {
+                int count = logService.reconcileMissedCheckouts();
+                Platform.runLater(() -> {
+                    AlertHelper.showInfo("Reconciliation Complete", "Reconciliation successful", 
+                            "Checkout reconciliation complete. Marked " + count + " unclosed device scan(s) as missed egress.");
+                    refreshStats();
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+                Platform.runLater(() -> {
+                    AlertHelper.showError("Reconciliation Failed", "Operation failed", e.getMessage());
+                });
+            }
+        }).start();
+    }
+
+    @FXML
     public void goToStudents() {
         NavigationManager.getInstance().loadViewIntoContainer(
-            NavigationManager.getInstance().getContentArea(), "RegistryManagementScreen.fxml");
-        syncSidebarSelection("Registry Management");
+            NavigationManager.getInstance().getContentArea(), "StudentsScreen.fxml");
+        syncSidebarSelection("Students");
     }
 
     @FXML
-    public void goToDevices() {
+    public void goToRequests() {
         NavigationManager.getInstance().loadViewIntoContainer(
-            NavigationManager.getInstance().getContentArea(), "TemporaryEventDeviceGuardScreen.fxml");
-        syncSidebarSelection("Event Requests");
+            NavigationManager.getInstance().getContentArea(), "RequestsScreen.fxml");
+        syncSidebarSelection("Requests");
     }
 
     @FXML
-    public void goToApprovals() {
+    public void goToLogs() {
         NavigationManager.getInstance().loadViewIntoContainer(
-            NavigationManager.getInstance().getContentArea(), "PendingRegistrationApprovalScreen.fxml");
-        syncSidebarSelection("Pending Approvals");
+            NavigationManager.getInstance().getContentArea(), "LogsScreen.fxml");
+        syncSidebarSelection("Logs");
     }
 
     @FXML
     public void goToReports() {
         NavigationManager.getInstance().loadViewIntoContainer(
             NavigationManager.getInstance().getContentArea(), "ReportsScreen.fxml");
-        syncSidebarSelection("Analytical Reports");
+        syncSidebarSelection("Reports");
     }
 
     private void syncSidebarSelection(String buttonText) {

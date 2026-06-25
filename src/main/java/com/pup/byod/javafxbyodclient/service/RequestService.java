@@ -28,4 +28,37 @@ public class RequestService {
     public DeviceCampusStatus getCampusStatusBySerial(String serialNumber) throws Exception {
         return apiClient.get("/api/requests/campus-status/" + serialNumber, DeviceCampusStatus.class);
     }
+
+    public List<Request> getAllRequests() throws Exception {
+        Request[] requests = apiClient.get("/api/requests", Request[].class);
+        return Arrays.asList(requests);
+    }
+
+    public Request createRequest(Request request) throws Exception {
+        return apiClient.post("/api/requests", request, Request.class);
+    }
+
+    public Request updateRequest(int requestId, Request request) throws Exception {
+        return apiClient.put("/api/requests/" + requestId, request, Request.class);
+    }
+
+    public void approveRequest(int requestId, int reviewerId) throws Exception {
+        java.util.Map<String, Object> body = new java.util.HashMap<>();
+        body.put("reviewerUserId", reviewerId);
+        apiClient.put("/api/requests/" + requestId + "/approve", body, Void.class);
+    }
+
+    public void rejectRequest(int requestId, int reviewerId, String remarks) throws Exception {
+        java.util.Map<String, Object> body = new java.util.HashMap<>();
+        body.put("reviewerUserId", reviewerId);
+        body.put("remarks", remarks);
+        apiClient.put("/api/requests/" + requestId + "/reject", body, Void.class);
+    }
+
+    public void returnRequest(int requestId, int reviewerId, String remarks) throws Exception {
+        java.util.Map<String, Object> body = new java.util.HashMap<>();
+        body.put("reviewerUserId", reviewerId);
+        body.put("remarks", remarks);
+        apiClient.put("/api/requests/" + requestId + "/return", body, Void.class);
+    }
 }
