@@ -51,12 +51,12 @@
                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
             </columnResizePolicy>
             <columns>
-                <TableColumn fx:id="colId" text="User ID" prefWidth="70.0"/>
-                <TableColumn fx:id="colUsername" text="Username" prefWidth="120.0"/>
-                <TableColumn fx:id="colEmail" text="Email" prefWidth="180.0"/>
-                <TableColumn fx:id="colName" text="Full Name" prefWidth="150.0"/>
-                <TableColumn fx:id="colRole" text="Role" prefWidth="100.0"/>
-                <TableColumn fx:id="colStatus" text="Status" prefWidth="80.0"/>
+                <TableColumn fx:id="colId" text="User ID" prefWidth="70.0" reorderable="false"/>
+                <TableColumn fx:id="colUsername" text="Username" prefWidth="120.0" reorderable="false"/>
+                <TableColumn fx:id="colEmail" text="Email" prefWidth="180.0" reorderable="false"/>
+                <TableColumn fx:id="colName" text="Full Name" prefWidth="150.0" reorderable="false"/>
+                <TableColumn fx:id="colRole" text="Role" prefWidth="100.0" reorderable="false"/>
+                <TableColumn fx:id="colStatus" text="Status" prefWidth="80.0" reorderable="false"/>
             </columns>
         </TableView>
     </VBox>

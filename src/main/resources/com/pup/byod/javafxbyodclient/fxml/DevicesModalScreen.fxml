@@ -23,12 +23,12 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
         </columnResizePolicy>
         <columns>
-            <TableColumn fx:id="colSelect" text="Select" prefWidth="95.0" style="-fx-alignment: CENTER;"/>
-            <TableColumn fx:id="colDevName" text="Device Name" prefWidth="180.0"/>
-            <TableColumn fx:id="colDevBrand" text="Brand" prefWidth="110.0"/>
-            <TableColumn fx:id="colDevModel" text="Model" prefWidth="110.0"/>
-            <TableColumn fx:id="colDevSerial" text="Serial Number" prefWidth="180.0"/>
-            <TableColumn fx:id="colDevQuantity" text="Qty" prefWidth="70.0" style="-fx-alignment: CENTER;"/>
+            <TableColumn fx:id="colSelect" text="Select" prefWidth="95.0" style="-fx-alignment: CENTER;" reorderable="false"/>
+            <TableColumn fx:id="colDevName" text="Device Name" prefWidth="180.0" reorderable="false"/>
+            <TableColumn fx:id="colDevBrand" text="Brand" prefWidth="110.0" reorderable="false"/>
+            <TableColumn fx:id="colDevModel" text="Model" prefWidth="110.0" reorderable="false"/>
+            <TableColumn fx:id="colDevSerial" text="Serial Number" prefWidth="180.0" reorderable="false"/>
+            <TableColumn fx:id="colDevQuantity" text="Qty" prefWidth="70.0" style="-fx-alignment: CENTER;" reorderable="false"/>
         </columns>
     </TableView>
     

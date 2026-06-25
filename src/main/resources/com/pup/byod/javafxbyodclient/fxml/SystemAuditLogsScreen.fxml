@@ -57,15 +57,15 @@
                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
             </columnResizePolicy>
             <columns>
-                <TableColumn fx:id="colAuditId" text="Audit ID" prefWidth="90.0" styleClass="centered-column"/>
-                <TableColumn fx:id="colPerformedBy" text="Operated By" prefWidth="130.0"/>
-                <TableColumn fx:id="colActionType" text="Action Type" prefWidth="160.0"/>
-                <TableColumn fx:id="colTargetTable" text="Target Table" prefWidth="120.0"/>
-                <TableColumn fx:id="colTargetId" text="Target ID" prefWidth="100.0" styleClass="centered-column"/>
-                <TableColumn fx:id="colOldValues" text="Old Values" prefWidth="140.0"/>
-                <TableColumn fx:id="colNewValues" text="New Values" prefWidth="140.0"/>
-                <TableColumn fx:id="colIpAddress" text="IP Address" prefWidth="110.0"/>
-                <TableColumn fx:id="colTimestamp" text="Timestamp" prefWidth="180.0"/>
+                <TableColumn fx:id="colAuditId" text="Audit ID" prefWidth="90.0" styleClass="centered-column" reorderable="false"/>
+                <TableColumn fx:id="colPerformedBy" text="Operated By" prefWidth="130.0" reorderable="false"/>
+                <TableColumn fx:id="colActionType" text="Action Type" prefWidth="160.0" reorderable="false"/>
+                <TableColumn fx:id="colTargetTable" text="Target Table" prefWidth="120.0" reorderable="false"/>
+                <TableColumn fx:id="colTargetId" text="Target ID" prefWidth="100.0" styleClass="centered-column" reorderable="false"/>
+                <TableColumn fx:id="colOldValues" text="Old Values" prefWidth="140.0" reorderable="false"/>
+                <TableColumn fx:id="colNewValues" text="New Values" prefWidth="140.0" reorderable="false"/>
+                <TableColumn fx:id="colIpAddress" text="IP Address" prefWidth="110.0" reorderable="false"/>
+                <TableColumn fx:id="colTimestamp" text="Timestamp" prefWidth="180.0" reorderable="false"/>
             </columns>
         </TableView>
     </VBox>

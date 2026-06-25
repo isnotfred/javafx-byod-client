@@ -41,10 +41,10 @@
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                 </columnResizePolicy>
                 <columns>
-                    <TableColumn fx:id="colStudentId" text="Student ID" prefWidth="150.0"/>
-                    <TableColumn fx:id="colStudentName" text="Full Name" prefWidth="250.0"/>
-                    <TableColumn fx:id="colStudentCourse" text="Course &amp; Section" prefWidth="180.0"/>
-                    <TableColumn fx:id="colStudentStatus" text="Status" prefWidth="100.0"/>
+                    <TableColumn fx:id="colStudentId" text="Student ID" prefWidth="150.0" reorderable="false"/>
+                    <TableColumn fx:id="colStudentName" text="Full Name" prefWidth="250.0" reorderable="false"/>
+                    <TableColumn fx:id="colStudentCourse" text="Course &amp; Section" prefWidth="180.0" reorderable="false"/>
+                    <TableColumn fx:id="colStudentStatus" text="Status" prefWidth="100.0" reorderable="false"/>
                 </columns>
             </TableView>
         </VBox>

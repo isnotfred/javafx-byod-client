@@ -110,7 +110,7 @@ public class IngressEgressMonitoringScreenController {
         studentSnLabel.setText("-");
         studentNameLabel.setText("Student: No Selection");
         studentCourseLabel.setText("-");
-        statusLabel.setText("STATUS: READY TO LOOKUP");
+        statusLabel.setText("STATUS: READY TO SEARCH");
         statusLabel.setStyle("-fx-text-fill: #64748B; -fx-font-weight: bold;");
         if (studentCard != null) {
             studentCard.setStyle("-fx-background-color: #F8FAFC; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 16px;");
@@ -150,7 +150,10 @@ public class IngressEgressMonitoringScreenController {
             List<Request> approvedRequests = new ArrayList<>();
             for (Request r : allRequests) {
                 if ("approved".equalsIgnoreCase(r.getStatus())) {
-                    approvedRequests.add(r);
+                    String actionType = calculateExpectedActionType(r);
+                    if (!"Completed".equalsIgnoreCase(actionType)) {
+                        approvedRequests.add(r);
+                    }
                 }
             }
 
@@ -182,8 +185,8 @@ public class IngressEgressMonitoringScreenController {
 
         } catch (Exception e) {
             resetView();
-            statusLabel.setText("STATUS: LOOKUP ERROR");
-            AlertHelper.showError("Search Error", "Lookup Failed", e.getMessage());
+            statusLabel.setText("STATUS: SEARCH ERROR");
+            AlertHelper.showError("Search Error", "Search Failed", e.getMessage());
         }
     }
 

@@ -86,10 +86,7 @@ public class AdminDashboardController {
         NavigationManager.getInstance().loadViewIntoContainer(contentArea, "ReportsScreen.fxml");
     }
 
-    @FXML
-    public void showProfile() {
-        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "ProfileScreen.fxml");
-    }
+
 
     @FXML
     public void handleLogout() {

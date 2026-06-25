@@ -41,12 +41,12 @@
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                 </columnResizePolicy>
                 <columns>
-                    <TableColumn fx:id="colAdminEventId" text="Req ID" prefWidth="80.0"/>
-                    <TableColumn fx:id="colAdminStudentId" text="Student ID" prefWidth="120.0"/>
-                    <TableColumn fx:id="colAdminEventName" text="Event Name" prefWidth="200.0"/>
-                    <TableColumn fx:id="colAdminStartDate" text="Start Date" prefWidth="120.0"/>
-                    <TableColumn fx:id="colAdminEndDate" text="End Date" prefWidth="120.0"/>
-                    <TableColumn fx:id="colAdminEventStatus" text="Status" prefWidth="100.0"/>
+                    <TableColumn fx:id="colAdminEventId" text="Req ID" prefWidth="80.0" reorderable="false"/>
+                    <TableColumn fx:id="colAdminStudentId" text="Student ID" prefWidth="120.0" reorderable="false"/>
+                    <TableColumn fx:id="colAdminEventName" text="Event Name" prefWidth="200.0" reorderable="false"/>
+                    <TableColumn fx:id="colAdminStartDate" text="Start Date" prefWidth="120.0" reorderable="false"/>
+                    <TableColumn fx:id="colAdminEndDate" text="End Date" prefWidth="120.0" reorderable="false"/>
+                    <TableColumn fx:id="colAdminEventStatus" text="Status" prefWidth="100.0" reorderable="false"/>
                 </columns>
             </TableView>
         </VBox>
@@ -85,8 +85,8 @@
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                     </columnResizePolicy>
                     <columns>
-                        <TableColumn fx:id="colStudentId" text="Student ID" prefWidth="150.0"/>
-                        <TableColumn fx:id="colEventName" text="Event Name" prefWidth="200.0"/>
+                        <TableColumn fx:id="colStudentId" text="Student ID" prefWidth="150.0" reorderable="false"/>
+                        <TableColumn fx:id="colEventName" text="Event Name" prefWidth="200.0" reorderable="false"/>
                     </columns>
                 </TableView>
             </VBox>
@@ -131,9 +131,31 @@
                                     <Label text="Contact (Phone/Socials):" styleClass="form-label"/>
                                     <TextField fx:id="guardContactField" disable="true" styleClass="modern-textfield" prefHeight="38.0"/>
                                 </VBox>
-                                <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0" visible="false" managed="false">
                                     <Label text="Purpose:" styleClass="form-label"/>
                                     <ComboBox fx:id="guardPurposeBox" disable="true" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0"/>
+                                </VBox>
+                            </HBox>
+                            
+                            <HBox spacing="20.0">
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                                    <Label text="Venue:" styleClass="form-label"/>
+                                    <TextField fx:id="guardVenueField" disable="true" styleClass="modern-textfield" prefHeight="38.0"/>
+                                </VBox>
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                                    <Label text="Focal Person/Adviser:" styleClass="form-label"/>
+                                    <TextField fx:id="guardFocalPersonField" disable="true" styleClass="modern-textfield" prefHeight="38.0"/>
+                                </VBox>
+                            </HBox>
+                            
+                            <HBox spacing="20.0">
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                                    <Label text="Attendees:" styleClass="form-label"/>
+                                    <TextField fx:id="guardAttendeesField" disable="true" styleClass="modern-textfield" prefHeight="38.0"/>
+                                </VBox>
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                                    <Label text="Time/Duration:" styleClass="form-label"/>
+                                    <TextField fx:id="guardTimeField" disable="true" styleClass="modern-textfield" prefHeight="38.0"/>
                                 </VBox>
                             </HBox>
                             
@@ -148,7 +170,7 @@
                                 </VBox>
                             </HBox>
                             
-                            <HBox spacing="20.0">
+                            <HBox spacing="20.0" visible="false" managed="false">
                                 <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
                                     <Label text="Approval Doc Type:" styleClass="form-label"/>
                                     <ComboBox fx:id="guardDocTypeBox" disable="true" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="38.0"/>
@@ -237,6 +259,28 @@
                     
                     <HBox spacing="20.0">
                         <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                            <Label text="Venue:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
+                            <TextField fx:id="venueField" promptText="e.g. Gym / Room 302" styleClass="modern-textfield" prefHeight="38.0"/>
+                        </VBox>
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                            <Label text="Focal Person/Adviser:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
+                            <TextField fx:id="focalPersonField" promptText="e.g. Dr. Jane Doe" styleClass="modern-textfield" prefHeight="38.0"/>
+                        </VBox>
+                    </HBox>
+                    
+                    <HBox spacing="20.0">
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                            <Label text="Attendees:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
+                            <TextField fx:id="attendeesField" promptText="e.g. 150 students" styleClass="modern-textfield" prefHeight="38.0"/>
+                        </VBox>
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                            <Label text="Time/Duration:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
+                            <TextField fx:id="timeField" promptText="e.g. 8:00 AM - 5:00 PM" styleClass="modern-textfield" prefHeight="38.0"/>
+                        </VBox>
+                    </HBox>
+                    
+                    <HBox spacing="20.0">
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
                             <Label text="Start Date:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                             <DatePicker fx:id="startDatePicker" styleClass="modern-date-picker" maxWidth="Infinity" prefHeight="38.0"/>
                         </VBox>
@@ -267,13 +311,12 @@
                             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                         </columnResizePolicy>
                         <columns>
-                            <TableColumn fx:id="colSelect" text="Select" prefWidth="65.0"/>
-                            <TableColumn fx:id="colItemId" text="Item ID" prefWidth="75.0"/>
-                            <TableColumn fx:id="colItemName" text="Device Name" prefWidth="130.0"/>
-                            <TableColumn fx:id="colSerialNumber" text="Serial Number" prefWidth="130.0"/>
-                            <TableColumn fx:id="colType" text="Type" prefWidth="140.0"/>
-
-                            <TableColumn fx:id="colCurrentDayStatus" text="Today's Status" prefWidth="130.0"/>
+                            <TableColumn fx:id="colSelect" text="Select" prefWidth="65.0" reorderable="false"/>
+                            <TableColumn fx:id="colItemId" text="Item ID" prefWidth="75.0" reorderable="false"/>
+                            <TableColumn fx:id="colItemName" text="Device Name" prefWidth="130.0" reorderable="false"/>
+                            <TableColumn fx:id="colSerialNumber" text="Serial Number" prefWidth="130.0" reorderable="false"/>
+                            <TableColumn fx:id="colType" text="Type" prefWidth="140.0" reorderable="false"/>
+                            <TableColumn fx:id="colCurrentDayStatus" text="Today's Status" prefWidth="130.0" reorderable="false"/>
                         </columns>
                     </TableView>
                     
@@ -299,9 +342,12 @@
                                 <Label text="Model:" styleClass="form-label"/>
                                 <TextField fx:id="modelField" promptText="e.g. 4B (8GB)" styleClass="modern-textfield" prefHeight="38.0"/>
                             </VBox>
-                            <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
+                            <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="120.0">
                                 <Label fx:id="serialNumberLabel" text="Serial Number:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
-                                <TextField fx:id="serialNumberField" promptText="Enter Serial Number" styleClass="modern-textfield" prefHeight="38.0"/>
+                                <HBox spacing="8.0" alignment="CENTER_LEFT">
+                                    <TextField fx:id="serialNumberField" promptText="Enter Serial Number" styleClass="modern-textfield" prefHeight="38.0" HBox.hgrow="ALWAYS"/>
+                                    <Button text="Auto-Gen" onAction="#handleGenerateSerial" styleClass="action-btn, action-btn-secondary" prefHeight="38.0" style="-fx-font-size: 11px;"/>
+                                </HBox>
                             </VBox>
                             <VBox spacing="5.0" HBox.hgrow="ALWAYS" prefWidth="100.0">
                                 <Label text="Device Type:" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
@@ -349,13 +395,13 @@
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                 </columnResizePolicy>
                 <columns>
-                    <TableColumn fx:id="colGuardSelect" text="Select" prefWidth="65.0"/>
-                    <TableColumn fx:id="colGuardItemId" text="Item ID" prefWidth="75.0"/>
-                    <TableColumn fx:id="colGuardItemName" text="Device Name" prefWidth="130.0"/>
-                    <TableColumn fx:id="colGuardSerialNumber" text="Serial Number" prefWidth="130.0"/>
-                    <TableColumn fx:id="colGuardType" text="Type" prefWidth="140.0"/>
-                    <TableColumn fx:id="colGuardStatus" text="Manifest Status" prefWidth="130.0"/>
-                    <TableColumn fx:id="colGuardCurrentDayStatus" text="Today's Status" prefWidth="130.0"/>
+                    <TableColumn fx:id="colGuardSelect" text="Select" prefWidth="65.0" reorderable="false"/>
+                    <TableColumn fx:id="colGuardItemId" text="Item ID" prefWidth="75.0" reorderable="false"/>
+                    <TableColumn fx:id="colGuardItemName" text="Device Name" prefWidth="130.0" reorderable="false"/>
+                    <TableColumn fx:id="colGuardSerialNumber" text="Serial Number" prefWidth="130.0" reorderable="false"/>
+                    <TableColumn fx:id="colGuardType" text="Type" prefWidth="140.0" reorderable="false"/>
+                    <TableColumn fx:id="colGuardStatus" text="Manifest Status" prefWidth="130.0" reorderable="false"/>
+                    <TableColumn fx:id="colGuardCurrentDayStatus" text="Today's Status" prefWidth="130.0" reorderable="false"/>
                 </columns>
             </TableView>
             

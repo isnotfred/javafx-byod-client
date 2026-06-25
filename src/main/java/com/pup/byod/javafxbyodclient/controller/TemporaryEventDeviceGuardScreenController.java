@@ -53,6 +53,10 @@ public class TemporaryEventDeviceGuardScreenController {
     @FXML private DatePicker guardEndDatePicker;
     @FXML private ComboBox<String> guardDocTypeBox;
     @FXML private TextField guardDocRefField;
+    @FXML private TextField guardVenueField;
+    @FXML private TextField guardFocalPersonField;
+    @FXML private TextField guardAttendeesField;
+    @FXML private TextField guardTimeField;
 
     @FXML private TableView<EventDeviceSelection> guardItemsTable;
     @FXML private TableColumn<EventDeviceSelection, Boolean> colGuardSelect;
@@ -81,6 +85,10 @@ public class TemporaryEventDeviceGuardScreenController {
     @FXML private DatePicker endDatePicker;
     @FXML private ComboBox<String> docTypeBox;
     @FXML private TextField docRefField;
+    @FXML private TextField venueField;
+    @FXML private TextField focalPersonField;
+    @FXML private TextField attendeesField;
+    @FXML private TextField timeField;
 
     // Right Section: Devices Table (Admins Overlay)
     @FXML private TableView<EventDeviceSelection> itemsTable;
@@ -122,6 +130,10 @@ public class TemporaryEventDeviceGuardScreenController {
         String docType = null;
         LocalDate start = null;
         LocalDate end = null;
+        String venue = "";
+        String focalPerson = "";
+        String attendees = "";
+        String time = "";
         final List<EventRequestDevice> devices = new ArrayList<>();
         int tempCounter = 1;
         boolean hasDraft = false;
@@ -137,6 +149,10 @@ public class TemporaryEventDeviceGuardScreenController {
             docType = null;
             start = null;
             end = null;
+            venue = "";
+            focalPerson = "";
+            attendees = "";
+            time = "";
             devices.clear();
             tempCounter = 1;
             hasDraft = false;
@@ -278,6 +294,10 @@ public class TemporaryEventDeviceGuardScreenController {
             responsiblePersonField.setText(draft.responsible);
             contactField.setText(draft.contact);
             purposeBox.setValue(draft.purpose);
+            venueField.setText(draft.venue);
+            focalPersonField.setText(draft.focalPerson);
+            attendeesField.setText(draft.attendees);
+            timeField.setText(draft.time);
             docRefField.setText(draft.docRef);
             docTypeBox.setValue(draft.docType);
             startDatePicker.setValue(draft.start);
@@ -330,6 +350,10 @@ public class TemporaryEventDeviceGuardScreenController {
         com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(guardOrganizationField);
         com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(guardContactField);
         com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(guardDocRefField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(guardVenueField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(guardFocalPersonField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(guardAttendeesField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(guardTimeField);
         com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(searchField);
         com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(formStudentIdField);
         com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(responsiblePersonField);
@@ -337,6 +361,10 @@ public class TemporaryEventDeviceGuardScreenController {
         com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(eventNameField);
         com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(organizationField);
         com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(docRefField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(venueField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(focalPersonField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(attendeesField);
+        com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(timeField);
         com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(deviceNameField);
         com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(brandField);
         com.pup.byod.javafxbyodclient.util.PromptTextHelper.setup(modelField);
@@ -346,6 +374,10 @@ public class TemporaryEventDeviceGuardScreenController {
         com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(eventNameField);
         com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(startDatePicker);
         com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(endDatePicker);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(venueField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(focalPersonField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(attendeesField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(timeField);
         
         com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(deviceNameField);
         com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(deviceTypeBox);
@@ -423,6 +455,23 @@ public class TemporaryEventDeviceGuardScreenController {
                 draft.hasDraft = true;
             });
         }
+
+        venueField.textProperty().addListener((obs, oldVal, newVal) -> {
+            draft.venue = newVal;
+            draft.hasDraft = true;
+        });
+        focalPersonField.textProperty().addListener((obs, oldVal, newVal) -> {
+            draft.focalPerson = newVal;
+            draft.hasDraft = true;
+        });
+        attendeesField.textProperty().addListener((obs, oldVal, newVal) -> {
+            draft.attendees = newVal;
+            draft.hasDraft = true;
+        });
+        timeField.textProperty().addListener((obs, oldVal, newVal) -> {
+            draft.time = newVal;
+            draft.hasDraft = true;
+        });
 
         docRefField.textProperty().addListener((obs, oldVal, newVal) -> {
             draft.docRef = newVal;
@@ -536,16 +585,11 @@ public class TemporaryEventDeviceGuardScreenController {
             guardDocRefField.setText(fullRequest.getApprovalDocRef());
 
             String remarks = fullRequest.getRemarks();
-            if (remarks != null && remarks.startsWith("Contact: ")) {
-                int endIdx = remarks.indexOf("\n");
-                if (endIdx == -1) {
-                    guardContactField.setText(remarks.substring(9).trim());
-                } else {
-                    guardContactField.setText(remarks.substring(9, endIdx).trim());
-                }
-            } else {
-                guardContactField.clear();
-            }
+            guardContactField.setText(parseRemarksField(remarks, "Contact: "));
+            guardVenueField.setText(parseRemarksField(remarks, "Venue: "));
+            guardFocalPersonField.setText(parseRemarksField(remarks, "Focal Person: "));
+            guardAttendeesField.setText(parseRemarksField(remarks, "Attendees: "));
+            guardTimeField.setText(parseRemarksField(remarks, "Time: "));
 
             try {
                 if (fullRequest.getStartDate() != null) {
@@ -572,16 +616,11 @@ public class TemporaryEventDeviceGuardScreenController {
             docRefField.setText(fullRequest.getApprovalDocRef());
 
             String remarks = fullRequest.getRemarks();
-            if (remarks != null && remarks.startsWith("Contact: ")) {
-                int endIdx = remarks.indexOf("\n");
-                if (endIdx == -1) {
-                    contactField.setText(remarks.substring(9).trim());
-                } else {
-                    contactField.setText(remarks.substring(9, endIdx).trim());
-                }
-            } else {
-                contactField.clear();
-            }
+            contactField.setText(parseRemarksField(remarks, "Contact: "));
+            venueField.setText(parseRemarksField(remarks, "Venue: "));
+            focalPersonField.setText(parseRemarksField(remarks, "Focal Person: "));
+            attendeesField.setText(parseRemarksField(remarks, "Attendees: "));
+            timeField.setText(parseRemarksField(remarks, "Time: "));
 
             try {
                 if (fullRequest.getStartDate() != null) {
@@ -640,6 +679,10 @@ public class TemporaryEventDeviceGuardScreenController {
         eventNameField.setDisable(disabled);
         organizationField.setDisable(disabled);
         purposeBox.setDisable(disabled);
+        venueField.setDisable(disabled);
+        focalPersonField.setDisable(disabled);
+        attendeesField.setDisable(disabled);
+        timeField.setDisable(disabled);
         startDatePicker.setDisable(disabled);
         endDatePicker.setDisable(disabled);
         docTypeBox.setDisable(disabled);
@@ -659,6 +702,10 @@ public class TemporaryEventDeviceGuardScreenController {
         eventNameField.setDisable(disabled);
         organizationField.setDisable(disabled);
         purposeBox.setDisable(disabled);
+        venueField.setDisable(disabled);
+        focalPersonField.setDisable(disabled);
+        attendeesField.setDisable(disabled);
+        timeField.setDisable(disabled);
         startDatePicker.setDisable(disabled);
         endDatePicker.setDisable(disabled);
         docTypeBox.setDisable(disabled);
@@ -761,6 +808,10 @@ public class TemporaryEventDeviceGuardScreenController {
         }
         purposeBox.setVisible(true);
         purposeBox.setManaged(true);
+        venueField.clear();
+        focalPersonField.clear();
+        attendeesField.clear();
+        timeField.clear();
         startDatePicker.setValue(null);
         endDatePicker.setValue(null);
         docTypeBox.setValue(null);
@@ -770,6 +821,10 @@ public class TemporaryEventDeviceGuardScreenController {
         com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(eventNameField);
         com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(startDatePicker);
         com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(endDatePicker);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(venueField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(focalPersonField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(attendeesField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(timeField);
 
         // Clear device inputs
         deviceNameField.clear();
@@ -848,8 +903,12 @@ public class TemporaryEventDeviceGuardScreenController {
         boolean v2 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(eventNameField, "Input needed");
         boolean v3 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateDatePicker(startDatePicker);
         boolean v4 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateDatePicker(endDatePicker);
+        boolean v5 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(venueField, "Input needed");
+        boolean v6 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(focalPersonField, "Input needed");
+        boolean v7 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(attendeesField, "Input needed");
+        boolean v8 = com.pup.byod.javafxbyodclient.util.ValidationHelper.validateTextInput(timeField, "Input needed");
 
-        if (!v1 || !v2 || !v3 || !v4 || deviceList.isEmpty()) {
+        if (!v1 || !v2 || !v3 || !v4 || !v5 || !v6 || !v7 || !v8 || deviceList.isEmpty()) {
             AlertHelper.showWarning("Form Validation", "Incomplete fields", "Please fill in all required fields and add at least one device.");
             return;
         }
@@ -889,12 +948,8 @@ public class TemporaryEventDeviceGuardScreenController {
         request.setStartDate(start.toString());
         request.setEndDate(end.toString());
 
-        // Prefix contact info in remarks column
-        if (!ValidationHelper.isEmpty(contact)) {
-            request.setRemarks("Contact: " + contact);
-        } else {
-            request.setRemarks("");
-        }
+        // Pack metadata into remarks column
+        request.setRemarks(packRemarks(contact, venueField.getText(), attendeesField.getText(), focalPersonField.getText(), timeField.getText()));
 
         List<EventRequestDevice> items = deviceList.stream().map(EventDeviceSelection::getDevice).collect(Collectors.toList());
         request.setLineItems(items);
@@ -1018,25 +1073,28 @@ public class TemporaryEventDeviceGuardScreenController {
     public void openEditOverlay() {
         EventRequest selected = adminEventsTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            AlertHelper.showWarning("View/Reconcile Request", "No Selection", "Please select an event request to view/reconcile.");
+            AlertHelper.showWarning("Edit Request", "No Selection", "Please select an event request to edit.");
             return;
         }
-        isEditMode = false;
+        isEditMode = true;
         
         // Populate overlay details
         showEventRequestDetails(selected);
         
-        // Show verify button if it can be reconciled, hide editing options
-
+        // Keep inputs enabled, but disable student ID field
+        setInputFieldsDisabled(false);
+        formStudentIdField.setDisable(true);
         
-        submitBtn.setVisible(false);
-        submitBtn.setManaged(false);
+        // Show submit button to allow saving changes
+        submitBtn.setVisible(true);
+        submitBtn.setManaged(true);
+        submitBtn.setText("Save Changes");
         
         clearFormBtn.setVisible(false);
         clearFormBtn.setManaged(false);
         
-        addDeviceCard.setVisible(false);
-        addDeviceCard.setManaged(false);
+        addDeviceCard.setVisible(true);
+        addDeviceCard.setManaged(true);
 
         formOverlay.setVisible(true);
     }
@@ -1158,5 +1216,42 @@ public class TemporaryEventDeviceGuardScreenController {
         public String getDeviceStatus() { return device.getDeviceStatus(); }
         public String getCurrentDayStatus() { return device.getCurrentDayStatus(); }
         public String getLastEventTime() { return device.getLastEventTime(); }
+    }
+
+    @FXML
+    public void handleGenerateSerial() {
+        String randomChars = java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        String generatedSN = "BYOD-EV-" + randomChars;
+        serialNumberField.setText(generatedSN);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(serialNumberField);
+    }
+
+    private String packRemarks(String contact, String venue, String attendees, String focalPerson, String time) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Contact: ").append(contact != null ? contact.trim() : "").append("\n");
+        sb.append("Venue: ").append(venue != null ? venue.trim() : "").append("\n");
+        sb.append("Attendees: ").append(attendees != null ? attendees.trim() : "").append("\n");
+        sb.append("Focal Person: ").append(focalPerson != null ? focalPerson.trim() : "").append("\n");
+        sb.append("Time: ").append(time != null ? time.trim() : "");
+        return sb.toString();
+    }
+
+    private String parseRemarksField(String remarks, String prefix) {
+        if (remarks == null || remarks.isEmpty()) {
+            return "";
+        }
+        String[] lines = remarks.split("\n");
+        for (String line : lines) {
+            if (line.startsWith(prefix)) {
+                return line.substring(prefix.length()).trim();
+            }
+        }
+        if ("Contact: ".equals(prefix) && !remarks.contains("Venue:") && !remarks.contains("Attendees:") && !remarks.contains("Focal Person:") && !remarks.contains("Time:")) {
+            if (remarks.startsWith("Contact: ")) {
+                return remarks.substring(9).trim();
+            }
+            return remarks.trim();
+        }
+        return "";
     }
 }
