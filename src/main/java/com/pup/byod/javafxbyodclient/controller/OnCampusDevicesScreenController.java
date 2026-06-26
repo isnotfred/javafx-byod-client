@@ -1,0 +1,214 @@
+package com.pup.byod.javafxbyodclient.controller;
+
+import com.pup.byod.javafxbyodclient.service.ReportService;
+import com.pup.byod.javafxbyodclient.util.AlertHelper;
+import com.pup.byod.javafxbyodclient.util.CsvExportHelper;
+import com.pup.byod.javafxbyodclient.util.PromptTextHelper;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import java.util.*;
+
+public class OnCampusDevicesScreenController {
+    @FXML private TableView<Map<String, Object>> statusTable;
+    @FXML private TableColumn<Map<String, Object>, Object> colStudentId;
+    @FXML private TableColumn<Map<String, Object>, Object> colStudentName;
+    @FXML private TableColumn<Map<String, Object>, Object> colCourseYearLevel;
+    @FXML private TableColumn<Map<String, Object>, Object> colDeviceName;
+    @FXML private TableColumn<Map<String, Object>, Object> colSerialNumber;
+    @FXML private TableColumn<Map<String, Object>, Object> colCheckedInTime;
+    @FXML private TableColumn<Map<String, Object>, Void> colDetails;
+
+    @FXML private TextField searchField;
+
+    private final ReportService reportService = new ReportService();
+    private final ObservableList<Map<String, Object>> statusList = FXCollections.observableArrayList();
+    private FilteredList<Map<String, Object>> filteredList;
+
+    @FXML
+    public void initialize() {
+        // Setup columns dynamically based on keys
+        setupColumn(colStudentId, "studentId", "student_id");
+        setupColumn(colStudentName, "studentName", "student_name");
+        setupColumn(colCourseYearLevel, "courseYearLevel", "course_year_level");
+        setupColumn(colDeviceName, "deviceName", "device_name");
+        setupColumn(colSerialNumber, "serialNumber", "serial_number");
+        if (colCheckedInTime != null) {
+            colCheckedInTime.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
+                com.pup.byod.javafxbyodclient.util.DateFormatter.formatTimeOnly(
+                    getValueFromMapRaw(cellData.getValue(), "enteredAt", "entered_at", "lastEventTime", "last_event_time")
+                )
+            ));
+        }
+
+        // Action Details column - View Button Cell Factory
+        if (colDetails != null) {
+            colDetails.setCellFactory(param -> new TableCell<>() {
+                private final Button btn = new Button("View");
+
+                {
+                    btn.getStyleClass().addAll("action-btn", "action-btn-primary");
+                    btn.setStyle("-fx-font-size: 11px; -fx-padding: 4px 8px; -fx-cursor: hand;");
+                    btn.setOnAction(event -> {
+                        Map<String, Object> device = getTableView().getItems().get(getIndex());
+                        showDeviceDetails(device);
+                    });
+                }
+
+                @Override
+                protected void updateItem(Void item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setGraphic(null);
+                    } else {
+                        setGraphic(btn);
+                        setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                    }
+                }
+            });
+        }
+
+        filteredList = new FilteredList<>(statusList, p -> true);
+        SortedList<Map<String, Object>> sortedData = new SortedList<>(filteredList);
+        sortedData.comparatorProperty().bind(statusTable.comparatorProperty());
+        statusTable.setItems(sortedData);
+
+        if (searchField != null) {
+            searchField.textProperty().addListener((obs, oldVal, newVal) -> applyFilter(newVal));
+            PromptTextHelper.setup(searchField);
+        }
+
+        loadStatus();
+    }
+
+    private void setupColumn(TableColumn<Map<String, Object>, Object> column, String... keys) {
+        if (column != null) {
+            column.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
+                getValueFromMap(cellData.getValue(), keys)
+            ));
+        }
+    }
+
+    private void showDeviceDetails(Map<String, Object> device) {
+        StringBuilder details = new StringBuilder();
+        details.append("Student Name: ").append(getValueString(device, "studentName", "student_name")).append("\n");
+        details.append("Student ID: ").append(getValueString(device, "studentId", "student_id")).append("\n");
+        details.append("Course/Year: ").append(getValueString(device, "courseYearLevel", "course_year_level")).append("\n\n");
+        
+        details.append("Device Name: ").append(getValueString(device, "deviceName", "device_name")).append("\n");
+        details.append("Brand: ").append(getValueString(device, "brand")).append("\n");
+        details.append("Model: ").append(getValueString(device, "model")).append("\n");
+        details.append("Device Type: ").append(getValueString(device, "deviceType", "device_type")).append("\n");
+        details.append("Serial Number: ").append(getValueString(device, "serialNumber", "serial_number")).append("\n");
+        
+        AlertHelper.showInfo("Device Specifications", "Specifications for " + getValueString(device, "deviceName", "Device"), details.toString());
+    }
+
+    private Object getValueFromMap(Map<String, Object> map, String... keys) {
+        if (map == null) return "";
+        for (String key : keys) {
+            if (map.containsKey(key) && map.get(key) != null) {
+                Object val = map.get(key);
+                if (val instanceof String && isTimestampKey(key)) {
+                    return com.pup.byod.javafxbyodclient.util.DateFormatter.formatTimestamp((String) val);
+                }
+                return val;
+            }
+        }
+        for (String mapKey : map.keySet()) {
+            for (String key : keys) {
+                if (mapKey.equalsIgnoreCase(key) && map.get(mapKey) != null) {
+                    Object val = map.get(mapKey);
+                    if (val instanceof String && isTimestampKey(key)) {
+                        return com.pup.byod.javafxbyodclient.util.DateFormatter.formatTimestamp((String) val);
+                    }
+                    return val;
+                }
+            }
+        }
+        return "";
+    }
+
+    private String getValueString(Map<String, Object> map, String... keys) {
+        if (map == null) return "-";
+        for (String key : keys) {
+            if (map.containsKey(key) && map.get(key) != null) {
+                return map.get(key).toString();
+            }
+        }
+        for (String mapKey : map.keySet()) {
+            for (String key : keys) {
+                if (mapKey.equalsIgnoreCase(key) && map.get(mapKey) != null) {
+                    return map.get(mapKey).toString();
+                }
+            }
+        }
+        return "-";
+    }
+
+    private boolean isTimestampKey(String key) {
+        if (key == null) return false;
+        String lower = key.toLowerCase();
+        return lower.contains("time") || lower.contains("at") || lower.contains("seen") || lower.equals("timestamp");
+    }
+
+    private void applyFilter(String query) {
+        if (filteredList == null) return;
+        filteredList.setPredicate(map -> {
+            if (query == null || query.trim().isEmpty()) {
+                return true;
+            }
+            String lowerCaseFilter = query.toLowerCase().trim();
+
+            String studentId = getValueString(map, "studentId", "student_id");
+            String studentName = getValueString(map, "studentName", "student_name");
+            String serialNumber = getValueString(map, "serialNumber", "serial_number");
+
+            return studentId.toLowerCase().contains(lowerCaseFilter) ||
+                   studentName.toLowerCase().contains(lowerCaseFilter) ||
+                   serialNumber.toLowerCase().contains(lowerCaseFilter);
+        });
+    }
+
+    @FXML
+    public void loadStatus() {
+        try {
+            List<Map<String, Object>> activeDevices = reportService.getActiveDevicesReport();
+            statusList.setAll(activeDevices);
+        } catch (Exception e) {
+            System.err.println("Could not load on-campus device status: " + e.getMessage());
+            AlertHelper.showError("Loading Error", "Could not load campus device status", e.getMessage());
+        }
+    }
+
+    @FXML
+    public void handleExportPresence() {
+        if (statusTable.getItems().isEmpty()) {
+            AlertHelper.showWarning("Export Warning", "No Data", "There is no active presence data to export.");
+            return;
+        }
+        javafx.stage.Window window = statusTable.getScene().getWindow();
+        CsvExportHelper.exportToCsv(statusTable, window, "on_campus_devices.csv");
+    }
+
+    private String getValueFromMapRaw(Map<String, Object> map, String... keys) {
+        if (map == null) return "";
+        for (String key : keys) {
+            if (map.containsKey(key) && map.get(key) != null) {
+                return map.get(key).toString();
+            }
+        }
+        for (String mapKey : map.keySet()) {
+            for (String key : keys) {
+                if (mapKey.equalsIgnoreCase(key) && map.get(mapKey) != null) {
+                    return map.get(mapKey).toString();
+                }
+            }
+        }
+        return "";
+    }
+}

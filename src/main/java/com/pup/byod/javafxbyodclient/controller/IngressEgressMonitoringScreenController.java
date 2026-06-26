@@ -36,6 +36,7 @@ public class IngressEgressMonitoringScreenController {
 
     @FXML private TableView<Request> requestsTable;
     @FXML private TableColumn<Request, String> colReqName;
+    @FXML private TableColumn<Request, String> colReqVenue;
     @FXML private TableColumn<Request, String> colReqActionType;
     @FXML private TableColumn<Request, Void> colReqView;
     @FXML private javafx.scene.layout.Region overlay;
@@ -66,6 +67,11 @@ public class IngressEgressMonitoringScreenController {
             } else {
                 return new SimpleStringProperty("Academic BYOD");
             }
+        });
+
+        colReqVenue.setCellValueFactory(cellData -> {
+            Request req = cellData.getValue();
+            return new SimpleStringProperty(req.getVenue() != null ? req.getVenue() : "N/A");
         });
 
         colReqActionType.setCellValueFactory(cellData -> {
@@ -110,7 +116,7 @@ public class IngressEgressMonitoringScreenController {
         studentSnLabel.setText("-");
         studentNameLabel.setText("Student: No Selection");
         studentCourseLabel.setText("-");
-        statusLabel.setText("STATUS: READY TO LOOKUP");
+        statusLabel.setText("STATUS: READY TO SEARCH");
         statusLabel.setStyle("-fx-text-fill: #64748B; -fx-font-weight: bold;");
         if (studentCard != null) {
             studentCard.setStyle("-fx-background-color: #F8FAFC; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 16px;");
@@ -191,8 +197,8 @@ public class IngressEgressMonitoringScreenController {
 
         } catch (Exception e) {
             resetView();
-            statusLabel.setText("STATUS: LOOKUP ERROR");
-            AlertHelper.showError("Search Error", "Lookup Failed", e.getMessage());
+            statusLabel.setText("STATUS: SEARCH ERROR");
+            AlertHelper.showError("Search Error", "Search Failed", e.getMessage());
         }
     }
 
@@ -204,20 +210,18 @@ public class IngressEgressMonitoringScreenController {
             
             for (RequestDevice d : devices) {
                 List<DeviceTransaction> txs = logService.getDeviceTransactions(d.getRequestDeviceId());
-                boolean isInsideToday = false;
+                boolean isInside = false;
                 boolean isCompletedToday = false;
                 
                 for (DeviceTransaction tx : txs) {
-                    if (isTransactionToday(tx)) {
-                        if (tx.getEgressTime() != null) {
-                            isCompletedToday = true;
-                        } else if (!tx.isNoEgressMarked()) {
-                            isInsideToday = true;
-                        }
+                    if (tx.getEgressTime() == null && !tx.isNoEgressMarked()) {
+                        isInside = true;
+                    } else if (isTransactionToday(tx)) {
+                        isCompletedToday = true;
                     }
                 }
                 
-                if (isInsideToday) {
+                if (isInside) {
                     anyInside = true;
                 } else if (!isCompletedToday) {
                     anyOutside = true;
@@ -264,28 +268,56 @@ public class IngressEgressMonitoringScreenController {
 
         try {
             List<RequestDevice> devices = requestService.getDevicesForRequest(req.getRequestId());
+            String expectedAction = requestActionTypeMap.getOrDefault(req.getRequestId(), "Entry");
+            boolean isNormalExit = "normal".equalsIgnoreCase(req.getRequestType()) && expectedAction != null && expectedAction.startsWith("Exit");
+
+            if (isNormalExit) {
+                List<Integer> insideDeviceIds = new ArrayList<>();
+                for (RequestDevice d : devices) {
+                    List<DeviceTransaction> txs = logService.getDeviceTransactions(d.getRequestDeviceId());
+                    boolean isInside = false;
+                    for (DeviceTransaction tx : txs) {
+                        if (tx.getEgressTime() == null && !tx.isNoEgressMarked()) {
+                            isInside = true;
+                            break;
+                        }
+                    }
+                    if (isInside) {
+                        insideDeviceIds.add(d.getRequestDeviceId());
+                    }
+                }
+
+                if (insideDeviceIds.isEmpty()) {
+                    AlertHelper.showWarning("Log Exit", "No Devices Inside", "No currently checked-in devices found to egress.");
+                    return;
+                }
+
+                int guardId = SessionManager.getInstance().getCurrentUser().getUserId();
+                logService.processBatchEgress(insideDeviceIds, guardId);
+                AlertHelper.showInfo("Gate Check Success", "Egress Logged", "Log Exit processed successfully for all (" + insideDeviceIds.size() + ") devices in entry.");
+                handleStudentSearch();
+                return;
+            }
+
             List<String> statuses = new ArrayList<>();
             for (RequestDevice d : devices) {
                 List<DeviceTransaction> txs = logService.getDeviceTransactions(d.getRequestDeviceId());
                 boolean isInside = false;
-                boolean isCompleted = false;
+                boolean isCompletedToday = false;
                 for (DeviceTransaction tx : txs) {
-                    if (isTransactionToday(tx)) {
-                        if (tx.getEgressTime() != null) {
-                            isCompleted = true;
-                        } else if (!tx.isNoEgressMarked()) {
-                            isInside = true;
-                        }
+                    if (tx.getEgressTime() == null && !tx.isNoEgressMarked()) {
+                        isInside = true;
+                    } else if (isTransactionToday(tx)) {
+                        isCompletedToday = true;
                     }
                 }
-                statuses.add(isInside ? "Inside" : (isCompleted ? "Completed" : "Outside"));
+                statuses.add(isInside ? "Inside" : (isCompletedToday ? "Completed" : "Outside"));
             }
 
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/com/pup/byod/javafxbyodclient/fxml/DevicesModalScreen.fxml"));
             javafx.scene.Parent root = loader.load();
             
             DevicesModalScreenController modalController = loader.getController();
-            String expectedAction = requestActionTypeMap.getOrDefault(req.getRequestId(), "Entry");
             
             modalController.initData(req, expectedAction, currentStudent, devices, statuses, () -> {
                 // On transaction complete callback: re-fetch and update table values

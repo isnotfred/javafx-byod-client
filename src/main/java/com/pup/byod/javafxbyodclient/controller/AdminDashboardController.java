@@ -62,6 +62,11 @@ public class AdminDashboardController {
     }
 
     @FXML
+    public void showOnCampusDevicesScreen() {
+        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "OnCampusDevicesScreen.fxml");
+    }
+
+    @FXML
     public void showLogsScreen() {
         NavigationManager.getInstance().loadViewIntoContainer(contentArea, "LogsScreen.fxml");
     }

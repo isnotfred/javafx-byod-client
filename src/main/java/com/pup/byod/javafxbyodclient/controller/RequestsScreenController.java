@@ -31,7 +31,7 @@ public class RequestsScreenController {
 
     private boolean isEditMode = false;
     private int editingRequestId = -1;
-    @FXML private TableColumn<Request, Integer> colReqId;
+    private boolean isUpdatingFields = false;
     @FXML private TableColumn<Request, String> colStudentId;
     @FXML private TableColumn<Request, String> colReqType;
     @FXML private TableColumn<Request, String> colPurpose;
@@ -47,6 +47,7 @@ public class RequestsScreenController {
     // Standard Request fields
     @FXML private TextField reqStudentIdField;
     @FXML private TextField reqPurposeField;
+    @FXML private TextField reqVenueField;
     @FXML private DatePicker reqStartDatePicker;
     @FXML private DatePicker reqEndDatePicker;
     @FXML private ComboBox<String> reqIngressHour;
@@ -65,6 +66,7 @@ public class RequestsScreenController {
     @FXML private ComboBox<String> devTypeBox;
     @FXML private Label lblStandardRequestTitle;
     @FXML private Button btnSaveRequestNormal;
+    @FXML private Button btnAddDeviceNormal;
     @FXML private TableView<RequestDevice> stagedNormalTable;
     @FXML private TableColumn<RequestDevice, String> colStgName;
     @FXML private TableColumn<RequestDevice, String> colStgBrand;
@@ -72,10 +74,18 @@ public class RequestsScreenController {
     @FXML private TableColumn<RequestDevice, String> colStgSerial;
     @FXML private TableColumn<RequestDevice, Integer> colStgQty;
     @FXML private TableColumn<RequestDevice, String> colStgType;
+    @FXML private TableColumn<RequestDevice, Void> colStgAction;
+
+    @FXML private Button btnCancelDeviceNormal;
+    @FXML private Button btnCancelDeviceEvent;
+
+    private RequestDevice editingStagedDeviceNormal = null;
+    private RequestDevice editingStagedDeviceEvent = null;
 
     // Event Request fields
     @FXML private TextField evtStudentIdField;
     @FXML private TextField evtEventNameField;
+    @FXML private TextField evtVenueField;
     @FXML private TextField evtOrgField;
     @FXML private TextField evtRespPersonField;
     @FXML private TextField evtPurposeField;
@@ -97,6 +107,7 @@ public class RequestsScreenController {
     @FXML private ComboBox<String> evtDevTypeBox;
     @FXML private Label lblEventRequestTitle;
     @FXML private Button btnSaveRequestEvent;
+    @FXML private Button btnAddDeviceEvent;
     @FXML private TableView<RequestDevice> stagedEventTable;
     @FXML private TableColumn<RequestDevice, String> colEvtStgName;
     @FXML private TableColumn<RequestDevice, String> colEvtStgBrand;
@@ -104,6 +115,7 @@ public class RequestsScreenController {
     @FXML private TableColumn<RequestDevice, String> colEvtStgSerial;
     @FXML private TableColumn<RequestDevice, Integer> colEvtStgQty;
     @FXML private TableColumn<RequestDevice, String> colEvtStgType;
+    @FXML private TableColumn<RequestDevice, Void> colEvtStgAction;
 
     // Review Modal Fields
     @FXML private Label reviewTitleLabel;
@@ -136,7 +148,6 @@ public class RequestsScreenController {
     @FXML
     public void initialize() {
         // Main Requests Table Columns
-        colReqId.setCellValueFactory(new PropertyValueFactory<>("requestId"));
         colStudentId.setCellValueFactory(new PropertyValueFactory<>("studentId"));
         colReqType.setCellValueFactory(new PropertyValueFactory<>("requestType"));
         colPurpose.setCellValueFactory(cellData -> {
@@ -199,10 +210,10 @@ public class RequestsScreenController {
         evtDevTypeBox.getItems().addAll(devTypes);
 
         // Populate time pickers
-        populateTimeComboBoxes(reqIngressHour, reqIngressMinute, reqIngressAmpm);
-        populateTimeComboBoxes(reqEgressHour, reqEgressMinute, reqEgressAmpm);
-        populateTimeComboBoxes(evtIngressHour, evtIngressMinute, evtIngressAmpm);
-        populateTimeComboBoxes(evtEgressHour, evtEgressMinute, evtEgressAmpm);
+        setupTimeComboBoxes(reqIngressHour, reqIngressMinute, reqIngressAmpm);
+        setupTimeComboBoxes(reqEgressHour, reqEgressMinute, reqEgressAmpm);
+        setupTimeComboBoxes(evtIngressHour, evtIngressMinute, evtIngressAmpm);
+        setupTimeComboBoxes(evtEgressHour, evtEgressMinute, evtEgressAmpm);
 
         // Date validation: Start date must be today or future (excluding Sundays & Holidays)
         reqStartDatePicker.setDayCellFactory(picker -> new DateCell() {
@@ -296,6 +307,59 @@ public class RequestsScreenController {
         colStgSerial.setCellValueFactory(new PropertyValueFactory<>("serialNumber"));
         colStgQty.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         colStgType.setCellValueFactory(new PropertyValueFactory<>("deviceType"));
+        colStgAction.setCellFactory(col -> new TableCell<RequestDevice, Void>() {
+            private final Button editBtn = new Button("Edit");
+            private final Button deleteBtn = new Button("Remove");
+            private final javafx.scene.layout.HBox container = new javafx.scene.layout.HBox(5.0, editBtn, deleteBtn);
+            {
+                container.setAlignment(javafx.geometry.Pos.CENTER);
+                editBtn.getStyleClass().addAll("action-btn", "action-btn-primary");
+                editBtn.setStyle("-fx-font-size: 10px; -fx-padding: 3px 8px; -fx-cursor: hand;");
+                editBtn.setOnAction(event -> {
+                    RequestDevice d = getTableView().getItems().get(getIndex());
+                    editingStagedDeviceNormal = d;
+                    devNameField.setText(d.getDeviceName());
+                    devBrandField.setText(d.getBrand() != null ? d.getBrand() : "");
+                    devModelField.setText(d.getModel() != null ? d.getModel() : "");
+                    devSerialField.setText(d.getSerialNumber());
+                    devQtyField.setText(String.valueOf(d.getQuantity()));
+                    devTypeBox.setValue(d.getDeviceType());
+                    
+                    btnAddDeviceNormal.setText("Update Device");
+                    if (btnCancelDeviceNormal != null) {
+                        btnCancelDeviceNormal.setVisible(true);
+                        btnCancelDeviceNormal.setManaged(true);
+                    }
+                });
+
+                deleteBtn.getStyleClass().addAll("action-btn", "action-btn-danger");
+                deleteBtn.setStyle("-fx-font-size: 10px; -fx-padding: 3px 8px; -fx-cursor: hand;");
+                deleteBtn.setOnAction(event -> {
+                    RequestDevice d = getTableView().getItems().get(getIndex());
+                    normalStagedList.remove(d);
+                    if (editingStagedDeviceNormal == d) {
+                        editingStagedDeviceNormal = null;
+                        clearStagedDeviceNormalForm();
+                        btnAddDeviceNormal.setText("+ Add Device To Staging");
+                        if (btnCancelDeviceNormal != null) {
+                            btnCancelDeviceNormal.setVisible(false);
+                            btnCancelDeviceNormal.setManaged(false);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(container);
+                    setAlignment(javafx.geometry.Pos.CENTER);
+                }
+            }
+        });
         stagedNormalTable.setItems(normalStagedList);
 
         colEvtStgName.setCellValueFactory(new PropertyValueFactory<>("deviceName"));
@@ -304,6 +368,59 @@ public class RequestsScreenController {
         colEvtStgSerial.setCellValueFactory(new PropertyValueFactory<>("serialNumber"));
         colEvtStgQty.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         colEvtStgType.setCellValueFactory(new PropertyValueFactory<>("deviceType"));
+        colEvtStgAction.setCellFactory(col -> new TableCell<RequestDevice, Void>() {
+            private final Button editBtn = new Button("Edit");
+            private final Button deleteBtn = new Button("Remove");
+            private final javafx.scene.layout.HBox container = new javafx.scene.layout.HBox(5.0, editBtn, deleteBtn);
+            {
+                container.setAlignment(javafx.geometry.Pos.CENTER);
+                editBtn.getStyleClass().addAll("action-btn", "action-btn-primary");
+                editBtn.setStyle("-fx-font-size: 10px; -fx-padding: 3px 8px; -fx-cursor: hand;");
+                editBtn.setOnAction(event -> {
+                    RequestDevice d = getTableView().getItems().get(getIndex());
+                    editingStagedDeviceEvent = d;
+                    evtDevNameField.setText(d.getDeviceName());
+                    evtDevBrandField.setText(d.getBrand() != null ? d.getBrand() : "");
+                    evtDevModelField.setText(d.getModel() != null ? d.getModel() : "");
+                    evtDevSerialField.setText(d.getSerialNumber());
+                    evtDevQtyField.setText(String.valueOf(d.getQuantity()));
+                    evtDevTypeBox.setValue(d.getDeviceType());
+                    
+                    btnAddDeviceEvent.setText("Update Device");
+                    if (btnCancelDeviceEvent != null) {
+                        btnCancelDeviceEvent.setVisible(true);
+                        btnCancelDeviceEvent.setManaged(true);
+                    }
+                });
+
+                deleteBtn.getStyleClass().addAll("action-btn", "action-btn-danger");
+                deleteBtn.setStyle("-fx-font-size: 10px; -fx-padding: 3px 8px; -fx-cursor: hand;");
+                deleteBtn.setOnAction(event -> {
+                    RequestDevice d = getTableView().getItems().get(getIndex());
+                    eventStagedList.remove(d);
+                    if (editingStagedDeviceEvent == d) {
+                        editingStagedDeviceEvent = null;
+                        clearStagedDeviceEventForm();
+                        btnAddDeviceEvent.setText("+ Add Device To Staging");
+                        if (btnCancelDeviceEvent != null) {
+                            btnCancelDeviceEvent.setVisible(false);
+                            btnCancelDeviceEvent.setManaged(false);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(container);
+                    setAlignment(javafx.geometry.Pos.CENTER);
+                }
+            }
+        });
         stagedEventTable.setItems(eventStagedList);
 
         // Bind Review table columns
@@ -341,20 +458,27 @@ public class RequestsScreenController {
         lblStandardRequestTitle.setText("New Standard Academic BYOD Request");
         btnSaveRequestNormal.setText("Submit Request");
 
+        isUpdatingFields = true;
         newRequestOverlay.setVisible(true);
         reqStudentIdField.clear();
         reqPurposeField.clear();
+        reqVenueField.clear();
         reqStartDatePicker.setValue(null);
         reqEndDatePicker.setValue(null);
-        reqIngressHour.setValue(null);
-        reqIngressMinute.setValue(null);
-        reqIngressAmpm.setValue("AM");
-        reqEgressHour.setValue(null);
-        reqEgressMinute.setValue(null);
-        reqEgressAmpm.setValue("AM");
+        resetTimeComboBoxes(reqIngressHour, reqIngressMinute, reqIngressAmpm);
+        resetTimeComboBoxes(reqEgressHour, reqEgressMinute, reqEgressAmpm);
         reqRemarksField.clear();
         normalStagedList.clear();
+        editingStagedDeviceNormal = null;
+        if (btnAddDeviceNormal != null) {
+            btnAddDeviceNormal.setText("+ Add Device To Staging");
+        }
+        if (btnCancelDeviceNormal != null) {
+            btnCancelDeviceNormal.setVisible(false);
+            btnCancelDeviceNormal.setManaged(false);
+        }
         clearStagedDeviceNormalForm();
+        isUpdatingFields = false;
     }
 
     @FXML
@@ -364,23 +488,30 @@ public class RequestsScreenController {
         lblEventRequestTitle.setText("New Event BYOD Access Request");
         btnSaveRequestEvent.setText("Submit Event Request");
 
+        isUpdatingFields = true;
         newEventRequestOverlay.setVisible(true);
         evtStudentIdField.clear();
         evtEventNameField.clear();
+        evtVenueField.clear();
         evtOrgField.clear();
         evtRespPersonField.clear();
         evtPurposeField.clear();
         evtStartDatePicker.setValue(null);
         evtEndDatePicker.setValue(null);
-        evtIngressHour.setValue(null);
-        evtIngressMinute.setValue(null);
-        evtIngressAmpm.setValue("AM");
-        evtEgressHour.setValue(null);
-        evtEgressMinute.setValue(null);
-        evtEgressAmpm.setValue("AM");
+        resetTimeComboBoxes(evtIngressHour, evtIngressMinute, evtIngressAmpm);
+        resetTimeComboBoxes(evtEgressHour, evtEgressMinute, evtEgressAmpm);
         evtRemarksField.clear();
         eventStagedList.clear();
+        editingStagedDeviceEvent = null;
+        if (btnAddDeviceEvent != null) {
+            btnAddDeviceEvent.setText("+ Add Device To Staging");
+        }
+        if (btnCancelDeviceEvent != null) {
+            btnCancelDeviceEvent.setVisible(false);
+            btnCancelDeviceEvent.setManaged(false);
+        }
         clearStagedDeviceEventForm();
+        isUpdatingFields = false;
     }
 
     @FXML
@@ -395,18 +526,29 @@ public class RequestsScreenController {
             lblEventRequestTitle.setText("Edit Event BYOD Access Request (Req #" + editingRequestId + ")");
             btnSaveRequestEvent.setText("Save Changes");
 
+            isUpdatingFields = true;
             newEventRequestOverlay.setVisible(true);
             evtStudentIdField.setText(req.getStudentId());
             evtEventNameField.setText(req.getEventName());
             evtOrgField.setText(req.getOrganization());
             evtRespPersonField.setText(req.getResponsiblePerson());
             evtPurposeField.setText(req.getPurpose());
+            evtVenueField.setText(req.getVenue() != null ? req.getVenue() : "");
             evtStartDatePicker.setValue(parseLocalDate(req.getStartDate()));
             evtEndDatePicker.setValue(parseLocalDate(req.getEndDate()));
             populateTimeFields(req.getExpectedIngressTime(), evtIngressHour, evtIngressMinute, evtIngressAmpm);
             populateTimeFields(req.getExpectedEgressTime(), evtEgressHour, evtEgressMinute, evtEgressAmpm);
             evtRemarksField.setText(req.getRemarks());
+            isUpdatingFields = false;
             
+            editingStagedDeviceEvent = null;
+            if (btnAddDeviceEvent != null) {
+                btnAddDeviceEvent.setText("+ Add Device To Staging");
+            }
+            if (btnCancelDeviceEvent != null) {
+                btnCancelDeviceEvent.setVisible(false);
+                btnCancelDeviceEvent.setManaged(false);
+            }
             eventStagedList.clear();
             new Thread(() -> {
                 try {
@@ -420,15 +562,26 @@ public class RequestsScreenController {
             lblStandardRequestTitle.setText("Edit Standard Academic BYOD Request (Req #" + editingRequestId + ")");
             btnSaveRequestNormal.setText("Save Changes");
 
+            isUpdatingFields = true;
             newRequestOverlay.setVisible(true);
             reqStudentIdField.setText(req.getStudentId());
             reqPurposeField.setText(req.getPurpose());
             reqStartDatePicker.setValue(parseLocalDate(req.getStartDate()));
             reqEndDatePicker.setValue(parseLocalDate(req.getEndDate()));
+            reqVenueField.setText(req.getVenue() != null ? req.getVenue() : "");
             populateTimeFields(req.getExpectedIngressTime(), reqIngressHour, reqIngressMinute, reqIngressAmpm);
             populateTimeFields(req.getExpectedEgressTime(), reqEgressHour, reqEgressMinute, reqEgressAmpm);
             reqRemarksField.setText(req.getRemarks());
+            isUpdatingFields = false;
 
+            editingStagedDeviceNormal = null;
+            if (btnAddDeviceNormal != null) {
+                btnAddDeviceNormal.setText("+ Add Device To Staging");
+            }
+            if (btnCancelDeviceNormal != null) {
+                btnCancelDeviceNormal.setVisible(false);
+                btnCancelDeviceNormal.setManaged(false);
+            }
             normalStagedList.clear();
             new Thread(() -> {
                 try {
@@ -480,9 +633,30 @@ public class RequestsScreenController {
                 roundedMin = 55;
             }
             
-            hourBox.setValue(String.format("%02d", h));
-            minuteBox.setValue(String.format("%02d", roundedMin));
-            ampmBox.setValue(ampm);
+            isUpdatingFields = true;
+            try {
+                ampmBox.setValue(ampm);
+                if ("AM".equals(ampm)) {
+                    hourBox.getItems().setAll("07", "08", "09", "10", "11");
+                } else {
+                    hourBox.getItems().setAll("12", "01", "02", "03", "04", "05", "06", "07", "08", "09");
+                }
+                hourBox.setValue(String.format("%02d", h));
+                
+                if ("PM".equals(ampm) && h == 9) {
+                    minuteBox.getItems().setAll("00");
+                    minuteBox.setValue("00");
+                } else {
+                    List<String> mins = new ArrayList<>();
+                    for (int minVal = 0; minVal < 60; minVal += 5) {
+                        mins.add(String.format("%02d", minVal));
+                    }
+                    minuteBox.getItems().setAll(mins);
+                    minuteBox.setValue(String.format("%02d", roundedMin));
+                }
+            } finally {
+                isUpdatingFields = false;
+            }
         } catch (Exception e) {
             hourBox.setValue(null);
             minuteBox.setValue(null);
@@ -533,6 +707,26 @@ public class RequestsScreenController {
         newEventRequestOverlay.setVisible(false);
         reviewOverlay.setVisible(false);
         selectedRequest = null;
+
+        editingStagedDeviceNormal = null;
+        clearStagedDeviceNormalForm();
+        if (btnAddDeviceNormal != null) {
+            btnAddDeviceNormal.setText("+ Add Device To Staging");
+        }
+        if (btnCancelDeviceNormal != null) {
+            btnCancelDeviceNormal.setVisible(false);
+            btnCancelDeviceNormal.setManaged(false);
+        }
+
+        editingStagedDeviceEvent = null;
+        clearStagedDeviceEventForm();
+        if (btnAddDeviceEvent != null) {
+            btnAddDeviceEvent.setText("+ Add Device To Staging");
+        }
+        if (btnCancelDeviceEvent != null) {
+            btnCancelDeviceEvent.setVisible(false);
+            btnCancelDeviceEvent.setManaged(false);
+        }
     }
 
     // --- Device Staging Methods ---
@@ -560,16 +754,33 @@ public class RequestsScreenController {
             }
         }
 
-        RequestDevice d = new RequestDevice();
-        d.setDeviceName(name);
-        d.setBrand(brand);
-        d.setModel(model);
-        d.setSerialNumber(serial);
-        d.setQuantity(qty);
-        d.setDeviceType(type);
+        if (editingStagedDeviceNormal != null) {
+            editingStagedDeviceNormal.setDeviceName(name);
+            editingStagedDeviceNormal.setBrand(brand);
+            editingStagedDeviceNormal.setModel(model);
+            editingStagedDeviceNormal.setSerialNumber(serial);
+            editingStagedDeviceNormal.setQuantity(qty);
+            editingStagedDeviceNormal.setDeviceType(type);
+            stagedNormalTable.refresh();
+            editingStagedDeviceNormal = null;
+            btnAddDeviceNormal.setText("+ Add Device To Staging");
+            if (btnCancelDeviceNormal != null) {
+                btnCancelDeviceNormal.setVisible(false);
+                btnCancelDeviceNormal.setManaged(false);
+            }
+            clearStagedDeviceNormalForm();
+        } else {
+            RequestDevice d = new RequestDevice();
+            d.setDeviceName(name);
+            d.setBrand(brand);
+            d.setModel(model);
+            d.setSerialNumber(serial);
+            d.setQuantity(qty);
+            d.setDeviceType(type);
 
-        normalStagedList.add(d);
-        clearStagedDeviceNormalForm();
+            normalStagedList.add(d);
+            clearStagedDeviceNormalForm();
+        }
     }
 
     @FXML
@@ -596,16 +807,33 @@ public class RequestsScreenController {
             }
         }
 
-        RequestDevice d = new RequestDevice();
-        d.setDeviceName(name);
-        d.setBrand(brand);
-        d.setModel(model);
-        d.setSerialNumber(serial);
-        d.setQuantity(qty);
-        d.setDeviceType(type);
+        if (editingStagedDeviceEvent != null) {
+            editingStagedDeviceEvent.setDeviceName(name);
+            editingStagedDeviceEvent.setBrand(brand);
+            editingStagedDeviceEvent.setModel(model);
+            editingStagedDeviceEvent.setSerialNumber(serial);
+            editingStagedDeviceEvent.setQuantity(qty);
+            editingStagedDeviceEvent.setDeviceType(type);
+            stagedEventTable.refresh();
+            editingStagedDeviceEvent = null;
+            btnAddDeviceEvent.setText("+ Add Device To Staging");
+            if (btnCancelDeviceEvent != null) {
+                btnCancelDeviceEvent.setVisible(false);
+                btnCancelDeviceEvent.setManaged(false);
+            }
+            clearStagedDeviceEventForm();
+        } else {
+            RequestDevice d = new RequestDevice();
+            d.setDeviceName(name);
+            d.setBrand(brand);
+            d.setModel(model);
+            d.setSerialNumber(serial);
+            d.setQuantity(qty);
+            d.setDeviceType(type);
 
-        eventStagedList.add(d);
-        clearStagedDeviceEventForm();
+            eventStagedList.add(d);
+            clearStagedDeviceEventForm();
+        }
     }
 
     private void clearStagedDeviceNormalForm() {
@@ -626,19 +854,42 @@ public class RequestsScreenController {
         evtDevTypeBox.setValue(null);
     }
 
+    @FXML
+    public void cancelEditDeviceNormal() {
+        editingStagedDeviceNormal = null;
+        clearStagedDeviceNormalForm();
+        btnAddDeviceNormal.setText("+ Add Device To Staging");
+        if (btnCancelDeviceNormal != null) {
+            btnCancelDeviceNormal.setVisible(false);
+            btnCancelDeviceNormal.setManaged(false);
+        }
+    }
+
+    @FXML
+    public void cancelEditDeviceEvent() {
+        editingStagedDeviceEvent = null;
+        clearStagedDeviceEventForm();
+        btnAddDeviceEvent.setText("+ Add Device To Staging");
+        if (btnCancelDeviceEvent != null) {
+            btnCancelDeviceEvent.setVisible(false);
+            btnCancelDeviceEvent.setManaged(false);
+        }
+    }
+
     // --- Access Requests Saving ---
     @FXML
     public void handleSaveRequestNormal() {
         String studentId = reqStudentIdField.getText().trim();
         String purpose = reqPurposeField.getText().trim();
+        String venue = reqVenueField.getText().trim();
         LocalDate start = reqStartDatePicker.getValue();
         LocalDate end = reqEndDatePicker.getValue();
         java.time.LocalTime ingressTime = parseTime(reqIngressHour.getValue(), reqIngressMinute.getValue(), reqIngressAmpm.getValue());
         java.time.LocalTime egressTime = parseTime(reqEgressHour.getValue(), reqEgressMinute.getValue(), reqEgressAmpm.getValue());
 
-        if (ValidationHelper.isEmpty(studentId) || ValidationHelper.isEmpty(purpose) ||
+        if (ValidationHelper.isEmpty(studentId) || ValidationHelper.isEmpty(purpose) || ValidationHelper.isEmpty(venue) ||
             start == null || end == null || ingressTime == null || egressTime == null) {
-            AlertHelper.showWarning("Submit Error", "Required Fields", "Please fill in all request fields.");
+            AlertHelper.showWarning("Submit Error", "Required Fields", "Please fill in all request fields (including Venue).");
             return;
         }
 
@@ -657,6 +908,14 @@ public class RequestsScreenController {
             return;
         }
 
+        if (start.equals(LocalDate.now())) {
+            java.time.LocalTime nowTime = java.time.LocalTime.now();
+            if (ingressTime.isBefore(nowTime)) {
+                AlertHelper.showWarning("Submit Error", "Invalid Ingress Time", "Ingress time cannot be in the past for today's request.");
+                return;
+            }
+        }
+
         if (normalStagedList.isEmpty()) {
             AlertHelper.showWarning("Submit Error", "No Devices", "You must add at least one device line item to this request.");
             return;
@@ -670,6 +929,7 @@ public class RequestsScreenController {
         req.setRequestType("normal");
         req.setStudentId(studentId);
         req.setPurpose(purpose);
+        req.setVenue(venue);
         req.setStartDate(start.toString());
         req.setEndDate(end.toString());
         req.setExpectedIngressTime(ingress);
@@ -715,6 +975,7 @@ public class RequestsScreenController {
     public void handleSaveRequestEvent() {
         String studentId = evtStudentIdField.getText().trim();
         String eventName = evtEventNameField.getText().trim();
+        String venue = evtVenueField.getText().trim();
         String org = evtOrgField.getText().trim();
         String respPerson = evtRespPersonField.getText().trim();
         String purpose = evtPurposeField.getText().trim();
@@ -723,10 +984,10 @@ public class RequestsScreenController {
         java.time.LocalTime ingressTime = parseTime(evtIngressHour.getValue(), evtIngressMinute.getValue(), evtIngressAmpm.getValue());
         java.time.LocalTime egressTime = parseTime(evtEgressHour.getValue(), evtEgressMinute.getValue(), evtEgressAmpm.getValue());
 
-        if (ValidationHelper.isEmpty(studentId) || ValidationHelper.isEmpty(eventName) || ValidationHelper.isEmpty(org) ||
-            ValidationHelper.isEmpty(respPerson) || ValidationHelper.isEmpty(purpose) || start == null || end == null ||
-            ingressTime == null || egressTime == null) {
-            AlertHelper.showWarning("Submit Error", "Required Fields", "Please fill in all event request fields.");
+        if (ValidationHelper.isEmpty(studentId) || ValidationHelper.isEmpty(eventName) || ValidationHelper.isEmpty(venue) ||
+            ValidationHelper.isEmpty(org) || ValidationHelper.isEmpty(respPerson) || ValidationHelper.isEmpty(purpose) ||
+            start == null || end == null || ingressTime == null || egressTime == null) {
+            AlertHelper.showWarning("Submit Error", "Required Fields", "Please fill in all event request fields (including Venue).");
             return;
         }
 
@@ -745,6 +1006,14 @@ public class RequestsScreenController {
             return;
         }
 
+        if (start.equals(LocalDate.now())) {
+            java.time.LocalTime nowTime = java.time.LocalTime.now();
+            if (ingressTime.isBefore(nowTime)) {
+                AlertHelper.showWarning("Submit Error", "Invalid Ingress Time", "Ingress time cannot be in the past for today's request.");
+                return;
+            }
+        }
+
         if (eventStagedList.isEmpty()) {
             AlertHelper.showWarning("Submit Error", "No Devices", "You must add at least one device line item to this request.");
             return;
@@ -758,6 +1027,7 @@ public class RequestsScreenController {
         req.setRequestType("event");
         req.setStudentId(studentId);
         req.setEventName(eventName);
+        req.setVenue(venue);
         req.setOrganization(org);
         req.setResponsiblePerson(respPerson);
         req.setPurpose(purpose);
@@ -890,17 +1160,35 @@ public class RequestsScreenController {
         });
     }
 
-    private void populateTimeComboBoxes(ComboBox<String> hourBox, ComboBox<String> minuteBox, ComboBox<String> ampmBox) {
-        hourBox.getItems().clear();
+    private void setupTimeComboBoxes(ComboBox<String> hourBox, ComboBox<String> minuteBox, ComboBox<String> ampmBox) {
+        ampmBox.getItems().setAll("AM", "PM");
+        ampmBox.setValue("AM");
+        List<String> hours = new ArrayList<>();
         for (int h = 1; h <= 12; h++) {
-            hourBox.getItems().add(String.format("%02d", h));
+            hours.add(String.format("%02d", h));
         }
-        minuteBox.getItems().clear();
+        hourBox.getItems().setAll(hours);
+        List<String> defaultMins = new ArrayList<>();
         for (int m = 0; m < 60; m += 5) {
-            minuteBox.getItems().add(String.format("%02d", m));
+            defaultMins.add(String.format("%02d", m));
         }
-        ampmBox.getItems().clear();
-        ampmBox.getItems().addAll("AM", "PM");
+        minuteBox.getItems().setAll(defaultMins);
+    }
+
+    private void resetTimeComboBoxes(ComboBox<String> hourBox, ComboBox<String> minuteBox, ComboBox<String> ampmBox) {
+        ampmBox.setValue("AM");
+        List<String> hours = new ArrayList<>();
+        for (int h = 1; h <= 12; h++) {
+            hours.add(String.format("%02d", h));
+        }
+        hourBox.getItems().setAll(hours);
+        hourBox.setValue(null);
+        List<String> mins = new ArrayList<>();
+        for (int m = 0; m < 60; m += 5) {
+            mins.add(String.format("%02d", m));
+        }
+        minuteBox.getItems().setAll(mins);
+        minuteBox.setValue(null);
     }
 
     private java.time.LocalTime parseTime(String hour, String minute, String ampm) {
@@ -961,4 +1249,5 @@ public class RequestsScreenController {
         
         return false;
     }
+
 }

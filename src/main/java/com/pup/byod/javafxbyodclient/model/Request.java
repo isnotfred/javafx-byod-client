@@ -10,6 +10,7 @@ public class Request {
     
     // Event-specific details
     private String eventName;
+    private String venue;
     private String organization;
     private String responsiblePerson;
     private String purpose;
@@ -40,6 +41,9 @@ public class Request {
 
     public String getEventName() { return eventName; }
     public void setEventName(String eventName) { this.eventName = eventName; }
+
+    public String getVenue() { return venue; }
+    public void setVenue(String venue) { this.venue = venue; }
 
     public String getOrganization() { return organization; }
     public void setOrganization(String organization) { this.organization = organization; }

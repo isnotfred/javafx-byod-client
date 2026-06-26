@@ -107,28 +107,7 @@ public class AdminSummaryDashboardController {
         }).start();
     }
 
-    @FXML
-    public void handleReconcile() {
-        if (!AlertHelper.showConfirmation("Reconciliation", "Confirm Reconciliation", 
-                "Are you sure you want to run daily checkout reconciliation? This will check out all stale devices from prior days.")) {
-            return;
-        }
-        new Thread(() -> {
-            try {
-                int count = logService.reconcileMissedCheckouts();
-                Platform.runLater(() -> {
-                    AlertHelper.showInfo("Reconciliation Complete", "Reconciliation successful", 
-                            "Checkout reconciliation complete. Marked " + count + " unclosed device scan(s) as missed egress.");
-                    refreshStats();
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-                Platform.runLater(() -> {
-                    AlertHelper.showError("Reconciliation Failed", "Operation failed", e.getMessage());
-                });
-            }
-        }).start();
-    }
+
 
     @FXML
     public void goToStudents() {
@@ -145,10 +124,10 @@ public class AdminSummaryDashboardController {
     }
 
     @FXML
-    public void goToLogs() {
+    public void goToOnCampusDevices() {
         NavigationManager.getInstance().loadViewIntoContainer(
-            NavigationManager.getInstance().getContentArea(), "LogsScreen.fxml");
-        syncSidebarSelection("Logs");
+            NavigationManager.getInstance().getContentArea(), "OnCampusDevicesScreen.fxml");
+        syncSidebarSelection("On-Campus Devices");
     }
 
     @FXML

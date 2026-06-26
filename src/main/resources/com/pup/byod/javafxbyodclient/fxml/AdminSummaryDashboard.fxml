@@ -19,7 +19,6 @@
                 <Label text="BYOD Central Administrator Panel — Manage and monitor student registrations and devices." styleClass="welcome-subtitle"/>
             </VBox>
             <HBox spacing="10.0" alignment="CENTER_RIGHT">
-                <Button text="Run Reconciliation" onAction="#handleReconcile" styleClass="action-btn, action-btn-danger" style="-fx-background-color: #DC2626; -fx-text-fill: white; -fx-cursor: hand; -fx-font-weight: bold; -fx-padding: 8px 16px; -fx-border-radius: 6; -fx-background-radius: 6;"/>
                 <Button text="Refresh Stats" onAction="#refreshStats" styleClass="refresh-btn"/>
             </HBox>
         </HBox>
@@ -100,7 +99,7 @@
                                      styleClass="shortcut-icon"/>
                         </StackPane>
                         <VBox spacing="4.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
-                            <Label text="Students Screen" styleClass="shortcut-title"/>
+                            <Label text="Students" styleClass="shortcut-title"/>
                             <Label text="Manage student profiles and CSV list imports" styleClass="shortcut-desc"/>
                         </VBox>
                     </HBox>
@@ -116,24 +115,24 @@
                                      styleClass="shortcut-icon"/>
                         </StackPane>
                         <VBox spacing="4.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
-                            <Label text="Requests Screen" styleClass="shortcut-title"/>
+                            <Label text="Requests" styleClass="shortcut-title"/>
                             <Label text="Approve, reject, return requests, and verify device specifications" styleClass="shortcut-desc"/>
                         </VBox>
                     </HBox>
                 </graphic>
             </Button>
             
-            <!-- Logs Screen -->
-            <Button onAction="#goToLogs" maxWidth="Infinity" styleClass="shortcut-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <!-- On-Campus Devices Screen -->
+            <Button onAction="#goToOnCampusDevices" maxWidth="Infinity" styleClass="shortcut-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
                 <graphic>
                     <HBox spacing="16.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                         <StackPane styleClass="shortcut-icon-container">
-                            <SVGPath content="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" 
+                            <SVGPath content="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z" 
                                      styleClass="shortcut-icon"/>
                         </StackPane>
                         <VBox spacing="4.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
-                            <Label text="Logs Screen" styleClass="shortcut-title"/>
-                            <Label text="Track today/weekly/monthly gate transactions, search logs, and export to Excel" styleClass="shortcut-desc"/>
+                            <Label text="On-Campus Devices" styleClass="shortcut-title"/>
+                            <Label text="Monitor registered hardware currently present inside campus gates in real-time" styleClass="shortcut-desc"/>
                         </VBox>
                     </HBox>
                 </graphic>
@@ -148,7 +147,7 @@
                                      styleClass="shortcut-icon"/>
                         </StackPane>
                         <VBox spacing="4.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
-                            <Label text="Reports Screen" styleClass="shortcut-title"/>
+                            <Label text="Reports" styleClass="shortcut-title"/>
                             <Label text="Generate analytical breakdown charts and campus reports" styleClass="shortcut-desc"/>
                         </VBox>
                     </HBox>

@@ -26,8 +26,8 @@
             
             <HBox spacing="10.0" alignment="CENTER_LEFT">
                 <!-- Search Bar -->
-                <StackPane alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="300.0">
-                    <TextField fx:id="searchField" promptText="Search Student ID or Device SN..." styleClass="modern-textfield, search-field-with-icon" prefHeight="38.0" maxWidth="Infinity"/>
+                <StackPane alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="350.0">
+                    <TextField fx:id="searchField" promptText="Search by Student ID, Name, or Device SN" styleClass="modern-textfield, search-field-with-icon" prefHeight="38.0" maxWidth="Infinity"/>
                     <Label text="🔍" mouseTransparent="true" style="-fx-padding: 0 0 0 10px; -fx-text-fill: #94A3B8; -fx-font-size: 13px;"/>
                 </StackPane>
                 

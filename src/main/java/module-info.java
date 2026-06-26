@@ -2,6 +2,7 @@ module com.pup.byod.javafxbyodclient {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.net.http;
+    requires java.desktop;
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.datatype.jsr310;
     requires org.apache.poi.poi;

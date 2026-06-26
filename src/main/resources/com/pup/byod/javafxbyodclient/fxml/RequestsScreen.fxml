@@ -42,7 +42,6 @@
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                 </columnResizePolicy>
                 <columns>
-                    <TableColumn fx:id="colReqId" text="Req ID" prefWidth="70.0"/>
                     <TableColumn fx:id="colStudentId" text="Student ID" prefWidth="120.0"/>
                     <TableColumn fx:id="colReqType" text="Type" prefWidth="100.0"/>
                     <TableColumn fx:id="colPurpose" text="Purpose/Event" prefWidth="250.0"/>
@@ -104,8 +103,11 @@
                             <ComboBox fx:id="reqEgressAmpm" promptText="AM/PM" styleClass="modern-combo-box" prefWidth="100.0" prefHeight="38.0"/>
                         </HBox>
 
-                        <Label text="Remarks:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="form-label"/>
-                        <TextField fx:id="reqRemarksField" promptText="Optional notes" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.columnSpan="3"/>
+                        <Label text="Venue:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="form-label"/>
+                        <TextField fx:id="reqVenueField" promptText="e.g. Gym / Room 302" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+                        <Label text="Remarks:" GridPane.columnIndex="2" GridPane.rowIndex="3" styleClass="form-label"/>
+                        <TextField fx:id="reqRemarksField" promptText="Optional notes" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="3" GridPane.rowIndex="3"/>
                     </GridPane>
                     <Separator/>
                     <Label text="II. Devices Inline Entry Builder" styleClass="form-label" style="-fx-text-fill: #0284C7; -fx-font-size: 13px;"/>
@@ -123,8 +125,9 @@
                             <TextField fx:id="devQtyField" promptText="Qty" styleClass="modern-textfield" prefHeight="34.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                             <ComboBox fx:id="devTypeBox" promptText="Device Type" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="34.0" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
                         </GridPane>
-                        <HBox alignment="CENTER_RIGHT">
-                            <Button text="+ Add Device To Staging" onAction="#addStagedDeviceNormal" styleClass="action-btn, action-btn-success" style="-fx-font-size: 11px;"/>
+                        <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                            <Button fx:id="btnCancelDeviceNormal" text="Cancel" onAction="#cancelEditDeviceNormal" styleClass="action-btn" style="-fx-font-size: 11px; -fx-background-color: #f1f5f9; -fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-text-fill: #475569;" visible="false" managed="false"/>
+                            <Button fx:id="btnAddDeviceNormal" text="+ Add Device To Staging" onAction="#addStagedDeviceNormal" styleClass="action-btn, action-btn-success" style="-fx-font-size: 11px;"/>
                         </HBox>
                     </VBox>
                     <TableView fx:id="stagedNormalTable" prefHeight="110.0" styleClass="modern-table">
@@ -138,6 +141,7 @@
                             <TableColumn fx:id="colStgSerial" text="Serial" prefWidth="140.0"/>
                             <TableColumn fx:id="colStgQty" text="Qty" prefWidth="50.0"/>
                             <TableColumn fx:id="colStgType" text="Type" prefWidth="110.0"/>
+                            <TableColumn fx:id="colStgAction" text="Actions" prefWidth="120.0"/>
                         </columns>
                     </TableView>
                     <Separator/>
@@ -185,12 +189,12 @@
 
                         <Label text="Responsible Person:" GridPane.columnIndex="2" GridPane.rowIndex="1" styleClass="form-label"/>
                         <TextField fx:id="evtRespPersonField" promptText="e.g. Prof. Smith" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
-
+                        
                         <Label text="Purpose:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="form-label"/>
                         <TextField fx:id="evtPurposeField" promptText="e.g. Exhibition and prototype testing" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
-                        <Label text="Remarks:" GridPane.columnIndex="2" GridPane.rowIndex="2" styleClass="form-label"/>
-                        <TextField fx:id="evtRemarksField" promptText="Optional notes" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+                        <Label text="Venue:" GridPane.columnIndex="2" GridPane.rowIndex="2" styleClass="form-label"/>
+                        <TextField fx:id="evtVenueField" promptText="e.g. Gymnasium" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
                         
                         <Label text="Start Date:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="form-label"/>
                         <DatePicker fx:id="evtStartDatePicker" styleClass="modern-datepicker" maxWidth="Infinity" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
@@ -211,6 +215,9 @@
                             <ComboBox fx:id="evtEgressMinute" promptText="Min" styleClass="modern-combo-box" prefWidth="80.0" prefHeight="38.0"/>
                             <ComboBox fx:id="evtEgressAmpm" promptText="AM/PM" styleClass="modern-combo-box" prefWidth="100.0" prefHeight="38.0"/>
                         </HBox>
+
+                        <Label text="Remarks:" GridPane.columnIndex="0" GridPane.rowIndex="5" styleClass="form-label"/>
+                        <TextField fx:id="evtRemarksField" promptText="Optional notes" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="5" GridPane.columnSpan="3"/>
                     </GridPane>
                     <Separator/>
                     <Label text="II. Devices Inline Entry Builder" styleClass="form-label" style="-fx-text-fill: #0284C7; -fx-font-size: 13px;"/>
@@ -228,8 +235,9 @@
                             <TextField fx:id="evtDevQtyField" promptText="Qty" styleClass="modern-textfield" prefHeight="34.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                             <ComboBox fx:id="evtDevTypeBox" promptText="Device Type" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="34.0" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
                         </GridPane>
-                        <HBox alignment="CENTER_RIGHT">
-                            <Button text="+ Add Device To Staging" onAction="#addStagedDeviceEvent" styleClass="action-btn, action-btn-success" style="-fx-font-size: 11px;"/>
+                        <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                            <Button fx:id="btnCancelDeviceEvent" text="Cancel" onAction="#cancelEditDeviceEvent" styleClass="action-btn" style="-fx-font-size: 11px; -fx-background-color: #f1f5f9; -fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-text-fill: #475569;" visible="false" managed="false"/>
+                            <Button fx:id="btnAddDeviceEvent" text="+ Add Device To Staging" onAction="#addStagedDeviceEvent" styleClass="action-btn, action-btn-success" style="-fx-font-size: 11px;"/>
                         </HBox>
                     </VBox>
                     <TableView fx:id="stagedEventTable" prefHeight="110.0" styleClass="modern-table">
@@ -243,6 +251,7 @@
                             <TableColumn fx:id="colEvtStgSerial" text="Serial" prefWidth="140.0"/>
                             <TableColumn fx:id="colEvtStgQty" text="Qty" prefWidth="50.0"/>
                             <TableColumn fx:id="colEvtStgType" text="Type" prefWidth="110.0"/>
+                            <TableColumn fx:id="colEvtStgAction" text="Actions" prefWidth="120.0"/>
                         </columns>
                     </TableView>
                     <Separator/>
@@ -274,22 +283,20 @@
             <VBox spacing="15.0" VBox.vgrow="ALWAYS" style="-fx-padding: 0 20px 20px 20px;">
                 <GridPane hgap="15.0" vgap="8.0">
                     <columnConstraints>
-                        <ColumnConstraints percentWidth="15.0" halignment="RIGHT"/>
-                        <ColumnConstraints percentWidth="35.0"/>
-                        <ColumnConstraints percentWidth="15.0" halignment="RIGHT"/>
-                        <ColumnConstraints percentWidth="35.0"/>
+                        <ColumnConstraints percentWidth="30.0" halignment="LEFT"/>
+                        <ColumnConstraints percentWidth="70.0" halignment="LEFT"/>
                     </columnConstraints>
-                    <Label text="Requester ID:" style="-fx-font-weight: bold; -fx-text-fill: #64748B;"/>
-                    <Label fx:id="lblReviewStudentId" text="-" style="-fx-font-weight: bold;" GridPane.columnIndex="1"/>
+                    <Label text="Requester ID:" style="-fx-font-weight: bold; -fx-text-fill: #64748B;" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                    <Label fx:id="lblReviewStudentId" text="-" style="-fx-font-weight: bold;" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
                     
-                    <Label text="Type:" style="-fx-font-weight: bold; -fx-text-fill: #64748B;" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
-                    <Label fx:id="lblReviewType" text="-" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+                    <Label text="Type:" style="-fx-font-weight: bold; -fx-text-fill: #64748B;" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                    <Label fx:id="lblReviewType" text="-" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-                    <Label text="Purpose / Event:" style="-fx-font-weight: bold; -fx-text-fill: #64748B;" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                    <Label fx:id="lblReviewPurpose" text="-" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                    <Label text="Purpose / Event:" style="-fx-font-weight: bold; -fx-text-fill: #64748B;" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                    <Label fx:id="lblReviewPurpose" text="-" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
                     
-                    <Label text="Expected Times:" style="-fx-font-weight: bold; -fx-text-fill: #64748B;" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
-                    <Label fx:id="lblReviewTimes" text="-" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+                    <Label text="Expected Times:" style="-fx-font-weight: bold; -fx-text-fill: #64748B;" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                    <Label fx:id="lblReviewTimes" text="-" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
                 </GridPane>
                 
                 <Label text="Device Line Items:" styleClass="form-label" style="-fx-text-fill: #0284C7;"/>
@@ -308,9 +315,6 @@
                 
                 <Separator/>
                 <HBox spacing="12.0" alignment="CENTER_RIGHT">
-                    <!-- Standard close -->
-                    <Button text="Close" onAction="#handleCloseOverlays" styleClass="action-btn" prefHeight="36.0" style="-fx-background-color: #f1f5f9; -fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-text-fill: #475569;"/>
-                    
                     <!-- Action buttons dynamically shown for pending requests -->
                     <Button fx:id="btnReturn" text="Return Request" onAction="#handleReturnRequest" styleClass="action-btn, action-btn-warning" prefHeight="36.0"/>
                     <Button fx:id="btnReject" text="Reject Request" onAction="#handleRejectRequest" styleClass="action-btn, action-btn-danger" prefHeight="36.0"/>
