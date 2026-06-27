@@ -116,7 +116,7 @@
                         </StackPane>
                         <VBox spacing="4.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                             <Label text="Requests" styleClass="shortcut-title"/>
-                            <Label text="Approve, reject, return requests, and verify device specifications" styleClass="shortcut-desc"/>
+                            <Label text="Manage and approve standard and event BYOD requests" styleClass="shortcut-desc"/>
                         </VBox>
                     </HBox>
                 </graphic>
@@ -132,7 +132,7 @@
                         </StackPane>
                         <VBox spacing="4.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                             <Label text="On-Campus Devices" styleClass="shortcut-title"/>
-                            <Label text="Monitor registered hardware currently present inside campus gates in real-time" styleClass="shortcut-desc"/>
+                            <Label text="Monitor devices currently inside the campus in real-time" styleClass="shortcut-desc"/>
                         </VBox>
                     </HBox>
                 </graphic>

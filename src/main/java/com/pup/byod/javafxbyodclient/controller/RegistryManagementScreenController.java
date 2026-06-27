@@ -116,6 +116,12 @@ public class RegistryManagementScreenController {
                 "APPLIANCE"
         );
 
+        // Setup UI Validation
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(studentIdField, "Input required");
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(firstNameField, "Input required");
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(lastNameField, "Input required");
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(courseYearLevelField, "Input required");
+
         // Listeners for selection & double click
         studentTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             editSelectedBtn.setDisable(newVal == null);
@@ -326,6 +332,25 @@ public class RegistryManagementScreenController {
     public void handleCloseOverlay() {
         formOverlay.setVisible(false);
         handleClearForm();
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(studentIdField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(firstNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(lastNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(courseYearLevelField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(deviceNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(serialNumberField);
+    }
+
+    @FXML
+    private void handleCancelBtn() {
+        formOverlay.setVisible(false);
+        isStudentEditMode = false;
+        
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(studentIdField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(firstNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(lastNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(courseYearLevelField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(deviceNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(serialNumberField);
     }
 
     private void loadDevicesForStudent(String studentId) {

@@ -20,6 +20,8 @@ public class StudentSearchDropdown {
     public static void attach(TextField textField, java.util.function.Predicate<Student> filter, Consumer<Student> onStudentSelected) {
         ContextMenu autocompleteMenu = new ContextMenu();
         autocompleteMenu.getStyleClass().add("student-search-popup");
+        autocompleteMenu.setMaxHeight(300);
+        autocompleteMenu.setStyle("-fx-background-radius: 8px; -fx-border-radius: 8px; -fx-padding: 5px;");
 
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
             String currentText = newValue.trim();

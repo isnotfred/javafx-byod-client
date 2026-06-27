@@ -62,10 +62,10 @@ public class ValidationHelper {
         }
     }
 
-    public static void setup(TextInputControl field) {
+    public static void setup(TextInputControl field, String prompt) {
         field.focusedProperty().addListener((obs, oldVal, newVal) -> {
             if (!newVal) {
-                validateTextInput(field, "Input needed");
+                validateTextInput(field, prompt);
             }
         });
         field.textProperty().addListener((obs, oldVal, newVal) -> {
@@ -73,6 +73,10 @@ public class ValidationHelper {
                 resetValidation(field);
             }
         });
+    }
+
+    public static void setup(TextInputControl field) {
+        setup(field, "Input needed");
     }
 
     public static void setup(ComboBox<?> box) {

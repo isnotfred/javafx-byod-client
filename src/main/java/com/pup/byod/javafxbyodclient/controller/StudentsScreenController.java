@@ -73,6 +73,12 @@ public class StudentsScreenController {
             editSelectedBtn.setDisable(newVal == null);
         });
 
+        // Setup UI Validation
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(studentIdField, "Input required");
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(firstNameField, "Input required");
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(lastNameField, "Input required");
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(courseYearLevelField, "Input required");
+
         // Load data async
         loadStudents();
     }
@@ -105,7 +111,11 @@ public class StudentsScreenController {
         lastNameField.clear();
         courseYearLevelField.clear();
         contactNumberField.clear();
-        
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(studentIdField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(firstNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(lastNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(courseYearLevelField);
+
         formOverlay.setVisible(true);
     }
 
@@ -124,12 +134,22 @@ public class StudentsScreenController {
         courseYearLevelField.setText(selectedStudent.getCourseYearLevel());
         contactNumberField.setText(selectedStudent.getContactNumber());
         
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(studentIdField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(firstNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(lastNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(courseYearLevelField);
+
         formOverlay.setVisible(true);
     }
 
     @FXML
     public void handleCloseOverlay() {
         formOverlay.setVisible(false);
+        
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(studentIdField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(firstNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(lastNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(courseYearLevelField);
     }
 
     @FXML

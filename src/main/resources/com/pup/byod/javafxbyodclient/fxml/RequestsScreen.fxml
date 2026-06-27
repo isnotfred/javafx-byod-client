@@ -77,33 +77,33 @@
                             <ColumnConstraints percentWidth="12.0" halignment="RIGHT"/>
                             <ColumnConstraints percentWidth="38.0"/>
                         </columnConstraints>
-                        <Label text="Student ID:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="form-label"/>
+                        <HBox spacing="2.0" GridPane.columnIndex="0" GridPane.rowIndex="0" alignment="CENTER_RIGHT"><Label text="Student ID:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
                         <TextField fx:id="reqStudentIdField" promptText="e.g. 2021-10023" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                         
-                        <Label text="Purpose:" GridPane.columnIndex="2" GridPane.rowIndex="0" styleClass="form-label"/>
+                        <HBox spacing="2.0" GridPane.columnIndex="2" GridPane.rowIndex="0" alignment="CENTER_RIGHT"><Label text="Purpose:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
                         <TextField fx:id="reqPurposeField" promptText="e.g. Study classes and programming" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
                         
-                        <Label text="Start Date:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="form-label"/>
+                        <HBox spacing="2.0" GridPane.columnIndex="0" GridPane.rowIndex="1" alignment="CENTER_RIGHT"><Label text="Start Date:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
                         <DatePicker fx:id="reqStartDatePicker" styleClass="modern-datepicker" maxWidth="Infinity" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                         
-                        <Label text="End Date:" GridPane.columnIndex="2" GridPane.rowIndex="1" styleClass="form-label"/>
+                        <HBox spacing="2.0" GridPane.columnIndex="2" GridPane.rowIndex="1" alignment="CENTER_RIGHT"><Label text="End Date:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
                         <DatePicker fx:id="reqEndDatePicker" styleClass="modern-datepicker" maxWidth="Infinity" prefHeight="38.0" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
                         
-                        <Label text="Ingress Time:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="form-label"/>
+                        <HBox spacing="2.0" GridPane.columnIndex="0" GridPane.rowIndex="2" alignment="CENTER_RIGHT"><Label text="Ingress Time:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
                         <HBox spacing="6.0" alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="2">
                             <ComboBox fx:id="reqIngressHour" promptText="Hr" styleClass="modern-combo-box" prefWidth="75.0" prefHeight="38.0"/>
                             <ComboBox fx:id="reqIngressMinute" promptText="Min" styleClass="modern-combo-box" prefWidth="80.0" prefHeight="38.0"/>
                             <ComboBox fx:id="reqIngressAmpm" promptText="AM/PM" styleClass="modern-combo-box" prefWidth="100.0" prefHeight="38.0"/>
                         </HBox>
                         
-                        <Label text="Egress Time:" GridPane.columnIndex="2" GridPane.rowIndex="2" styleClass="form-label"/>
+                        <HBox spacing="2.0" GridPane.columnIndex="2" GridPane.rowIndex="2" alignment="CENTER_RIGHT"><Label text="Egress Time:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
                         <HBox spacing="6.0" alignment="CENTER_LEFT" GridPane.columnIndex="3" GridPane.rowIndex="2">
                             <ComboBox fx:id="reqEgressHour" promptText="Hr" styleClass="modern-combo-box" prefWidth="75.0" prefHeight="38.0"/>
                             <ComboBox fx:id="reqEgressMinute" promptText="Min" styleClass="modern-combo-box" prefWidth="80.0" prefHeight="38.0"/>
                             <ComboBox fx:id="reqEgressAmpm" promptText="AM/PM" styleClass="modern-combo-box" prefWidth="100.0" prefHeight="38.0"/>
                         </HBox>
 
-                        <Label text="Venue:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="form-label"/>
+                        <HBox spacing="2.0" GridPane.columnIndex="0" GridPane.rowIndex="3" alignment="CENTER_RIGHT"><Label text="Venue:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
                         <TextField fx:id="reqVenueField" promptText="e.g. Gym / Room 302" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
                         <Label text="Remarks:" GridPane.columnIndex="2" GridPane.rowIndex="3" styleClass="form-label"/>
@@ -173,51 +173,72 @@
                     <Label text="I. Request Headers" styleClass="form-label" style="-fx-text-fill: #0284C7; -fx-font-size: 13px;"/>
                     <GridPane hgap="15.0" vgap="12.0">
                         <columnConstraints>
-                            <ColumnConstraints percentWidth="12.0" halignment="RIGHT"/>
-                            <ColumnConstraints percentWidth="38.0"/>
-                            <ColumnConstraints percentWidth="12.0" halignment="RIGHT"/>
-                            <ColumnConstraints percentWidth="38.0"/>
+                            <ColumnConstraints percentWidth="50.0"/>
+                            <ColumnConstraints percentWidth="50.0"/>
                         </columnConstraints>
-                        <Label text="Student ID:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="form-label"/>
-                        <TextField fx:id="evtStudentIdField" promptText="e.g. 2021-10023" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                         
-                        <Label text="Event Name:" GridPane.columnIndex="2" GridPane.rowIndex="0" styleClass="form-label"/>
-                        <TextField fx:id="evtEventNameField" promptText="e.g. Tech Fair 2026" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+                        <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                            <HBox spacing="2.0"><Label text="Student ID:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
+                            <TextField fx:id="evtStudentIdField" promptText="e.g. 2021-10023" styleClass="modern-textfield" prefHeight="38.0"/>
+                        </VBox>
+                        
+                        <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                            <HBox spacing="2.0"><Label text="Event Name:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
+                            <TextField fx:id="evtEventNameField" promptText="e.g. Tech Fair 2026" styleClass="modern-textfield" prefHeight="38.0"/>
+                        </VBox>
 
-                        <Label text="Organization:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="form-label"/>
-                        <TextField fx:id="evtOrgField" promptText="e.g. ACM Student Chapter" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                        <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                            <HBox spacing="2.0"><Label text="Organization:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
+                            <TextField fx:id="evtOrgField" promptText="e.g. ACM Student Chapter" styleClass="modern-textfield" prefHeight="38.0"/>
+                        </VBox>
 
-                        <Label text="Responsible Person:" GridPane.columnIndex="2" GridPane.rowIndex="1" styleClass="form-label"/>
-                        <TextField fx:id="evtRespPersonField" promptText="e.g. Prof. Smith" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+                        <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <HBox spacing="2.0"><Label text="Responsible Person:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
+                            <TextField fx:id="evtRespPersonField" promptText="e.g. Prof. Smith" styleClass="modern-textfield" prefHeight="38.0"/>
+                        </VBox>
                         
-                        <Label text="Purpose:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="form-label"/>
-                        <TextField fx:id="evtPurposeField" promptText="e.g. Exhibition and prototype testing" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                        <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                            <HBox spacing="2.0"><Label text="Purpose:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
+                            <TextField fx:id="evtPurposeField" promptText="e.g. Exhibition and prototype testing" styleClass="modern-textfield" prefHeight="38.0"/>
+                        </VBox>
 
-                        <Label text="Venue:" GridPane.columnIndex="2" GridPane.rowIndex="2" styleClass="form-label"/>
-                        <TextField fx:id="evtVenueField" promptText="e.g. Gymnasium" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+                        <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                            <HBox spacing="2.0"><Label text="Venue:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
+                            <TextField fx:id="evtVenueField" promptText="e.g. Gymnasium" styleClass="modern-textfield" prefHeight="38.0"/>
+                        </VBox>
                         
-                        <Label text="Start Date:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="form-label"/>
-                        <DatePicker fx:id="evtStartDatePicker" styleClass="modern-datepicker" maxWidth="Infinity" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                        <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                            <HBox spacing="2.0"><Label text="Start Date:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
+                            <DatePicker fx:id="evtStartDatePicker" styleClass="modern-datepicker" maxWidth="Infinity" prefHeight="38.0"/>
+                        </VBox>
                         
-                        <Label text="End Date:" GridPane.columnIndex="2" GridPane.rowIndex="3" styleClass="form-label"/>
-                        <DatePicker fx:id="evtEndDatePicker" styleClass="modern-datepicker" maxWidth="Infinity" prefHeight="38.0" GridPane.columnIndex="3" GridPane.rowIndex="3"/>
+                        <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                            <HBox spacing="2.0"><Label text="End Date:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
+                            <DatePicker fx:id="evtEndDatePicker" styleClass="modern-datepicker" maxWidth="Infinity" prefHeight="38.0"/>
+                        </VBox>
                         
-                        <Label text="Ingress Time:" GridPane.columnIndex="0" GridPane.rowIndex="4" styleClass="form-label"/>
-                        <HBox spacing="6.0" alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="4">
-                            <ComboBox fx:id="evtIngressHour" promptText="Hr" styleClass="modern-combo-box" prefWidth="75.0" prefHeight="38.0"/>
-                            <ComboBox fx:id="evtIngressMinute" promptText="Min" styleClass="modern-combo-box" prefWidth="80.0" prefHeight="38.0"/>
-                            <ComboBox fx:id="evtIngressAmpm" promptText="AM/PM" styleClass="modern-combo-box" prefWidth="100.0" prefHeight="38.0"/>
-                        </HBox>
+                        <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="4">
+                            <HBox spacing="2.0"><Label text="Ingress Time:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
+                            <HBox spacing="6.0" alignment="CENTER_LEFT">
+                                <ComboBox fx:id="evtIngressHour" promptText="Hr" styleClass="modern-combo-box" prefWidth="75.0" prefHeight="38.0"/>
+                                <ComboBox fx:id="evtIngressMinute" promptText="Min" styleClass="modern-combo-box" prefWidth="80.0" prefHeight="38.0"/>
+                                <ComboBox fx:id="evtIngressAmpm" promptText="AM/PM" styleClass="modern-combo-box" prefWidth="100.0" prefHeight="38.0"/>
+                            </HBox>
+                        </VBox>
                         
-                        <Label text="Egress Time:" GridPane.columnIndex="2" GridPane.rowIndex="4" styleClass="form-label"/>
-                        <HBox spacing="6.0" alignment="CENTER_LEFT" GridPane.columnIndex="3" GridPane.rowIndex="4">
-                            <ComboBox fx:id="evtEgressHour" promptText="Hr" styleClass="modern-combo-box" prefWidth="75.0" prefHeight="38.0"/>
-                            <ComboBox fx:id="evtEgressMinute" promptText="Min" styleClass="modern-combo-box" prefWidth="80.0" prefHeight="38.0"/>
-                            <ComboBox fx:id="evtEgressAmpm" promptText="AM/PM" styleClass="modern-combo-box" prefWidth="100.0" prefHeight="38.0"/>
-                        </HBox>
+                        <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                            <HBox spacing="2.0"><Label text="Egress Time:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
+                            <HBox spacing="6.0" alignment="CENTER_LEFT">
+                                <ComboBox fx:id="evtEgressHour" promptText="Hr" styleClass="modern-combo-box" prefWidth="75.0" prefHeight="38.0"/>
+                                <ComboBox fx:id="evtEgressMinute" promptText="Min" styleClass="modern-combo-box" prefWidth="80.0" prefHeight="38.0"/>
+                                <ComboBox fx:id="evtEgressAmpm" promptText="AM/PM" styleClass="modern-combo-box" prefWidth="100.0" prefHeight="38.0"/>
+                            </HBox>
+                        </VBox>
 
-                        <Label text="Remarks:" GridPane.columnIndex="0" GridPane.rowIndex="5" styleClass="form-label"/>
-                        <TextField fx:id="evtRemarksField" promptText="Optional notes" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="5" GridPane.columnSpan="3"/>
+                        <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="5" GridPane.columnSpan="2">
+                            <Label text="Remarks:" styleClass="form-label"/>
+                            <TextField fx:id="evtRemarksField" promptText="Optional notes" styleClass="modern-textfield" prefHeight="38.0"/>
+                        </VBox>
                     </GridPane>
                     <Separator/>
                     <Label text="II. Devices Inline Entry Builder" styleClass="form-label" style="-fx-text-fill: #0284C7; -fx-font-size: 13px;"/>

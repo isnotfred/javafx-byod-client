@@ -431,6 +431,38 @@ public class RequestsScreenController {
         colRevQty.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         reviewDevicesTable.setItems(reviewDevicesList);
 
+        // Setup Validation
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(reqStudentIdField, "Input required");
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(reqPurposeField, "Input required");
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(reqVenueField, "Input required");
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(reqStartDatePicker);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(reqEndDatePicker);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(reqIngressHour);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(reqIngressMinute);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(reqIngressAmpm);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(reqEgressHour);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(reqEgressMinute);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(reqEgressAmpm);
+
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(evtStudentIdField, "Input required");
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(evtEventNameField, "Input required");
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(evtOrgField, "Input required");
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(evtRespPersonField, "Input required");
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(evtPurposeField, "Input required");
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(evtVenueField, "Input required");
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(evtStartDatePicker);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(evtEndDatePicker);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(evtIngressHour);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(evtIngressMinute);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(evtIngressAmpm);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(evtEgressHour);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(evtEgressMinute);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(evtEgressAmpm);
+
+        // Partial Search for Student ID
+        com.pup.byod.javafxbyodclient.util.StudentSearchDropdown.attach(reqStudentIdField, null);
+        com.pup.byod.javafxbyodclient.util.StudentSearchDropdown.attach(evtStudentIdField, null);
+
         // Load data async
         loadRequests();
     }
@@ -727,6 +759,34 @@ public class RequestsScreenController {
             btnCancelDeviceEvent.setVisible(false);
             btnCancelDeviceEvent.setManaged(false);
         }
+
+        // Reset validations
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(reqStudentIdField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(reqPurposeField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(reqVenueField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(reqStartDatePicker);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(reqEndDatePicker);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(reqIngressHour);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(reqIngressMinute);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(reqIngressAmpm);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(reqEgressHour);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(reqEgressMinute);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(reqEgressAmpm);
+
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(evtStudentIdField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(evtEventNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(evtOrgField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(evtRespPersonField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(evtPurposeField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(evtVenueField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(evtStartDatePicker);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(evtEndDatePicker);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(evtIngressHour);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(evtIngressMinute);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(evtIngressAmpm);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(evtEgressHour);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(evtEgressMinute);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(evtEgressAmpm);
     }
 
     // --- Device Staging Methods ---

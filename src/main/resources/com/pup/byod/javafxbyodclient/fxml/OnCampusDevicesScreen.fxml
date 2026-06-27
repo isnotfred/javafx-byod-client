@@ -24,12 +24,11 @@
           style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 16px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 8, 0, 0, 2);">
         
         <HBox alignment="CENTER_LEFT" spacing="10.0">
-            <VBox spacing="2.0">
-                <Label text="Campus Presence Registry" style="-fx-font-family: 'Hanken Grotesk', 'Segoe UI Bold', 'Segoe UI', sans-serif; -fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #102A43;"/>
-                <Label text="Showing live entry and exit states for all registered user hardware" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 12px; -fx-text-fill: #64748B;"/>
+            <VBox spacing="2.0" alignment="CENTER_LEFT">
+                <Label text="Campus Presence Registry" style="-fx-font-family: 'Hanken Grotesk', 'Segoe UI Bold', 'Segoe UI', sans-serif; -fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #102A43;"/>
             </VBox>
             <Region HBox.hgrow="ALWAYS"/>
-            <StackPane alignment="CENTER_LEFT" prefWidth="350.0">
+            <StackPane alignment="CENTER_LEFT" prefWidth="250.0">
                 <TextField fx:id="searchField" promptText="Search by Student ID, Name, or Device SN" styleClass="modern-textfield, search-field-with-icon" prefHeight="35.0" maxWidth="Infinity"/>
                 <Label text="🔍" mouseTransparent="true" style="-fx-padding: 0 0 0 10px; -fx-text-fill: #94A3B8; -fx-font-size: 13px;"/>
             </StackPane>
