@@ -274,18 +274,29 @@ public class ReportsScreenController {
                 );
                 break;
             case LATE_SCANS:
-                reportsTable.getColumns().addAll(
-                    createColumn("Log ID", "logId", "transactionId", "transaction_id"),
-                    createColumn("Student ID", "studentId", "student_id"),
-                    createColumn("Student Name", "studentName", "student_name"),
-                    createColumn("Course/Year", "courseYearLevel", "course_year_level"),
-                    createColumn("Device Name", "deviceName", "device_name"),
-                    createColumn("Serial Number", "serialNumber", "serial_number"),
-                    createColumn("Expected Ingress", "expectedIngressTime", "expected_ingress_time"),
-                    createColumn("Expected Egress", "expectedEgressTime", "expected_egress_time"),
-                    createLateHighlightedColumn("Checked-In", "isLateIngress", "ingressTime", "ingress_time"),
-                    createLateHighlightedColumn("Checked-Out", "isLateEgress", "egressTime", "egress_time")
-                );
+                TableColumn<Map<String, Object>, Object> colLogId = createColumn("Log ID", "logId", "transactionId", "transaction_id");
+                TableColumn<Map<String, Object>, Object> colStudId = createColumn("Student ID", "studentId", "student_id");
+                TableColumn<Map<String, Object>, Object> colStudName = createColumn("Student Name", "studentName", "student_name");
+                TableColumn<Map<String, Object>, Object> colCourse = createColumn("Course/Year", "courseYearLevel", "course_year_level");
+                TableColumn<Map<String, Object>, Object> colDev = createColumn("Device Name", "deviceName", "device_name");
+                TableColumn<Map<String, Object>, Object> colSerial = createColumn("Serial Number", "serialNumber", "serial_number");
+                TableColumn<Map<String, Object>, Object> colExpIn = createColumn("Expected Ingress", "expectedIngressTime", "expected_ingress_time");
+                TableColumn<Map<String, Object>, Object> colExpEg = createColumn("Expected Egress", "expectedEgressTime", "expected_egress_time");
+                TableColumn<Map<String, Object>, Object> colIn = createLateHighlightedColumn("Checked-In", "isLateIngress", "ingressTime", "ingress_time");
+                TableColumn<Map<String, Object>, Object> colEg = createLateHighlightedColumn("Checked-Out", "isLateEgress", "egressTime", "egress_time");
+
+                colLogId.setPrefWidth(60.0);
+                colStudId.setPrefWidth(130.0);
+                colStudName.setPrefWidth(180.0);
+                colCourse.setPrefWidth(100.0);
+                colDev.setPrefWidth(110.0);
+                colSerial.setPrefWidth(110.0);
+                colExpIn.setPrefWidth(110.0);
+                colExpEg.setPrefWidth(110.0);
+                colIn.setPrefWidth(100.0);
+                colEg.setPrefWidth(100.0);
+
+                reportsTable.getColumns().addAll(colLogId, colStudId, colStudName, colCourse, colDev, colSerial, colExpIn, colExpEg, colIn, colEg);
                 break;
             case MONTHLY_TRAFFIC:
                 reportsTable.getColumns().addAll(
@@ -357,8 +368,10 @@ public class ReportsScreenController {
         }
 
         // Set reasonable default widths
-        for (TableColumn<Map<String, Object>, ?> col : reportsTable.getColumns()) {
-            col.setPrefWidth(130.0);
+        if (!LATE_SCANS.equals(reportType)) {
+            for (TableColumn<Map<String, Object>, ?> col : reportsTable.getColumns()) {
+                col.setPrefWidth(130.0);
+            }
         }
 
         // Force table layout pass to distribute columns evenly and eliminate empty ending column space
@@ -425,6 +438,13 @@ public class ReportsScreenController {
     private String formatTimeOnly(String timestampStr) {
         if (timestampStr == null || timestampStr.isEmpty() || "null".equalsIgnoreCase(timestampStr)) return "-";
         try {
+            // First check if it's a simple local time string like "08:00:00" or "08:00"
+            if (!timestampStr.contains("T") && !timestampStr.contains("Z") && !timestampStr.contains("+") && timestampStr.split(":").length >= 2) {
+                java.time.LocalTime time = java.time.LocalTime.parse(timestampStr);
+                java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("h:mm a");
+                return time.format(formatter);
+            }
+
             java.time.temporal.TemporalAccessor temporal;
             if (timestampStr.contains("Z") || timestampStr.contains("+") || (timestampStr.lastIndexOf("-") > 10)) {
                 temporal = java.time.OffsetDateTime.parse(timestampStr);

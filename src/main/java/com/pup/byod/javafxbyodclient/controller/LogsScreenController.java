@@ -207,6 +207,13 @@ public class LogsScreenController {
     private String formatTimeOnly(String timestampStr) {
         if (timestampStr == null || timestampStr.isEmpty() || "null".equalsIgnoreCase(timestampStr)) return "-";
         try {
+            // First check if it's a simple local time string like "08:00:00" or "08:00"
+            if (!timestampStr.contains("T") && !timestampStr.contains("Z") && !timestampStr.contains("+") && timestampStr.split(":").length >= 2) {
+                java.time.LocalTime time = java.time.LocalTime.parse(timestampStr);
+                java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("h:mm a");
+                return time.format(formatter);
+            }
+
             java.time.temporal.TemporalAccessor temporal;
             if (timestampStr.contains("Z") || timestampStr.contains("+") || (timestampStr.lastIndexOf("-") > 10)) {
                 temporal = java.time.OffsetDateTime.parse(timestampStr);
