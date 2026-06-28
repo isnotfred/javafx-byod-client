@@ -119,6 +119,10 @@ public class DevicesModalScreenController {
             btnAction.setText("Log Exit");
             btnAction.setStyle("-fx-background-color: #EF4444; -fx-text-fill: white; -fx-font-weight: bold;");
             btnAction.setDisable(false);
+        } else if ("Expired".equalsIgnoreCase(expectedAction)) {
+            btnAction.setText("Request Expired");
+            btnAction.setStyle("-fx-background-color: #F43F5E; -fx-text-fill: white; -fx-font-weight: bold;");
+            btnAction.setDisable(true);
         } else {
             btnAction.setText("Transaction Completed for Today");
             btnAction.setStyle("-fx-background-color: #94A3B8; -fx-text-fill: white; -fx-font-weight: bold;");

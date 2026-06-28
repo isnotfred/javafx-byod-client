@@ -26,6 +26,7 @@ import java.util.List;
 public class RequestsScreenController {
     // Main components
     @FXML private TextField searchField;
+    @FXML private ComboBox<String> statusFilterBox;
     @FXML private TableView<Request> requestsTable;
     @FXML private Button btnEditRequest;
 
@@ -187,19 +188,16 @@ public class RequestsScreenController {
             }
         });
 
-        // Search Bar Filtering
+        // Search Bar & Status Filtering
         filteredRequestList = new FilteredList<>(requestList, p -> true);
         requestsTable.setItems(filteredRequestList);
         btnEditRequest.disableProperty().bind(requestsTable.getSelectionModel().selectedItemProperty().isNull());
-        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
-            filteredRequestList.setPredicate(req -> {
-                if (newVal == null || newVal.trim().isEmpty()) {
-                    return true;
-                }
-                String lower = newVal.toLowerCase().trim();
-                return req.getStudentId().toLowerCase().contains(lower);
-            });
-        });
+
+        statusFilterBox.getItems().addAll("All", "Upcoming", "Ongoing", "Completed");
+        statusFilterBox.getSelectionModel().select("All");
+
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> applyFilters());
+        statusFilterBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> applyFilters());
 
         // Initialize Combobox device types
         List<String> devTypes = new java.util.ArrayList<>();
@@ -240,17 +238,6 @@ public class RequestsScreenController {
         });
 
         // Initialize End Date pickers factories
-        reqEndDatePicker.setDayCellFactory(picker -> new DateCell() {
-            @Override
-            public void updateItem(LocalDate date, boolean empty) {
-                super.updateItem(date, empty);
-                boolean disable = empty || date.isBefore(LocalDate.now()) || isSundayOrHoliday(date);
-                setDisable(disable);
-                if (!empty && isSundayOrHoliday(date)) {
-                    setStyle("-fx-background-color: #ffe4e6; -fx-text-fill: #991b1b;");
-                }
-            }
-        });
         evtEndDatePicker.setDayCellFactory(picker -> new DateCell() {
             @Override
             public void updateItem(LocalDate date, boolean empty) {
@@ -265,21 +252,7 @@ public class RequestsScreenController {
 
         // Dynamic End Date constraints based on Start Date selection
         reqStartDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> {
-            reqEndDatePicker.setDayCellFactory(picker -> new DateCell() {
-                @Override
-                public void updateItem(LocalDate date, boolean empty) {
-                    super.updateItem(date, empty);
-                    LocalDate minDate = (newVal != null) ? newVal : LocalDate.now();
-                    boolean disable = empty || date.isBefore(minDate) || isSundayOrHoliday(date);
-                    setDisable(disable);
-                    if (!empty && isSundayOrHoliday(date)) {
-                        setStyle("-fx-background-color: #ffe4e6; -fx-text-fill: #991b1b;");
-                    }
-                }
-            });
-            if (reqEndDatePicker.getValue() != null && newVal != null && reqEndDatePicker.getValue().isBefore(newVal)) {
-                reqEndDatePicker.setValue(null);
-            }
+            reqEndDatePicker.setValue(newVal);
         });
 
         evtStartDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> {
@@ -306,7 +279,9 @@ public class RequestsScreenController {
         colStgModel.setCellValueFactory(new PropertyValueFactory<>("model"));
         colStgSerial.setCellValueFactory(new PropertyValueFactory<>("serialNumber"));
         colStgQty.setCellValueFactory(new PropertyValueFactory<>("quantity"));
-        colStgType.setCellValueFactory(new PropertyValueFactory<>("deviceType"));
+        colStgType.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+            com.pup.byod.javafxbyodclient.util.ValidationHelper.cleanDeviceType(cellData.getValue().getDeviceType())
+        ));
         colStgAction.setCellFactory(col -> new TableCell<RequestDevice, Void>() {
             private final Button editBtn = new Button("Edit");
             private final Button deleteBtn = new Button("Remove");
@@ -367,7 +342,9 @@ public class RequestsScreenController {
         colEvtStgModel.setCellValueFactory(new PropertyValueFactory<>("model"));
         colEvtStgSerial.setCellValueFactory(new PropertyValueFactory<>("serialNumber"));
         colEvtStgQty.setCellValueFactory(new PropertyValueFactory<>("quantity"));
-        colEvtStgType.setCellValueFactory(new PropertyValueFactory<>("deviceType"));
+        colEvtStgType.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+            com.pup.byod.javafxbyodclient.util.ValidationHelper.cleanDeviceType(cellData.getValue().getDeviceType())
+        ));
         colEvtStgAction.setCellFactory(col -> new TableCell<RequestDevice, Void>() {
             private final Button editBtn = new Button("Edit");
             private final Button deleteBtn = new Button("Remove");
@@ -465,6 +442,62 @@ public class RequestsScreenController {
 
         // Load data async
         loadRequests();
+    }
+
+    private void applyFilters() {
+        String keyword = searchField.getText();
+        String selectedStatus = statusFilterBox.getValue();
+
+        filteredRequestList.setPredicate(req -> {
+            // 1. Text Search Filter (Student ID, Event Name, or Purpose)
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                String lower = keyword.toLowerCase().trim();
+                boolean matchesKeyword = req.getStudentId().toLowerCase().contains(lower) ||
+                                         (req.getPurpose() != null && req.getPurpose().toLowerCase().contains(lower)) ||
+                                         (req.getEventName() != null && req.getEventName().toLowerCase().contains(lower));
+                if (!matchesKeyword) return false;
+            }
+
+            // 2. Status Dropdown Filter
+            if (selectedStatus == null || "All".equals(selectedStatus)) {
+                return true;
+            }
+
+            LocalDate today = LocalDate.now();
+            String status = req.getStatus();
+
+            boolean isUpcoming = false;
+            boolean isOngoing = false;
+            boolean isCompleted = false;
+
+            if ("approved".equalsIgnoreCase(status)) {
+                try {
+                    LocalDate start = LocalDate.parse(req.getStartDate());
+                    LocalDate end = LocalDate.parse(req.getEndDate());
+                    if (today.isBefore(start)) {
+                        isUpcoming = true;
+                    } else if (today.isAfter(end)) {
+                        isCompleted = true;
+                    } else {
+                        isOngoing = true;
+                    }
+                } catch (Exception e) {
+                    // Fallback
+                }
+            } else if ("returned".equalsIgnoreCase(status) || "rejected".equalsIgnoreCase(status)) {
+                isCompleted = true;
+            }
+
+            if ("Upcoming".equals(selectedStatus)) {
+                return isUpcoming;
+            } else if ("Ongoing".equals(selectedStatus)) {
+                return isOngoing;
+            } else if ("Completed".equals(selectedStatus)) {
+                return isCompleted;
+            }
+
+            return true;
+        });
     }
 
     private void loadRequests() {
@@ -943,13 +976,18 @@ public class RequestsScreenController {
         String purpose = reqPurposeField.getText().trim();
         String venue = reqVenueField.getText().trim();
         LocalDate start = reqStartDatePicker.getValue();
-        LocalDate end = reqEndDatePicker.getValue();
+        LocalDate end = start; // Force 1-day duration (end date matches start date)
         java.time.LocalTime ingressTime = parseTime(reqIngressHour.getValue(), reqIngressMinute.getValue(), reqIngressAmpm.getValue());
         java.time.LocalTime egressTime = parseTime(reqEgressHour.getValue(), reqEgressMinute.getValue(), reqEgressAmpm.getValue());
 
         if (ValidationHelper.isEmpty(studentId) || ValidationHelper.isEmpty(purpose) || ValidationHelper.isEmpty(venue) ||
             start == null || end == null || ingressTime == null || egressTime == null) {
             AlertHelper.showWarning("Submit Error", "Required Fields", "Please fill in all request fields (including Venue).");
+            return;
+        }
+
+        if (!ValidationHelper.isValidStudentId(studentId)) {
+            AlertHelper.showWarning("Submit Error", "Invalid Student ID", "Student ID must be in format 2###-######-SR-0 (e.g., 2024-00482-SR-0).");
             return;
         }
 
@@ -1051,6 +1089,11 @@ public class RequestsScreenController {
             return;
         }
 
+        if (!ValidationHelper.isValidStudentId(studentId)) {
+            AlertHelper.showWarning("Submit Error", "Invalid Student ID", "Student ID must be in format 2###-######-SR-0 (e.g., 2024-00482-SR-0).");
+            return;
+        }
+
         if (!isEditMode && start.isBefore(LocalDate.now())) {
             AlertHelper.showWarning("Submit Error", "Invalid Start Date", "Start date cannot be in the past.");
             return;
@@ -1058,11 +1101,6 @@ public class RequestsScreenController {
 
         if (end.isBefore(start)) {
             AlertHelper.showWarning("Submit Error", "Invalid End Date", "End date must be same or after start date.");
-            return;
-        }
-
-        if (!egressTime.isAfter(ingressTime)) {
-            AlertHelper.showWarning("Submit Error", "Invalid Times", "Egress time must be after Ingress time.");
             return;
         }
 

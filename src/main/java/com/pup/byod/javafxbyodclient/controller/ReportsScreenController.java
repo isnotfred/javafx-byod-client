@@ -52,6 +52,7 @@ public class ReportsScreenController {
     private static final String DEVICE_FREQUENCY = "Device Frequency Report";
     private static final String INCIDENT_OVERRIDES = "Incident Overrides Report";
     private static final String PURPOSE_BREAKDOWN = "Purpose Breakdown Report";
+    private static final String LATE_SCANS = "Late Check-ins & Check-outs Report";
 
     @FXML
     public void initialize() {
@@ -61,7 +62,8 @@ public class ReportsScreenController {
             MISSED_CHECKOUTS,
             DEVICE_FREQUENCY,
             INCIDENT_OVERRIDES,
-            PURPOSE_BREAKDOWN
+            PURPOSE_BREAKDOWN,
+            LATE_SCANS
         );
         reportsTable.setItems(reportList);
 
@@ -219,6 +221,41 @@ public class ReportsScreenController {
         return column;
     }
 
+    private TableColumn<Map<String, Object>, Object> createLateHighlightedColumn(String header, String lateFlagKey, String... keys) {
+        TableColumn<Map<String, Object>, Object> column = new TableColumn<>(header);
+        column.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
+            getValueFromMap(cellData.getValue(), keys)
+        ));
+        column.setCellFactory(col -> new TableCell<Map<String, Object>, Object>() {
+            @Override
+            protected void updateItem(Object item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(item.toString());
+                    Map<String, Object> rowData = getTableView().getItems().get(getIndex());
+                    if (rowData != null) {
+                        Object flag = rowData.get(lateFlagKey);
+                        if (flag == null) {
+                            String alternativeKey = lateFlagKey.equals("isLateIngress") ? "is_late_ingress" : "is_late_egress";
+                            flag = rowData.get(alternativeKey);
+                        }
+                        if (Boolean.TRUE.equals(flag) || "true".equalsIgnoreCase(String.valueOf(flag))) {
+                            setStyle("-fx-text-fill: #EF4444; -fx-font-weight: bold;");
+                        } else {
+                            setStyle("");
+                        }
+                    } else {
+                        setStyle("");
+                    }
+                }
+            }
+        });
+        return column;
+    }
+
     private void setupTableColumns(String reportType) {
         reportsTable.getColumns().clear();
         if (reportType == null) return;
@@ -232,8 +269,22 @@ public class ReportsScreenController {
                     createColumn("Course/Year", "courseYearLevel", "course_year_level"),
                     createColumn("Device Name", "deviceName", "device_name"),
                     createColumn("Serial Number", "serialNumber", "serial_number"),
-                    createColumn("Checked-In", "ingressTime", "ingress_time"),
-                    createColumn("Checked-Out", "egressTime", "egress_time")
+                    createLateHighlightedColumn("Checked-In", "isLateIngress", "ingressTime", "ingress_time"),
+                    createLateHighlightedColumn("Checked-Out", "isLateEgress", "egressTime", "egress_time")
+                );
+                break;
+            case LATE_SCANS:
+                reportsTable.getColumns().addAll(
+                    createColumn("Log ID", "logId", "transactionId", "transaction_id"),
+                    createColumn("Student ID", "studentId", "student_id"),
+                    createColumn("Student Name", "studentName", "student_name"),
+                    createColumn("Course/Year", "courseYearLevel", "course_year_level"),
+                    createColumn("Device Name", "deviceName", "device_name"),
+                    createColumn("Serial Number", "serialNumber", "serial_number"),
+                    createColumn("Expected Ingress", "expectedIngressTime", "expected_ingress_time"),
+                    createColumn("Expected Egress", "expectedEgressTime", "expected_egress_time"),
+                    createLateHighlightedColumn("Checked-In", "isLateIngress", "ingressTime", "ingress_time"),
+                    createLateHighlightedColumn("Checked-Out", "isLateEgress", "egressTime", "egress_time")
                 );
                 break;
             case MONTHLY_TRAFFIC:
@@ -309,6 +360,10 @@ public class ReportsScreenController {
         for (TableColumn<Map<String, Object>, ?> col : reportsTable.getColumns()) {
             col.setPrefWidth(130.0);
         }
+
+        // Force table layout pass to distribute columns evenly and eliminate empty ending column space
+        reportsTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+        reportsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     private Object getValueFromMap(Map<String, Object> map, String... keys) {
@@ -316,11 +371,17 @@ public class ReportsScreenController {
         for (String key : keys) {
             if (map.containsKey(key) && map.get(key) != null) {
                 Object val = map.get(key);
-                if (val instanceof String && isTimestampKey(key)) {
-                    if (isTimeOnlyKey(key)) {
-                        return formatTimeOnly((String) val);
+                if (val instanceof String) {
+                    String strVal = (String) val;
+                    if ("Project Prototypes (Optional SN)".equalsIgnoreCase(strVal.trim())) {
+                        return "Project Prototypes";
                     }
-                    return com.pup.byod.javafxbyodclient.util.DateFormatter.formatTimestamp((String) val);
+                    if (isTimestampKey(key)) {
+                        if (isTimeOnlyKey(key)) {
+                            return formatTimeOnly(strVal);
+                        }
+                        return com.pup.byod.javafxbyodclient.util.DateFormatter.formatTimestamp(strVal);
+                    }
                 }
                 return val;
             }
@@ -330,11 +391,17 @@ public class ReportsScreenController {
             for (String key : keys) {
                 if (mapKey.equalsIgnoreCase(key) && map.get(mapKey) != null) {
                     Object val = map.get(mapKey);
-                    if (val instanceof String && isTimestampKey(key)) {
-                        if (isTimeOnlyKey(key)) {
-                            return formatTimeOnly((String) val);
+                    if (val instanceof String) {
+                        String strVal = (String) val;
+                        if ("Project Prototypes (Optional SN)".equalsIgnoreCase(strVal.trim())) {
+                            return "Project Prototypes";
                         }
-                        return com.pup.byod.javafxbyodclient.util.DateFormatter.formatTimestamp((String) val);
+                        if (isTimestampKey(key)) {
+                            if (isTimeOnlyKey(key)) {
+                                return formatTimeOnly(strVal);
+                            }
+                            return com.pup.byod.javafxbyodclient.util.DateFormatter.formatTimestamp(strVal);
+                        }
                     }
                     return map.get(mapKey);
                 }
@@ -385,13 +452,21 @@ public class ReportsScreenController {
         if (map == null) return "";
         for (String key : keys) {
             if (map.containsKey(key) && map.get(key) != null) {
-                return map.get(key).toString();
+                String strVal = map.get(key).toString();
+                if ("Project Prototypes (Optional SN)".equalsIgnoreCase(strVal.trim())) {
+                    return "Project Prototypes";
+                }
+                return strVal;
             }
         }
         for (String mapKey : map.keySet()) {
             for (String key : keys) {
                 if (mapKey.equalsIgnoreCase(key) && map.get(mapKey) != null) {
-                    return map.get(mapKey).toString();
+                    String strVal = map.get(mapKey).toString();
+                    if ("Project Prototypes (Optional SN)".equalsIgnoreCase(strVal.trim())) {
+                        return "Project Prototypes";
+                    }
+                    return strVal;
                 }
             }
         }
@@ -438,7 +513,7 @@ public class ReportsScreenController {
                 }
                 return;
             }
-        } else if (DEVICE_FREQUENCY.equals(reportType) || INCIDENT_OVERRIDES.equals(reportType) || MISSED_CHECKOUTS.equals(reportType)) {
+        } else if (DEVICE_FREQUENCY.equals(reportType) || INCIDENT_OVERRIDES.equals(reportType) || MISSED_CHECKOUTS.equals(reportType) || LATE_SCANS.equals(reportType)) {
             String rangeType = rangeSelectBox != null ? rangeSelectBox.getValue() : "Today";
             if (rangeType == null) rangeType = "Today";
             
@@ -501,6 +576,8 @@ public class ReportsScreenController {
                 records = reportService.getDeviceFrequencyReport(start.toString(), end.toString());
             } else if (INCIDENT_OVERRIDES.equals(reportType)) {
                 records = reportService.getIncidentsReport(start.toString(), end.toString());
+            } else if (LATE_SCANS.equals(reportType)) {
+                records = reportService.getLateScansReport(start.toString(), end.toString());
             } else { // PURPOSE_BREAKDOWN
                 records = reportService.getPurposeBreakdownReport();
             }
@@ -732,6 +809,40 @@ public class ReportsScreenController {
 
             pieChart.setData(pieData);
             chartContainer.getChildren().add(pieChart);
+        } else if (LATE_SCANS.equals(reportType)) {
+            CategoryAxis xAxis = new CategoryAxis();
+            xAxis.setLabel("Scan Type");
+            NumberAxis yAxis = new NumberAxis();
+            yAxis.setLabel("Late Scans Count");
+
+            BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
+            barChart.setTitle("Late Check-ins vs Check-outs");
+            barChart.setAnimated(false);
+
+            long lateCheckIns = 0;
+            long lateCheckOuts = 0;
+
+            for (Map<String, Object> record : records) {
+                Object inFlag = record.get("isLateIngress");
+                if (inFlag == null) inFlag = record.get("is_late_ingress");
+                if (Boolean.TRUE.equals(inFlag) || "true".equalsIgnoreCase(String.valueOf(inFlag))) {
+                    lateCheckIns++;
+                }
+
+                Object outFlag = record.get("isLateEgress");
+                if (outFlag == null) outFlag = record.get("is_late_egress");
+                if (Boolean.TRUE.equals(outFlag) || "true".equalsIgnoreCase(String.valueOf(outFlag))) {
+                    lateCheckOuts++;
+                }
+            }
+
+            XYChart.Series<String, Number> series = new XYChart.Series<>();
+            series.setName("Late Transactions");
+            series.getData().add(new XYChart.Data<>("Late Check-in", lateCheckIns));
+            series.getData().add(new XYChart.Data<>("Late Check-out", lateCheckOuts));
+
+            barChart.getData().add(series);
+            chartContainer.getChildren().add(barChart);
         }
     }
 
@@ -1025,7 +1136,7 @@ public class ReportsScreenController {
                     workbook.write(out);
                 }
 
-                Platform.runLater(() -> {
+                        Platform.runLater(() -> {
                     AlertHelper.showInfo("Success", "Report Exported", "Successfully exported report and charts to " + file.getName());
                 });
             } catch (Exception e) {

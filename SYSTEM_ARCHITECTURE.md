@@ -139,10 +139,9 @@ The PostgreSQL database is hosted on Railway and is the single source of truth. 
 |---|---|---|
 | **users** | user_id SERIAL | Admin, guard, and super admin accounts (email address in `email` column, `status` allows `pending` for first login onboarding) |
 | **students** | student_id VARCHAR(50) | Student registry — never hard-delete; set status = inactive |
-| **devices** | device_id SERIAL | Permanent BYOD device registrations |
-| **event_requests** | event_request_id SERIAL | Header for a temporary device access request (school events, orgs) |
-| **event_request_devices** | event_device_id SERIAL | Individual devices listed under an event request |
-| **device_logs** | log_id SERIAL | Immutable gate entry/exit event log — never UPDATE or DELETE |
+| **requests** | request_id SERIAL | Unified header for normal and event device access requests (school events, orgs, individual BYOD) |
+| **request_devices** | request_device_id SERIAL | Individual devices attached to a request |
+| **device_transactions** | transaction_id SERIAL | Daily ingress/egress transactions. Max 1 transaction per device per day. |
 | **audit_logs** | audit_id SERIAL | Immutable system-wide audit trail — write via fn_write_audit_log() only |
 | **system_settings** | setting_key VARCHAR(100) | System settings and policy parameters |
 
@@ -150,10 +149,8 @@ The PostgreSQL database is hosted on Railway and is the single source of truth. 
 
 | View Name | Purpose |
 |---|---|
-| **v_device_campus_status** | Derives inside/outside status per approved active device from the latest device_log row |
-| **v_pending_devices** | Pending device registrations for the admin approval queue, with student name joined |
-| **v_active_event_requests** | Pending and approved event requests with device counts |
-| **v_event_device_status** | Current daily campus presence status per event request device |
+| **v_device_campus_status** | Derives inside/outside status per approved active request device from the latest transaction log |
+| **v_active_requests** | Active approved access requests with device counts |
 
 ### 6.3 Key Functions and Triggers
 
@@ -161,14 +158,13 @@ The PostgreSQL database is hosted on Railway and is the single source of truth. 
 |---|---|
 | **fn_write_audit_log()** | Preferred writer for audit_logs. Called from DAO layer only. Prevents direct INSERT. |
 | **fn_set_updated_at()** | Auto-refreshes updated_at on every UPDATE across all mutable tables |
-| **fn_force_created_at()** | Forces server-side created_at timestamp on device_logs and audit_logs to prevent backdating |
-| **fn_guard_registration_transition()** | Enforces device registration state machine: pending → approved \| pending → rejected \| rejected → pending |
-| **fn_guard_device_log_approved_only()** | Blocks gate log inserts for unapproved or inactive devices |
-| **fn_guard_consecutive_events()** | Blocks two consecutive same-type events (e.g. double-entry without exit). Auto-exit rows are exempt. |
-| **fn_guard_consecutive_event_device_events()** | Blocks two consecutive same-type events for event devices (e.g. double entry/exit) |
+| **fn_force_created_at()** | Forces server-side created_at timestamp on device_transactions and audit_logs to prevent backdating |
+| **fn_guard_device_transaction_approved_only()** | Blocks transactions for devices or requests that are not approved |
 | **fn_audit_log_immutable()** | Prevents UPDATE and DELETE on audit_logs rows |
-| **fn_device_log_immutable()** | Prevents hard-delete on device_logs rows |
-| **fn_protect_student/device/user_delete()** | Blocks hard-delete when referencing records exist; requires setting status = inactive instead |
+| **fn_protect_request_device_delete()** | Prevents deleting request devices if they have logs |
+| **fn_protect_request_delete()** | Prevents deleting requests if they have active transactions |
+| **fn_protect_student_delete()** | Blocks student deletion if they have active requests or transactions |
+| **fn_protect_user_delete()** | Blocks user deletion if they have audit logs; requires setting status = inactive instead |
 
 ---
 
@@ -311,13 +307,10 @@ The frontend is built using a decoupled **MVC + Service** pattern. Rather than i
 |---|---|---|
 | **User** | `users` Table | Property-bound user attributes for session context |
 | **Student** | `students` Table | Bound to student management table controls |
-| **Device** | `devices` Table | Bound to registry and detail views |
-| **PendingDevice** | `v_pending_devices` View | Combines device details with Student Full Name for the approval queue |
+| **Request** | `requests` Table | Header information for normal and event device access requests |
+| **RequestDevice** | `request_devices` Table | Device specs and details attached to access requests |
+| **DeviceTransaction** | `device_transactions` Table | Check-in (ingress) and check-out (egress) transactions |
 | **DeviceCampusStatus** | `v_device_campus_status` View | Real-time status mapping, color-coded based on inside/outside states |
-| **DeviceLog** | `device_logs` Table | Display data for recent entry/exit events |
-| **EventRequest** | `event_requests` Table | Header information for school event bypass requests |
-| **EventRequestDevice** | `event_request_devices` Table | Device list nested inside event details with check-in flags |
-| **ActiveEventRequest** | `v_active_event_requests` View | Summary listing active events with active device counters |
 | **AuditLog** | `audit_logs` Table | Immutable record representation for audit tables |
 | **SystemSetting** | `system_settings` Table | Key-value settings metadata for configuring runtime operations |
 

@@ -68,5 +68,14 @@ public class ReportService {
         Map[] reports = apiClient.get("/api/reports/purpose-breakdown", Map[].class);
         return (List<Map<String, Object>>) (List) Arrays.asList(reports);
     }
+
+    // 8. Late Check-ins & Check-outs Report
+    @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> getLateScansReport(String fromDate, String toDate) throws Exception {
+        String from = URLEncoder.encode(fromDate, StandardCharsets.UTF_8);
+        String to = URLEncoder.encode(toDate, StandardCharsets.UTF_8);
+        Map[] reports = apiClient.get("/api/reports/late-scans?from=" + from + "&to=" + to, Map[].class);
+        return (List<Map<String, Object>>) (List) Arrays.asList(reports);
+    }
 }
 

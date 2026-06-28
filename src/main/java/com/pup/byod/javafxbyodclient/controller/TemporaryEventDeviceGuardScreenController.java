@@ -172,7 +172,9 @@ public class TemporaryEventDeviceGuardScreenController {
         colItemId.setCellValueFactory(new PropertyValueFactory<>("eventDeviceId"));
         colItemName.setCellValueFactory(new PropertyValueFactory<>("deviceName"));
         colSerialNumber.setCellValueFactory(new PropertyValueFactory<>("serialNumber"));
-        colType.setCellValueFactory(new PropertyValueFactory<>("deviceType"));
+        colType.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+            com.pup.byod.javafxbyodclient.util.ValidationHelper.cleanDeviceType(cellData.getValue().getDeviceType())
+        ));
         colCurrentDayStatus.setCellValueFactory(new PropertyValueFactory<>("currentDayStatus"));
         itemsTable.setItems(deviceList);
 
@@ -189,7 +191,9 @@ public class TemporaryEventDeviceGuardScreenController {
         colGuardItemId.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("eventDeviceId"));
         colGuardItemName.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("deviceName"));
         colGuardSerialNumber.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("serialNumber"));
-        colGuardType.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("deviceType"));
+        colGuardType.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+            com.pup.byod.javafxbyodclient.util.ValidationHelper.cleanDeviceType(cellData.getValue().getDeviceType())
+        ));
         colGuardStatus.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("deviceStatus"));
         colGuardCurrentDayStatus.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("currentDayStatus"));
         guardItemsTable.setItems(deviceList);

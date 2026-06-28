@@ -160,7 +160,23 @@ public class IngressEgressMonitoringScreenController {
                     try {
                         LocalDate start = LocalDate.parse(r.getStartDate());
                         LocalDate end = LocalDate.parse(r.getEndDate());
-                        if (!today.isBefore(start) && !today.isAfter(end)) {
+                        boolean isActiveToday = !today.isBefore(start) && !today.isAfter(end);
+                        boolean isExpiredEventWithUnclosedTransactions = false;
+                        if ("event".equalsIgnoreCase(r.getRequestType()) && today.isAfter(end)) {
+                            List<RequestDevice> devices = requestService.getDevicesForRequest(r.getRequestId());
+                            for (RequestDevice d : devices) {
+                                List<DeviceTransaction> txs = logService.getDeviceTransactions(d.getRequestDeviceId());
+                                for (DeviceTransaction tx : txs) {
+                                    if (tx.getEgressTime() == null) {
+                                        isExpiredEventWithUnclosedTransactions = true;
+                                        break;
+                                    }
+                                }
+                                if (isExpiredEventWithUnclosedTransactions) break;
+                            }
+                        }
+
+                        if (isActiveToday || isExpiredEventWithUnclosedTransactions) {
                             approvedRequests.add(r);
                         }
                     } catch (Exception e) {
@@ -228,9 +244,19 @@ public class IngressEgressMonitoringScreenController {
                 }
             }
             
+            LocalDate today = LocalDate.now();
+            LocalDate end = null;
+            try {
+                end = LocalDate.parse(req.getEndDate());
+            } catch (Exception ignored) {}
+            boolean isExpired = end != null && today.isAfter(end);
+
             if (anyInside) {
                 return "Exit: " + formatTime12hr(req.getExpectedEgressTime());
             } else if (anyOutside) {
+                if (isExpired) {
+                    return "Expired";
+                }
                 return "Entry: " + formatTime12hr(req.getExpectedIngressTime());
             } else {
                 return "Completed";

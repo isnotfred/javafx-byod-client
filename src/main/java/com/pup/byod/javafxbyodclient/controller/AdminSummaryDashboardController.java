@@ -61,7 +61,19 @@ public class AdminSummaryDashboardController {
             String approvedRequestsStr = "Error";
             try {
                 List<Request> requests = requestService.getAllRequests();
-                long approved = requests.stream().filter(r -> "approved".equalsIgnoreCase(r.getStatus())).count();
+                LocalDate today = LocalDate.now();
+                long approved = requests.stream()
+                        .filter(r -> "approved".equalsIgnoreCase(r.getStatus()))
+                        .filter(r -> {
+                            try {
+                                LocalDate start = LocalDate.parse(r.getStartDate());
+                                LocalDate end = LocalDate.parse(r.getEndDate());
+                                return !today.isBefore(start) && !today.isAfter(end);
+                            } catch (Exception ex) {
+                                return false;
+                            }
+                        })
+                        .count();
                 approvedRequestsStr = String.valueOf(approved);
             } catch (Exception e) {
                 e.printStackTrace();

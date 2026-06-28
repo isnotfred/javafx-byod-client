@@ -27,10 +27,12 @@
             
             <HBox spacing="10.0" alignment="CENTER_LEFT">
                 <!-- Search Bar -->
-                <StackPane alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="300.0">
+                <StackPane alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="250.0">
                     <TextField fx:id="searchField" promptText="Filter by Student ID..." styleClass="modern-textfield, search-field-with-icon" prefHeight="38.0" maxWidth="Infinity"/>
                     <Label text="🔍" mouseTransparent="true" style="-fx-padding: 0 0 0 10px; -fx-text-fill: #94A3B8; -fx-font-size: 13px;"/>
                 </StackPane>
+                <!-- Status Filter Dropdown -->
+                <ComboBox fx:id="statusFilterBox" promptText="All Statuses" styleClass="modern-combo-box" prefWidth="150.0" prefHeight="38.0"/>
                 <Region HBox.hgrow="ALWAYS"/>
                 <Button fx:id="btnEditRequest" text="Edit Selected" onAction="#handleEditRequest" styleClass="action-btn, action-btn-primary" prefHeight="38.0"/>
                 <Button text="New Request" onAction="#openNewRequestOverlay" styleClass="action-btn, action-btn-warning" prefHeight="38.0"/>
@@ -72,42 +74,59 @@
                     <Label text="I. Request Headers" styleClass="form-label" style="-fx-text-fill: #0284C7; -fx-font-size: 13px;"/>
                     <GridPane hgap="15.0" vgap="12.0">
                         <columnConstraints>
-                            <ColumnConstraints percentWidth="12.0" halignment="RIGHT"/>
-                            <ColumnConstraints percentWidth="38.0"/>
-                            <ColumnConstraints percentWidth="12.0" halignment="RIGHT"/>
-                            <ColumnConstraints percentWidth="38.0"/>
+                            <ColumnConstraints percentWidth="50.0"/>
+                            <ColumnConstraints percentWidth="50.0"/>
                         </columnConstraints>
-                        <HBox spacing="2.0" GridPane.columnIndex="0" GridPane.rowIndex="0" alignment="CENTER_RIGHT"><Label text="Student ID:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
-                        <TextField fx:id="reqStudentIdField" promptText="e.g. 2021-10023" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                         
-                        <HBox spacing="2.0" GridPane.columnIndex="2" GridPane.rowIndex="0" alignment="CENTER_RIGHT"><Label text="Purpose:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
-                        <TextField fx:id="reqPurposeField" promptText="e.g. Study classes and programming" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+                        <!-- Row 0: Student ID & Purpose -->
+                        <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                            <HBox spacing="2.0"><Label text="Student ID:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
+                            <TextField fx:id="reqStudentIdField" promptText="e.g. 2021-10023" styleClass="modern-textfield" prefHeight="38.0"/>
+                        </VBox>
                         
-                        <HBox spacing="2.0" GridPane.columnIndex="0" GridPane.rowIndex="1" alignment="CENTER_RIGHT"><Label text="Start Date:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
-                        <DatePicker fx:id="reqStartDatePicker" styleClass="modern-datepicker" maxWidth="Infinity" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                        <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                            <HBox spacing="2.0"><Label text="Purpose:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
+                            <TextField fx:id="reqPurposeField" promptText="e.g. Study classes and programming" styleClass="modern-textfield" prefHeight="38.0"/>
+                        </VBox>
                         
-                        <HBox spacing="2.0" GridPane.columnIndex="2" GridPane.rowIndex="1" alignment="CENTER_RIGHT"><Label text="End Date:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
-                        <DatePicker fx:id="reqEndDatePicker" styleClass="modern-datepicker" maxWidth="Infinity" prefHeight="38.0" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+                        <!-- Row 1: Authorized Date & Venue -->
+                        <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                            <HBox spacing="2.0"><Label text="Authorized Date:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
+                            <DatePicker fx:id="reqStartDatePicker" styleClass="modern-datepicker" maxWidth="Infinity" prefHeight="38.0"/>
+                        </VBox>
                         
-                        <HBox spacing="2.0" GridPane.columnIndex="0" GridPane.rowIndex="2" alignment="CENTER_RIGHT"><Label text="Ingress Time:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
-                        <HBox spacing="6.0" alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                            <ComboBox fx:id="reqIngressHour" promptText="Hr" styleClass="modern-combo-box" prefWidth="75.0" prefHeight="38.0"/>
-                            <ComboBox fx:id="reqIngressMinute" promptText="Min" styleClass="modern-combo-box" prefWidth="80.0" prefHeight="38.0"/>
-                            <ComboBox fx:id="reqIngressAmpm" promptText="AM/PM" styleClass="modern-combo-box" prefWidth="100.0" prefHeight="38.0"/>
-                        </HBox>
+                        <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <HBox spacing="2.0"><Label text="Venue:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
+                            <TextField fx:id="reqVenueField" promptText="e.g. Gym / Room 302" styleClass="modern-textfield" prefHeight="38.0"/>
+                        </VBox>
                         
-                        <HBox spacing="2.0" GridPane.columnIndex="2" GridPane.rowIndex="2" alignment="CENTER_RIGHT"><Label text="Egress Time:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
-                        <HBox spacing="6.0" alignment="CENTER_LEFT" GridPane.columnIndex="3" GridPane.rowIndex="2">
-                            <ComboBox fx:id="reqEgressHour" promptText="Hr" styleClass="modern-combo-box" prefWidth="75.0" prefHeight="38.0"/>
-                            <ComboBox fx:id="reqEgressMinute" promptText="Min" styleClass="modern-combo-box" prefWidth="80.0" prefHeight="38.0"/>
-                            <ComboBox fx:id="reqEgressAmpm" promptText="AM/PM" styleClass="modern-combo-box" prefWidth="100.0" prefHeight="38.0"/>
-                        </HBox>
+                        <!-- Row 2: Ingress Time & Egress Time -->
+                        <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                            <HBox spacing="2.0"><Label text="Ingress Time:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
+                            <HBox spacing="6.0" alignment="CENTER_LEFT">
+                                <ComboBox fx:id="reqIngressHour" promptText="Hr" styleClass="modern-combo-box" prefWidth="75.0" prefHeight="38.0"/>
+                                <ComboBox fx:id="reqIngressMinute" promptText="Min" styleClass="modern-combo-box" prefWidth="80.0" prefHeight="38.0"/>
+                                <ComboBox fx:id="reqIngressAmpm" promptText="AM/PM" styleClass="modern-combo-box" prefWidth="100.0" prefHeight="38.0"/>
+                            </HBox>
+                        </VBox>
+                        
+                        <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                            <HBox spacing="2.0"><Label text="Egress Time:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
+                            <HBox spacing="6.0" alignment="CENTER_LEFT">
+                                <ComboBox fx:id="reqEgressHour" promptText="Hr" styleClass="modern-combo-box" prefWidth="75.0" prefHeight="38.0"/>
+                                <ComboBox fx:id="reqEgressMinute" promptText="Min" styleClass="modern-combo-box" prefWidth="80.0" prefHeight="38.0"/>
+                                <ComboBox fx:id="reqEgressAmpm" promptText="AM/PM" styleClass="modern-combo-box" prefWidth="100.0" prefHeight="38.0"/>
+                            </HBox>
+                        </VBox>
 
-                        <HBox spacing="2.0" GridPane.columnIndex="0" GridPane.rowIndex="3" alignment="CENTER_RIGHT"><Label text="Venue:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
-                        <TextField fx:id="reqVenueField" promptText="e.g. Gym / Room 302" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-
-                        <Label text="Remarks:" GridPane.columnIndex="2" GridPane.rowIndex="3" styleClass="form-label"/>
-                        <TextField fx:id="reqRemarksField" promptText="Optional notes" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="3" GridPane.rowIndex="3"/>
+                        <!-- Row 3: Remarks (spanning 2 columns) -->
+                        <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.columnSpan="2">
+                            <Label text="Remarks:" styleClass="form-label"/>
+                            <TextField fx:id="reqRemarksField" promptText="Optional notes" styleClass="modern-textfield" prefHeight="38.0"/>
+                        </VBox>
+                        
+                        <!-- Hidden DatePicker -->
+                        <DatePicker fx:id="reqEndDatePicker" visible="false" managed="false" styleClass="modern-datepicker" maxWidth="Infinity" prefHeight="38.0" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
                     </GridPane>
                     <Separator/>
                     <Label text="II. Devices Inline Entry Builder" styleClass="form-label" style="-fx-text-fill: #0284C7; -fx-font-size: 13px;"/>

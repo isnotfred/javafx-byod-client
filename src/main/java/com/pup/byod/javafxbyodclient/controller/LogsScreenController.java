@@ -55,9 +55,58 @@ public class LogsScreenController {
         colIngress.setCellValueFactory(cellData -> new SimpleStringProperty(
                 formatTimeOnly(getVal(cellData.getValue(), "ingress_time", "ingressTime"))
         ));
+        colIngress.setCellFactory(col -> new TableCell<Map<String, Object>, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(item);
+                    Map<String, Object> rowData = getTableView().getItems().get(getIndex());
+                    if (rowData != null) {
+                        Object flag = rowData.get("isLateIngress");
+                        if (flag == null) flag = rowData.get("is_late_ingress");
+                        if (Boolean.TRUE.equals(flag) || "true".equalsIgnoreCase(String.valueOf(flag))) {
+                            setStyle("-fx-text-fill: #EF4444; -fx-font-weight: bold;");
+                        } else {
+                            setStyle("");
+                        }
+                    } else {
+                        setStyle("");
+                    }
+                }
+            }
+        });
+        
         colEgress.setCellValueFactory(cellData -> new SimpleStringProperty(
                 formatTimeOnly(getVal(cellData.getValue(), "egress_time", "egressTime"))
         ));
+        colEgress.setCellFactory(col -> new TableCell<Map<String, Object>, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(item);
+                    Map<String, Object> rowData = getTableView().getItems().get(getIndex());
+                    if (rowData != null) {
+                        Object flag = rowData.get("isLateEgress");
+                        if (flag == null) flag = rowData.get("is_late_egress");
+                        if (Boolean.TRUE.equals(flag) || "true".equalsIgnoreCase(String.valueOf(flag))) {
+                            setStyle("-fx-text-fill: #EF4444; -fx-font-weight: bold;");
+                        } else {
+                            setStyle("");
+                        }
+                    } else {
+                        setStyle("");
+                    }
+                }
+            }
+        });
 
         // Dropdown settings
         filterPeriodComboBox.getItems().addAll(TODAY, THIS_WEEK, MONTHLY);

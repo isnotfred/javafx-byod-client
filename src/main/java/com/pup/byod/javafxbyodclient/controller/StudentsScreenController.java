@@ -128,7 +128,7 @@ public class StudentsScreenController {
         formTitleLabel.setText("Edit Student Profile");
 
         studentIdField.setText(selectedStudent.getStudentId());
-        studentIdField.setEditable(false);
+        studentIdField.setEditable(true);
         firstNameField.setText(selectedStudent.getFirstName());
         lastNameField.setText(selectedStudent.getLastName());
         courseYearLevelField.setText(selectedStudent.getCourseYearLevel());
@@ -166,6 +166,18 @@ public class StudentsScreenController {
             return;
         }
 
+        if (!ValidationHelper.isValidStudentId(studentId)) {
+            AlertHelper.showWarning("Form Validation", "Invalid Student ID", "Student ID must be in format 2###-######-SR-0 (e.g., 2024-00482-SR-0).");
+            return;
+        }
+
+        if (!ValidationHelper.isValidCourseYearLevel(courseYearLevel)) {
+            AlertHelper.showWarning("Form Validation", "Invalid Course / Year Level", "Course / Year Level must be in format 'Text #-#' (e.g., BSIT 2-2).");
+            return;
+        }
+
+        String originalStudentId = isEditMode ? selectedStudent.getStudentId() : null;
+
         Student s = isEditMode ? selectedStudent : new Student();
         s.setStudentId(studentId);
         s.setFirstName(firstName);
@@ -177,7 +189,7 @@ public class StudentsScreenController {
         new Thread(() -> {
             try {
                 if (isEditMode) {
-                    studentService.updateStudent(s.getStudentId(), s);
+                    studentService.updateStudent(originalStudentId, s);
                 } else {
                     studentService.createStudent(s);
                 }

@@ -87,7 +87,9 @@ public class RegistryManagementScreenController {
         // Initialize Device Columns
         colDeviceId.setCellValueFactory(new PropertyValueFactory<>("deviceId"));
         colDeviceName.setCellValueFactory(new PropertyValueFactory<>("deviceName"));
-        colDeviceType.setCellValueFactory(new PropertyValueFactory<>("deviceType"));
+        colDeviceType.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+                com.pup.byod.javafxbyodclient.util.ValidationHelper.cleanDeviceType(cellData.getValue().getDeviceType())
+        ));
         colDeviceBrand.setCellValueFactory(new PropertyValueFactory<>("brand"));
         colDeviceSerialNumber.setCellValueFactory(new PropertyValueFactory<>("serialNumber"));
         colDeviceRegStatus.setCellValueFactory(new PropertyValueFactory<>("registrationStatus"));
