@@ -912,3 +912,17 @@
 .date-picker-popup .spinner .button .right-arrow {
     -fx-background-color: black;
 }
+
+/* ─── Missed Checkouts Rows — red highlighting ─── */
+.modern-table .table-row-cell.missed-row,
+.modern-table .table-row-cell.missed-row:odd,
+.modern-table .table-row-cell.missed-row:hover {
+    -fx-background-color: #FFE4E6;
+}
+.modern-table .table-row-cell.missed-row:selected {
+    -fx-background-color: #FECDD3;
+}
+.modern-table .table-row-cell.missed-row .table-cell,
+.modern-table .table-row-cell.missed-row:selected .table-cell {
+    -fx-text-fill: #DC2626;
+}

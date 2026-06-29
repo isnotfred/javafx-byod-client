@@ -106,6 +106,26 @@ public class IngressEgressMonitoringScreenController {
 
         requestsTable.setItems(requestsList);
 
+        // Highlight Missed Checkout request rows in pastel red via CSS style class
+        requestsTable.setRowFactory(tv -> new TableRow<Request>() {
+            @Override
+            protected void updateItem(Request item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    getStyleClass().remove("missed-row");
+                } else {
+                    String action = requestActionTypeMap.getOrDefault(item.getRequestId(), "Entry");
+                    if ("Missed".equalsIgnoreCase(action)) {
+                        if (!getStyleClass().contains("missed-row")) {
+                            getStyleClass().add("missed-row");
+                        }
+                    } else {
+                        getStyleClass().remove("missed-row");
+                    }
+                }
+            }
+        });
+
         // Reset view state
         resetView();
     }
@@ -151,7 +171,7 @@ public class IngressEgressMonitoringScreenController {
                 return;
             }
 
-            // Fetch requests and check if student has any active requests today
+            // Fetch requests and check if student has any ongoing requests today or missed checkouts
             LocalDate today = LocalDate.now();
             List<Request> allRequests = requestService.getRequestsByStudentId(found.getStudentId());
             List<Request> approvedRequests = new ArrayList<>();
@@ -161,22 +181,24 @@ public class IngressEgressMonitoringScreenController {
                         LocalDate start = LocalDate.parse(r.getStartDate());
                         LocalDate end = LocalDate.parse(r.getEndDate());
                         boolean isActiveToday = !today.isBefore(start) && !today.isAfter(end);
-                        boolean isExpiredEventWithUnclosedTransactions = false;
-                        if ("event".equalsIgnoreCase(r.getRequestType()) && today.isAfter(end)) {
-                            List<RequestDevice> devices = requestService.getDevicesForRequest(r.getRequestId());
-                            for (RequestDevice d : devices) {
-                                List<DeviceTransaction> txs = logService.getDeviceTransactions(d.getRequestDeviceId());
-                                for (DeviceTransaction tx : txs) {
-                                    if (tx.getEgressTime() == null) {
-                                        isExpiredEventWithUnclosedTransactions = true;
+                        
+                        boolean hasUnclosedMissedCheckout = false;
+                        List<RequestDevice> devices = requestService.getDevicesForRequest(r.getRequestId());
+                        for (RequestDevice d : devices) {
+                            List<DeviceTransaction> txs = logService.getDeviceTransactions(d.getRequestDeviceId());
+                            for (DeviceTransaction tx : txs) {
+                                if (tx.getEgressTime() == null) {
+                                    LocalDate logDate = LocalDate.parse(tx.getLogDate().substring(0, 10));
+                                    if (tx.isNoEgressMarked() || logDate.isBefore(today)) {
+                                        hasUnclosedMissedCheckout = true;
                                         break;
                                     }
                                 }
-                                if (isExpiredEventWithUnclosedTransactions) break;
                             }
+                            if (hasUnclosedMissedCheckout) break;
                         }
 
-                        if (isActiveToday || isExpiredEventWithUnclosedTransactions) {
+                        if (isActiveToday || hasUnclosedMissedCheckout) {
                             approvedRequests.add(r);
                         }
                     } catch (Exception e) {
@@ -187,8 +209,8 @@ public class IngressEgressMonitoringScreenController {
 
             if (approvedRequests.isEmpty()) {
                 // Do NOT update student details below as per request
-                statusLabel.setText("STATUS: NO ACTIVE REQUESTS");
-                AlertHelper.showWarning("Search Result", "No Active Requests", "This student has no active approved requests for today.");
+                statusLabel.setText("STATUS: NO ACTIVE OR MISSED REQUESTS");
+                AlertHelper.showWarning("Search Result", "No Active/Missed Requests", "This student has no ongoing or missed checkout requests.");
                 return;
             }
 
@@ -220,7 +242,30 @@ public class IngressEgressMonitoringScreenController {
 
     private String calculateExpectedActionType(Request req) {
         try {
+            LocalDate today = LocalDate.now();
             List<RequestDevice> devices = requestService.getDevicesForRequest(req.getRequestId());
+            
+            // 1. Check if there are any unclosed missed checkouts
+            boolean hasUnclosedMissed = false;
+            for (RequestDevice d : devices) {
+                List<DeviceTransaction> txs = logService.getDeviceTransactions(d.getRequestDeviceId());
+                for (DeviceTransaction tx : txs) {
+                    if (tx.getEgressTime() == null) {
+                        LocalDate logDate = LocalDate.parse(tx.getLogDate().substring(0, 10));
+                        if (tx.isNoEgressMarked() || logDate.isBefore(today)) {
+                            hasUnclosedMissed = true;
+                            break;
+                        }
+                    }
+                }
+                if (hasUnclosedMissed) break;
+            }
+            
+            if (hasUnclosedMissed) {
+                return "Missed";
+            }
+            
+            // 2. Otherwise calculate regular entry/exit action
             boolean anyInside = false;
             boolean anyOutside = false;
             
@@ -230,7 +275,7 @@ public class IngressEgressMonitoringScreenController {
                 boolean isCompletedToday = false;
                 
                 for (DeviceTransaction tx : txs) {
-                    if (tx.getEgressTime() == null && !tx.isNoEgressMarked()) {
+                    if (tx.getEgressTime() == null) {
                         isInside = true;
                     } else if (isTransactionToday(tx)) {
                         isCompletedToday = true;
@@ -244,7 +289,6 @@ public class IngressEgressMonitoringScreenController {
                 }
             }
             
-            LocalDate today = LocalDate.now();
             LocalDate end = null;
             try {
                 end = LocalDate.parse(req.getEndDate());
@@ -303,7 +347,7 @@ public class IngressEgressMonitoringScreenController {
                     List<DeviceTransaction> txs = logService.getDeviceTransactions(d.getRequestDeviceId());
                     boolean isInside = false;
                     for (DeviceTransaction tx : txs) {
-                        if (tx.getEgressTime() == null && !tx.isNoEgressMarked()) {
+                        if (tx.getEgressTime() == null) {
                             isInside = true;
                             break;
                         }
@@ -331,7 +375,7 @@ public class IngressEgressMonitoringScreenController {
                 boolean isInside = false;
                 boolean isCompletedToday = false;
                 for (DeviceTransaction tx : txs) {
-                    if (tx.getEgressTime() == null && !tx.isNoEgressMarked()) {
+                    if (tx.getEgressTime() == null) {
                         isInside = true;
                     } else if (isTransactionToday(tx)) {
                         isCompletedToday = true;

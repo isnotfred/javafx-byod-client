@@ -115,7 +115,7 @@ public class DevicesModalScreenController {
             btnAction.setText("Log Entry");
             btnAction.setStyle("-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: bold;");
             btnAction.setDisable(false);
-        } else if ("Exit".equalsIgnoreCase(expectedAction) || (expectedAction != null && expectedAction.startsWith("Exit"))) {
+        } else if ("Exit".equalsIgnoreCase(expectedAction) || (expectedAction != null && expectedAction.startsWith("Exit")) || "Missed".equalsIgnoreCase(expectedAction)) {
             btnAction.setText("Log Exit");
             btnAction.setStyle("-fx-background-color: #EF4444; -fx-text-fill: white; -fx-font-weight: bold;");
             btnAction.setDisable(false);

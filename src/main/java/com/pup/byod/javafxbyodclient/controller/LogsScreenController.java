@@ -38,7 +38,7 @@ public class LogsScreenController {
     private FilteredList<Map<String, Object>> filteredLogsList;
 
     private static final String TODAY = "Today";
-    private static final String THIS_WEEK = "This Week (Mon-Sat)";
+    private static final String THIS_WEEK = "This Week";
     private static final String MONTHLY = "Monthly";
 
     @FXML
@@ -116,6 +116,44 @@ public class LogsScreenController {
         filteredLogsList = new FilteredList<>(logsList, p -> true);
         logsTable.setItems(filteredLogsList);
 
+        // Highlight Missed Checkouts or checking out of missed egress logs in red
+        logsTable.setRowFactory(tv -> new TableRow<Map<String, Object>>() {
+            @Override
+            protected void updateItem(Map<String, Object> item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    getStyleClass().remove("missed-row");
+                } else {
+                    Object noEgress = item.get("noEgressMarked");
+                    if (noEgress == null) noEgress = item.get("no_egress_marked");
+                    
+                    String ingressStr = getVal(item, "ingress_time", "ingressTime");
+                    String egressStr = getVal(item, "egress_time", "egressTime");
+                    
+                    boolean isMissedOrLateCheckout = false;
+                    if (Boolean.TRUE.equals(noEgress) || "true".equalsIgnoreCase(String.valueOf(noEgress))) {
+                        isMissedOrLateCheckout = true;
+                    } else if (ingressStr != null && egressStr != null && !ingressStr.isEmpty() && !egressStr.isEmpty() && !"null".equalsIgnoreCase(ingressStr) && !"null".equalsIgnoreCase(egressStr)) {
+                        try {
+                            String inDate = ingressStr.substring(0, 10);
+                            String outDate = egressStr.substring(0, 10);
+                            if (!inDate.equals(outDate)) {
+                                isMissedOrLateCheckout = true;
+                            }
+                        } catch (Exception ignored) {}
+                    }
+                    
+                    if (isMissedOrLateCheckout) {
+                        if (!getStyleClass().contains("missed-row")) {
+                            getStyleClass().add("missed-row");
+                        }
+                    } else {
+                        getStyleClass().remove("missed-row");
+                    }
+                }
+            }
+        });
+
         searchField.textProperty().addListener((obs, oldVal, newVal) -> {
             filteredLogsList.setPredicate(log -> {
                 if (newVal == null || newVal.trim().isEmpty()) {
@@ -151,8 +189,11 @@ public class LogsScreenController {
                     records = reportService.getDailyTrafficReport(today.toString(), null, null, null);
                 } else if (THIS_WEEK.equals(period)) {
                     LocalDate monday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-                    for (int i = 0; i < 6; i++) { // Mon, Tue, Wed, Thu, Fri, Sat
+                    for (int i = 0; i < 7; i++) { // Mon to Sun
                         LocalDate date = monday.plusDays(i);
+                        if (date.isAfter(today)) {
+                            break; // Do not query future dates
+                        }
                         List<Map<String, Object>> daily = reportService.getDailyTrafficReport(date.toString(), null, null, null);
                         records.addAll(daily);
                     }
@@ -166,6 +207,22 @@ public class LogsScreenController {
                         records.addAll(daily);
                     }
                 }
+
+                // De-duplicate records by transactionId to prevent overlaps in weekly/monthly queries
+                Set<Object> seenIds = new HashSet<>();
+                List<Map<String, Object>> uniqueRecords = new ArrayList<>();
+                for (Map<String, Object> log : records) {
+                    Object txId = log.get("transactionId");
+                    if (txId == null) txId = log.get("transaction_id");
+                    if (txId != null) {
+                        if (seenIds.add(txId)) {
+                            uniqueRecords.add(log);
+                        }
+                    } else {
+                        uniqueRecords.add(log);
+                    }
+                }
+                records = uniqueRecords;
 
                 // Sort logs descending by Ingress Time
                 records.sort((r1, r2) -> {

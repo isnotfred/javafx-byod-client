@@ -274,29 +274,18 @@ public class ReportsScreenController {
                 );
                 break;
             case LATE_SCANS:
-                TableColumn<Map<String, Object>, Object> colLogId = createColumn("Log ID", "logId", "transactionId", "transaction_id");
-                TableColumn<Map<String, Object>, Object> colStudId = createColumn("Student ID", "studentId", "student_id");
-                TableColumn<Map<String, Object>, Object> colStudName = createColumn("Student Name", "studentName", "student_name");
-                TableColumn<Map<String, Object>, Object> colCourse = createColumn("Course/Year", "courseYearLevel", "course_year_level");
-                TableColumn<Map<String, Object>, Object> colDev = createColumn("Device Name", "deviceName", "device_name");
-                TableColumn<Map<String, Object>, Object> colSerial = createColumn("Serial Number", "serialNumber", "serial_number");
-                TableColumn<Map<String, Object>, Object> colExpIn = createColumn("Expected Ingress", "expectedIngressTime", "expected_ingress_time");
-                TableColumn<Map<String, Object>, Object> colExpEg = createColumn("Expected Egress", "expectedEgressTime", "expected_egress_time");
-                TableColumn<Map<String, Object>, Object> colIn = createLateHighlightedColumn("Checked-In", "isLateIngress", "ingressTime", "ingress_time");
-                TableColumn<Map<String, Object>, Object> colEg = createLateHighlightedColumn("Checked-Out", "isLateEgress", "egressTime", "egress_time");
-
-                colLogId.setPrefWidth(60.0);
-                colStudId.setPrefWidth(130.0);
-                colStudName.setPrefWidth(180.0);
-                colCourse.setPrefWidth(100.0);
-                colDev.setPrefWidth(110.0);
-                colSerial.setPrefWidth(110.0);
-                colExpIn.setPrefWidth(110.0);
-                colExpEg.setPrefWidth(110.0);
-                colIn.setPrefWidth(100.0);
-                colEg.setPrefWidth(100.0);
-
-                reportsTable.getColumns().addAll(colLogId, colStudId, colStudName, colCourse, colDev, colSerial, colExpIn, colExpEg, colIn, colEg);
+                reportsTable.getColumns().addAll(
+                    createColumn("Log ID", "logId", "transactionId", "transaction_id"),
+                    createColumn("Student ID", "studentId", "student_id"),
+                    createColumn("Student Name", "studentName", "student_name"),
+                    createColumn("Course/Year", "courseYearLevel", "course_year_level"),
+                    createColumn("Device Name", "deviceName", "device_name"),
+                    createColumn("Serial Number", "serialNumber", "serial_number"),
+                    createColumn("Expected Ingress", "expectedIngressTime", "expected_ingress_time"),
+                    createColumn("Expected Egress", "expectedEgressTime", "expected_egress_time"),
+                    createLateHighlightedColumn("Checked-In", "isLateIngress", "ingressTime", "ingress_time"),
+                    createLateHighlightedColumn("Checked-Out", "isLateEgress", "egressTime", "egress_time")
+                );
                 break;
             case MONTHLY_TRAFFIC:
                 reportsTable.getColumns().addAll(
@@ -367,10 +356,17 @@ public class ReportsScreenController {
                 break;
         }
 
-        // Set reasonable default widths
-        if (!LATE_SCANS.equals(reportType)) {
-            for (TableColumn<Map<String, Object>, ?> col : reportsTable.getColumns()) {
-                col.setPrefWidth(130.0);
+        // Set reasonable default widths that fit headers and make Student Name the widest
+        for (TableColumn<Map<String, Object>, ?> col : reportsTable.getColumns()) {
+            String header = col.getText();
+            double calculatedWidth = (header != null ? header.length() : 10) * 9.5 + 40.0;
+            
+            if ("Student Name".equals(header)) {
+                col.setPrefWidth(220.0);
+            } else if ("Log ID".equals(header)) {
+                col.setPrefWidth(75.0);
+            } else {
+                col.setPrefWidth(Math.max(calculatedWidth, 120.0));
             }
         }
 
@@ -543,8 +539,13 @@ public class ReportsScreenController {
                     end = LocalDate.now();
                     break;
                 case "Today":
-                    start = LocalDate.now();
-                    end = LocalDate.now();
+                    if (MISSED_CHECKOUTS.equals(reportType)) {
+                        start = LocalDate.now().minusDays(1);
+                        end = LocalDate.now().minusDays(1);
+                    } else {
+                        start = LocalDate.now();
+                        end = LocalDate.now();
+                    }
                     break;
                 case "This Week":
                     LocalDate now = LocalDate.now();
@@ -999,12 +1000,17 @@ public class ReportsScreenController {
             dateInfo = "Period: " + monthSelectBox.getValue() + " " + yearSelectBox.getValue();
             fileSuffix = "_" + monthSelectBox.getValue() + "_" + yearSelectBox.getValue();
         } else if (rangeSelectBox != null && !"All Time".equals(rangeSelectBox.getValue())) {
-            dateInfo = "Range: " + rangeSelectBox.getValue();
-            if ("Range".equals(rangeSelectBox.getValue()) && startDatePicker.getValue() != null && endDatePicker.getValue() != null) {
-                dateInfo += " (" + startDatePicker.getValue() + " to " + endDatePicker.getValue() + ")";
-                fileSuffix = "_" + startDatePicker.getValue() + "_to_" + endDatePicker.getValue();
+            if ("Today".equals(rangeSelectBox.getValue()) && MISSED_CHECKOUTS.equals(reportType)) {
+                dateInfo = "Range: Yesterday (" + LocalDate.now().minusDays(1).toString() + ")";
+                fileSuffix = "_Yesterday_" + LocalDate.now().minusDays(1).toString();
             } else {
-                fileSuffix = "_" + rangeSelectBox.getValue().replace(" ", "_") + "_" + LocalDate.now().toString();
+                dateInfo = "Range: " + rangeSelectBox.getValue();
+                if ("Range".equals(rangeSelectBox.getValue()) && startDatePicker.getValue() != null && endDatePicker.getValue() != null) {
+                    dateInfo += " (" + startDatePicker.getValue() + " to " + endDatePicker.getValue() + ")";
+                    fileSuffix = "_" + startDatePicker.getValue() + "_to_" + endDatePicker.getValue();
+                } else {
+                    fileSuffix = "_" + rangeSelectBox.getValue().replace(" ", "_") + "_" + LocalDate.now().toString();
+                }
             }
         } else {
             dateInfo = "All Time";
