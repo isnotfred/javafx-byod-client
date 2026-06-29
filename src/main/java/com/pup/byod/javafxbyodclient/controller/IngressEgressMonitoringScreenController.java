@@ -207,9 +207,18 @@ public class IngressEgressMonitoringScreenController {
                 }
             }
 
+            // Student has been found - update profile details first
+            currentStudent = found;
+            studentSnLabel.setText(found.getStudentId());
+            studentNameLabel.setText(found.getFullName());
+            studentCourseLabel.setText(found.getCourseYearLevel());
+            studentCard.setStyle("-fx-background-color: #F8FAFC; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 16px;");
+
             if (approvedRequests.isEmpty()) {
-                // Do NOT update student details below as per request
+                requestsList.clear();
+                requestActionTypeMap.clear();
                 statusLabel.setText("STATUS: NO ACTIVE OR MISSED REQUESTS");
+                statusLabel.setStyle("-fx-text-fill: #E11D48; -fx-font-weight: bold;");
                 AlertHelper.showWarning("Search Result", "No Active/Missed Requests", "This student has no ongoing or missed checkout requests.");
                 return;
             }
@@ -221,17 +230,11 @@ public class IngressEgressMonitoringScreenController {
                 requestActionTypeMap.put(req.getRequestId(), actionType);
             }
 
-            // Student has approved requests - update profile and populate table
-            currentStudent = found;
-            studentSnLabel.setText(found.getStudentId());
-            studentNameLabel.setText(found.getFullName());
-            studentCourseLabel.setText(found.getCourseYearLevel());
-            
             statusLabel.setText("STATUS: STUDENT FOUND");
             statusLabel.setStyle("-fx-text-fill: #64748B; -fx-font-weight: bold;");
-            studentCard.setStyle("-fx-background-color: #F8FAFC; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 16px;");
 
             requestsList.setAll(approvedRequests);
+            requestsTable.refresh();
 
         } catch (Exception e) {
             resetView();
