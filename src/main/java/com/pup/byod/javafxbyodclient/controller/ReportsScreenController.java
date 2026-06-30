@@ -382,7 +382,7 @@ public class ReportsScreenController {
                 Object val = map.get(key);
                 if (val instanceof String) {
                     String strVal = (String) val;
-                    if ("Project Prototypes (Optional SN)".equalsIgnoreCase(strVal.trim())) {
+                    if ("Project Prototypes (Optional SN)".equalsIgnoreCase(strVal.trim()) || "Project Prototypes".equalsIgnoreCase(strVal.trim())) {
                         return "Project Prototypes";
                     }
                     if (isTimestampKey(key)) {
@@ -402,7 +402,7 @@ public class ReportsScreenController {
                     Object val = map.get(mapKey);
                     if (val instanceof String) {
                         String strVal = (String) val;
-                        if ("Project Prototypes (Optional SN)".equalsIgnoreCase(strVal.trim())) {
+                        if ("Project Prototypes (Optional SN)".equalsIgnoreCase(strVal.trim()) || "Project Prototypes".equalsIgnoreCase(strVal.trim())) {
                             return "Project Prototypes";
                         }
                         if (isTimestampKey(key)) {
@@ -469,7 +469,7 @@ public class ReportsScreenController {
         for (String key : keys) {
             if (map.containsKey(key) && map.get(key) != null) {
                 String strVal = map.get(key).toString();
-                if ("Project Prototypes (Optional SN)".equalsIgnoreCase(strVal.trim())) {
+                if ("Project Prototypes (Optional SN)".equalsIgnoreCase(strVal.trim()) || "Project Prototypes".equalsIgnoreCase(strVal.trim())) {
                     return "Project Prototypes";
                 }
                 return strVal;
@@ -479,7 +479,7 @@ public class ReportsScreenController {
             for (String key : keys) {
                 if (mapKey.equalsIgnoreCase(key) && map.get(mapKey) != null) {
                     String strVal = map.get(mapKey).toString();
-                    if ("Project Prototypes (Optional SN)".equalsIgnoreCase(strVal.trim())) {
+                    if ("Project Prototypes (Optional SN)".equalsIgnoreCase(strVal.trim()) || "Project Prototypes".equalsIgnoreCase(strVal.trim())) {
                         return "Project Prototypes";
                     }
                     return strVal;

@@ -19,7 +19,7 @@ public class OnCampusDevicesScreenController {
     @FXML private TableColumn<Map<String, Object>, Object> colStudentName;
     @FXML private TableColumn<Map<String, Object>, Object> colCourseYearLevel;
     @FXML private TableColumn<Map<String, Object>, Object> colDeviceName;
-    @FXML private TableColumn<Map<String, Object>, Object> colSerialNumber;
+    @FXML private TableColumn<Map<String, Object>, Object> colExpectedExitTime;
     @FXML private TableColumn<Map<String, Object>, Object> colCheckedInTime;
     @FXML private TableColumn<Map<String, Object>, Void> colDetails;
 
@@ -36,7 +36,13 @@ public class OnCampusDevicesScreenController {
         setupColumn(colStudentName, "studentName", "student_name");
         setupColumn(colCourseYearLevel, "courseYearLevel", "course_year_level");
         setupColumn(colDeviceName, "deviceName", "device_name");
-        setupColumn(colSerialNumber, "serialNumber", "serial_number");
+        if (colExpectedExitTime != null) {
+            colExpectedExitTime.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
+                com.pup.byod.javafxbyodclient.util.DateFormatter.formatTimeOnly(
+                    getValueFromMapRaw(cellData.getValue(), "expectedExitTime", "expected_exit_time", "expectedEgressTime", "expected_egress_time")
+                )
+            ));
+        }
         if (colCheckedInTime != null) {
             colCheckedInTime.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
                 com.pup.byod.javafxbyodclient.util.DateFormatter.formatTimeOnly(

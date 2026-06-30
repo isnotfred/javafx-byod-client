@@ -146,6 +146,11 @@ public class RequestsScreenController {
 
     private Request selectedRequest = null;
 
+    private String generateProtoSerialNumber() {
+        String ts = Long.toString(System.currentTimeMillis(), 36).toUpperCase();
+        return "SN-PROTO-" + (ts.length() >= 6 ? ts.substring(ts.length() - 6) : ts);
+    }
+
     @FXML
     public void initialize() {
         // Main Requests Table Columns
@@ -206,6 +211,35 @@ public class RequestsScreenController {
         }
         devTypeBox.getItems().addAll(devTypes);
         evtDevTypeBox.getItems().addAll(devTypes);
+
+        // Auto-generate and lock SN for Project Prototypes
+        devTypeBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if ("Project Prototypes".equals(newVal)) {
+                if (devSerialField.getText() == null || devSerialField.getText().trim().isEmpty()) {
+                    devSerialField.setText(generateProtoSerialNumber());
+                }
+                devSerialField.setDisable(true);
+            } else {
+                devSerialField.setDisable(false);
+                if (devSerialField.getText() != null && devSerialField.getText().startsWith("SN-PROTO-")) {
+                    devSerialField.clear();
+                }
+            }
+        });
+
+        evtDevTypeBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if ("Project Prototypes".equals(newVal)) {
+                if (evtDevSerialField.getText() == null || evtDevSerialField.getText().trim().isEmpty()) {
+                    evtDevSerialField.setText(generateProtoSerialNumber());
+                }
+                evtDevSerialField.setDisable(true);
+            } else {
+                evtDevSerialField.setDisable(false);
+                if (evtDevSerialField.getText() != null && evtDevSerialField.getText().startsWith("SN-PROTO-")) {
+                    evtDevSerialField.clear();
+                }
+            }
+        });
 
         // Populate time pickers
         setupTimeComboBoxes(reqIngressHour, reqIngressMinute, reqIngressAmpm);
@@ -833,7 +867,7 @@ public class RequestsScreenController {
         String type = devTypeBox.getValue();
 
         if (ValidationHelper.isEmpty(name) || ValidationHelper.isEmpty(serial) || type == null) {
-            AlertHelper.showWarning("Device Form", "Required Fields", "Name, Serial, and Device Type are required.");
+            AlertHelper.showWarning("Device Form", "Required Fields", "Device Name, Serial Number, and Device Type are required.");
             return;
         }
 
@@ -841,6 +875,10 @@ public class RequestsScreenController {
         if (!qtyStr.isEmpty()) {
             try {
                 qty = Integer.parseInt(qtyStr);
+                if (qty <= 0) {
+                    AlertHelper.showWarning("Device Form", "Invalid Quantity", "Quantity must be a positive number.");
+                    return;
+                }
             } catch (NumberFormatException e) {
                 AlertHelper.showWarning("Device Form", "Invalid Quantity", "Quantity must be a valid integer.");
                 return;
@@ -886,7 +924,7 @@ public class RequestsScreenController {
         String type = evtDevTypeBox.getValue();
 
         if (ValidationHelper.isEmpty(name) || ValidationHelper.isEmpty(serial) || type == null) {
-            AlertHelper.showWarning("Device Form", "Required Fields", "Name, Serial, and Device Type are required.");
+            AlertHelper.showWarning("Device Form", "Required Fields", "Device Name, Serial Number, and Device Type are required.");
             return;
         }
 
@@ -894,6 +932,10 @@ public class RequestsScreenController {
         if (!qtyStr.isEmpty()) {
             try {
                 qty = Integer.parseInt(qtyStr);
+                if (qty <= 0) {
+                    AlertHelper.showWarning("Device Form", "Invalid Quantity", "Quantity must be a positive number.");
+                    return;
+                }
             } catch (NumberFormatException e) {
                 AlertHelper.showWarning("Device Form", "Invalid Quantity", "Quantity must be a valid integer.");
                 return;
@@ -982,7 +1024,7 @@ public class RequestsScreenController {
 
         if (ValidationHelper.isEmpty(studentId) || ValidationHelper.isEmpty(purpose) || ValidationHelper.isEmpty(venue) ||
             start == null || end == null || ingressTime == null || egressTime == null) {
-            AlertHelper.showWarning("Submit Error", "Required Fields", "Please fill in all request fields (including Venue).");
+            AlertHelper.showWarning("Submit Error", "Required Fields", "Please fill in all fields.");
             return;
         }
 
@@ -1085,7 +1127,7 @@ public class RequestsScreenController {
         if (ValidationHelper.isEmpty(studentId) || ValidationHelper.isEmpty(eventName) || ValidationHelper.isEmpty(venue) ||
             ValidationHelper.isEmpty(org) || ValidationHelper.isEmpty(respPerson) || ValidationHelper.isEmpty(purpose) ||
             start == null || end == null || ingressTime == null || egressTime == null) {
-            AlertHelper.showWarning("Submit Error", "Required Fields", "Please fill in all event request fields (including Venue).");
+            AlertHelper.showWarning("Submit Error", "Required Fields", "Please fill in all fields.");
             return;
         }
 

@@ -81,7 +81,7 @@
                         </columnConstraints>
                         
                         <Label text="Student ID:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
-                        <TextField fx:id="studentIdField" promptText="e.g. 2021-10023" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                        <TextField fx:id="studentIdField" promptText="e.g. 2024-00481-SR-0" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                         
                         <Label text="First Name:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
                         <TextField fx:id="firstNameField" promptText="e.g. Juan" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>

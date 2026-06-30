@@ -139,7 +139,7 @@ public class AdminSummaryDashboardController {
     public void goToOnCampusDevices() {
         NavigationManager.getInstance().loadViewIntoContainer(
             NavigationManager.getInstance().getContentArea(), "OnCampusDevicesScreen.fxml");
-        syncSidebarSelection("On-Campus Devices");
+        syncSidebarSelection("On-Campus");
     }
 
     @FXML

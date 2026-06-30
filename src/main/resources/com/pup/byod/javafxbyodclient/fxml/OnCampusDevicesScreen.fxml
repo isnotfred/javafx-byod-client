@@ -45,9 +45,9 @@
                 <TableColumn fx:id="colStudentName" text="Student Name" prefWidth="180.0"/>
                 <TableColumn fx:id="colCourseYearLevel" text="Course/Year" prefWidth="120.0"/>
                 <TableColumn fx:id="colDeviceName" text="Device Name" prefWidth="170.0"/>
-                <TableColumn fx:id="colSerialNumber" text="Serial Number" prefWidth="160.0"/>
-                <TableColumn fx:id="colCheckedInTime" text="Checked-in Time" prefWidth="110.0"/>
-                <TableColumn fx:id="colDetails" text="Details" prefWidth="100.0"/>
+                <TableColumn fx:id="colCheckedInTime" text="Checked-in Time" prefWidth="120.0"/>
+                <TableColumn fx:id="colExpectedExitTime" text="Expected Exit" prefWidth="120.0"/>
+                <TableColumn fx:id="colDetails" text="Details" prefWidth="90.0"/>
             </columns>
         </TableView>
         

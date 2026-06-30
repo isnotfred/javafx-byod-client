@@ -86,7 +86,7 @@ public class LoginScreenController {
 
     @FXML
     private void handleForgotPassword() {
-        NavigationManager.getInstance().openModal("ForgotPasswordScreen.fxml", "Forgot Password");
+        NavigationManager.getInstance().switchRootScene("ForgotPasswordScreen.fxml");
     }
 
     @FXML

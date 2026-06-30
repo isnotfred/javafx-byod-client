@@ -46,6 +46,18 @@ public class DateFormatter {
                 temporal = OffsetDateTime.parse(ts);
             } else if (ts.contains("T")) {
                 temporal = LocalDateTime.parse(ts);
+            } else if (ts.contains(":")) {
+                java.time.LocalTime time;
+                try {
+                    time = java.time.LocalTime.parse(ts);
+                } catch (Exception e1) {
+                    try {
+                        time = java.time.LocalTime.parse(ts, DateTimeFormatter.ofPattern("H:mm"));
+                    } catch (Exception e2) {
+                        return ts;
+                    }
+                }
+                return time.format(DateTimeFormatter.ofPattern("h:mm a"));
             } else {
                 return ts;
             }

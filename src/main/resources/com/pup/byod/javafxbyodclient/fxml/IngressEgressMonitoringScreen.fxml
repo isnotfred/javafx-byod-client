@@ -19,8 +19,8 @@
         <VBox spacing="8.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-padding: 12px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.03), 5, 0, 0, 1);" maxWidth="Infinity">
             <HBox spacing="10.0" alignment="CENTER_LEFT">
                 <Label text="Student ID:" styleClass="form-label" style="-fx-min-width: 80px; -fx-font-weight: bold;"/>
-                <TextField fx:id="studentIdField" promptText="e.g. 2021-00001" HBox.hgrow="ALWAYS" prefHeight="34.0" styleClass="modern-textfield"/>
-                <Button text="Search" onAction="#handleStudentSearch" prefHeight="34.0" prefWidth="100.0" styleClass="action-btn, action-btn-primary"/>
+                <TextField fx:id="studentIdField" promptText="e.g. 2024-00481-SR-0" HBox.hgrow="ALWAYS" prefHeight="34.0" styleClass="modern-textfield"/>
+                <Button text="Search" onAction="#handleStudentSearch" prefHeight="34.0" prefWidth="100.0" styleClass="action-btn, guard-search-btn"/>
             </HBox>
         </VBox>
         

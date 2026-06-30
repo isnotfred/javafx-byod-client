@@ -127,7 +127,7 @@ public class ValidationHelper {
 
     public static String cleanDeviceType(String type) {
         if (type == null) return "";
-        if ("Project Prototypes (Optional SN)".equalsIgnoreCase(type.trim())) {
+        if ("Project Prototypes (Optional SN)".equalsIgnoreCase(type.trim()) || "Project Prototypes".equalsIgnoreCase(type.trim())) {
             return "Project Prototypes";
         }
         return type;

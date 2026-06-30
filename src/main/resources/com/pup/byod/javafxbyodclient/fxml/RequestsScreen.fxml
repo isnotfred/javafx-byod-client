@@ -81,7 +81,7 @@
                         <!-- Row 0: Student ID & Purpose -->
                         <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
                             <HBox spacing="2.0"><Label text="Student ID:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
-                            <TextField fx:id="reqStudentIdField" promptText="e.g. 2021-10023" styleClass="modern-textfield" prefHeight="38.0"/>
+                            <TextField fx:id="reqStudentIdField" promptText="e.g. 2024-00481-SR-0" styleClass="modern-textfield" prefHeight="38.0"/>
                         </VBox>
                         
                         <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
@@ -137,12 +137,39 @@
                                 <ColumnConstraints percentWidth="33.0"/>
                                 <ColumnConstraints percentWidth="34.0"/>
                             </columnConstraints>
-                            <TextField fx:id="devNameField" promptText="Device Name (e.g. Macbook)" styleClass="modern-textfield" prefHeight="34.0" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                            <TextField fx:id="devBrandField" promptText="Brand (e.g. Apple)" styleClass="modern-textfield" prefHeight="34.0" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-                            <TextField fx:id="devModelField" promptText="Model (e.g. M3)" styleClass="modern-textfield" prefHeight="34.0" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
-                            <TextField fx:id="devSerialField" promptText="Serial Number" styleClass="modern-textfield" prefHeight="34.0" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                            <TextField fx:id="devQtyField" promptText="Qty" styleClass="modern-textfield" prefHeight="34.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                            <ComboBox fx:id="devTypeBox" promptText="Device Type" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="34.0" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                            <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                <HBox spacing="2.0">
+                                    <Label text="Device Name:" styleClass="form-label"/>
+                                    <Label text="*" style="-fx-text-fill: red;"/>
+                                </HBox>
+                                <TextField fx:id="devNameField" promptText="e.g. Laptop" styleClass="modern-textfield" prefHeight="34.0"/>
+                            </VBox>
+                            <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                <Label text="Brand:" styleClass="form-label"/>
+                                <TextField fx:id="devBrandField" promptText="e.g. Apple" styleClass="modern-textfield" prefHeight="34.0"/>
+                            </VBox>
+                            <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                <Label text="Model:" styleClass="form-label"/>
+                                <TextField fx:id="devModelField" promptText="e.g. Air M2" styleClass="modern-textfield" prefHeight="34.0"/>
+                            </VBox>
+                            <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                <HBox spacing="2.0">
+                                    <Label text="Device Type:" styleClass="form-label"/>
+                                    <Label text="*" style="-fx-text-fill: red;"/>
+                                </HBox>
+                                <ComboBox fx:id="devTypeBox" promptText="Select type" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="34.0"/>
+                            </VBox>
+                            <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                <HBox spacing="2.0">
+                                    <Label text="Serial Number:" styleClass="form-label"/>
+                                    <Label text="*" style="-fx-text-fill: red;"/>
+                                </HBox>
+                                <TextField fx:id="devSerialField" promptText="Enter serial number" styleClass="modern-textfield" prefHeight="34.0"/>
+                            </VBox>
+                            <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                <Label text="Quantity:" styleClass="form-label"/>
+                                <TextField fx:id="devQtyField" promptText="e.g. 1" styleClass="modern-textfield" prefHeight="34.0"/>
+                            </VBox>
                         </GridPane>
                         <HBox alignment="CENTER_RIGHT" spacing="10.0">
                             <Button fx:id="btnCancelDeviceNormal" text="Cancel" onAction="#cancelEditDeviceNormal" styleClass="action-btn" style="-fx-font-size: 11px; -fx-background-color: #f1f5f9; -fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-text-fill: #475569;" visible="false" managed="false"/>
@@ -198,7 +225,7 @@
                         
                         <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
                             <HBox spacing="2.0"><Label text="Student ID:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
-                            <TextField fx:id="evtStudentIdField" promptText="e.g. 2021-10023" styleClass="modern-textfield" prefHeight="38.0"/>
+                            <TextField fx:id="evtStudentIdField" promptText="e.g. 2024-00481-SR-0" styleClass="modern-textfield" prefHeight="38.0"/>
                         </VBox>
                         
                         <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
@@ -268,12 +295,39 @@
                                 <ColumnConstraints percentWidth="33.0"/>
                                 <ColumnConstraints percentWidth="34.0"/>
                             </columnConstraints>
-                            <TextField fx:id="evtDevNameField" promptText="Device Name" styleClass="modern-textfield" prefHeight="34.0" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                            <TextField fx:id="evtDevBrandField" promptText="Brand" styleClass="modern-textfield" prefHeight="34.0" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-                            <TextField fx:id="evtDevModelField" promptText="Model" styleClass="modern-textfield" prefHeight="34.0" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
-                            <TextField fx:id="evtDevSerialField" promptText="Serial Number" styleClass="modern-textfield" prefHeight="34.0" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                            <TextField fx:id="evtDevQtyField" promptText="Qty" styleClass="modern-textfield" prefHeight="34.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                            <ComboBox fx:id="evtDevTypeBox" promptText="Device Type" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="34.0" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                            <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                <HBox spacing="2.0">
+                                    <Label text="Device Name:" styleClass="form-label"/>
+                                    <Label text="*" style="-fx-text-fill: red;"/>
+                                </HBox>
+                                <TextField fx:id="evtDevNameField" promptText="e.g. Project Kit" styleClass="modern-textfield" prefHeight="34.0"/>
+                            </VBox>
+                            <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                <Label text="Brand:" styleClass="form-label"/>
+                                <TextField fx:id="evtDevBrandField" promptText="e.g. Generic" styleClass="modern-textfield" prefHeight="34.0"/>
+                            </VBox>
+                            <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                <Label text="Model:" styleClass="form-label"/>
+                                <TextField fx:id="evtDevModelField" promptText="e.g. Custom" styleClass="modern-textfield" prefHeight="34.0"/>
+                            </VBox>
+                            <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                <HBox spacing="2.0">
+                                    <Label text="Device Type:" styleClass="form-label"/>
+                                    <Label text="*" style="-fx-text-fill: red;"/>
+                                </HBox>
+                                <ComboBox fx:id="evtDevTypeBox" promptText="Select type" styleClass="modern-combo-box" maxWidth="Infinity" prefHeight="34.0"/>
+                            </VBox>
+                            <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                <HBox spacing="2.0">
+                                    <Label text="Serial Number:" styleClass="form-label"/>
+                                    <Label text="*" style="-fx-text-fill: red;"/>
+                                </HBox>
+                                <TextField fx:id="evtDevSerialField" promptText="Enter serial number" styleClass="modern-textfield" prefHeight="34.0"/>
+                            </VBox>
+                            <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                <Label text="Quantity:" styleClass="form-label"/>
+                                <TextField fx:id="evtDevQtyField" promptText="e.g. 1" styleClass="modern-textfield" prefHeight="34.0"/>
+                            </VBox>
                         </GridPane>
                         <HBox alignment="CENTER_RIGHT" spacing="10.0">
                             <Button fx:id="btnCancelDeviceEvent" text="Cancel" onAction="#cancelEditDeviceEvent" styleClass="action-btn" style="-fx-font-size: 11px; -fx-background-color: #f1f5f9; -fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-text-fill: #475569;" visible="false" managed="false"/>

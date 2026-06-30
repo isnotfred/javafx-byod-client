@@ -44,7 +44,7 @@ public class ResetPasswordScreenController {
                 authService.resetPassword(token.trim(), newPassword);
                 Platform.runLater(() -> {
                     AlertHelper.showInfo("Success", "Password Reset", "Your password has been reset successfully! You can now log in.");
-                    NavigationManager.getInstance().closeModal(event);
+                    NavigationManager.getInstance().switchRootScene("LoginScreen.fxml");
                 });
             } catch (Exception e) {
                 Platform.runLater(() -> {
@@ -56,6 +56,6 @@ public class ResetPasswordScreenController {
 
     @FXML
     private void handleCancel(ActionEvent event) {
-        NavigationManager.getInstance().closeModal(event);
+        NavigationManager.getInstance().switchRootScene("LoginScreen.fxml");
     }
 }

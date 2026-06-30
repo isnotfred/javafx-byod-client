@@ -133,6 +133,13 @@ public class AlertHelper {
                 }
             }
         });
+        
+        // Auto-resize window to fit the custom layout and styles after showing to prevent cut-offs
+        alert.setOnShown(e -> {
+            if (alert.getDialogPane().getScene() != null && alert.getDialogPane().getScene().getWindow() != null) {
+                alert.getDialogPane().getScene().getWindow().sizeToScene();
+            }
+        });
     }
 }
 

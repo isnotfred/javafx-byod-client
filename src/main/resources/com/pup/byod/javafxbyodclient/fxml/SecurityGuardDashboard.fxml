@@ -13,7 +13,7 @@
             
     <!-- Top Header Bar -->
     <top>
-        <HBox spacing="15.0" alignment="CENTER_LEFT" styleClass="header-bar" style="-fx-background-color: #0F172A; -fx-padding: 10px 20px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 8, 0, 0, 2);">
+        <HBox spacing="15.0" alignment="CENTER_LEFT" styleClass="header-bar" style="-fx-background-color: #102A43; -fx-padding: 10px 20px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 8, 0, 0, 2);">
             <ImageView fitHeight="32.0" pickOnBounds="true" preserveRatio="true">
                 <image>
                     <Image url="@../images/BYOD_Logo.png"/>

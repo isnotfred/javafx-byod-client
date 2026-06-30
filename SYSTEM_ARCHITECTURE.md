@@ -279,25 +279,19 @@ The frontend is built using a decoupled **MVC + Service** pattern. Rather than i
 | **AdminDashboardController** | `AdminDashboard.fxml` | Shell navigation bar and statistics panels for `admin` role |
 | **AdminSummaryDashboardController** | `AdminSummaryDashboard.fxml` | Summary dashboard statistics and quick-nav shortcuts (`admin` only) |
 | **SecurityGuardDashboardController** | `SecurityGuardDashboard.fxml` | Entry/exit quick-paths and scanned statistics for `guard` role |
-| **SecurityGuardSummaryDashboardController** | `SecurityGuardSummaryDashboard.fxml` | Summary dashboard statistics and scanning updates for `guard` role |
 | **SuperAdminDashboardController** | `SuperAdminDashboard.fxml` | Shell navigation bar and panel container for `super_admin` role |
 | **SuperAdminSummaryDashboardController** | `SuperAdminSummaryDashboard.fxml` | Summary dashboard statistics and system health indicators for `super_admin` role |
-| **DeviceManagementScreenController** | `DeviceManagementScreen.fxml` | Main registry lookup — search, filter, and deactivate registered devices |
-| **PendingRegistrationApprovalScreenController** | `PendingRegistrationApprovalScreen.fxml` | Approval queue — review specs, approve/reject device registrations (`admin` only) |
-| **EventApprovalScreenController** | `EventApprovalScreen.fxml` | Event approval queue — review, approve, reject, or return temporary event bypass requests (`admin` only) |
-| **QuickPendingRegistrationScreenController** | `QuickPendingRegistrationScreen.fxml` | Guard onboarding form — register student devices directly at the gate |
-| **StudentManagementScreenController** | `StudentManagementScreen.fxml` | Student directory CRUD — register students, edit details, and soft-delete students |
-| **RegistryManagementScreenController** | `RegistryManagementScreen.fxml` | Unified student directory & device staging panel — add/edit student profiles and pre-register hardware (`admin` only) |
+| **StudentsScreenController** | `StudentsScreen.fxml` | Student directory CRUD — register students, edit details, and soft-delete students |
+| **RequestsScreenController** | `RequestsScreen.fxml` | Main access requests list and requests creation/editing panels (`admin` only) |
+| **OnCampusDevicesScreenController** | `OnCampusDevicesScreen.fxml` | Main registry lookup — search, filter, and track currently inside or active devices |
 | **UserManagementScreenController** | `UserManagementScreen.fxml` | System operator directory — register, configure, or block admins/guards (`super_admin` only) |
 | **IngressEgressMonitoringScreenController** | `IngressEgressMonitoringScreen.fxml` | Ingress scan gate — input serial numbers, prompt status warnings, log entry/exit events |
-| **ActiveDevicesInsideCampusScreenController** | `ActiveDevicesInsideCampusScreen.fxml`, `ActiveDevicesAdminScreen.fxml` | Real-time monitoring directory of all registered devices and campus presence status (both guard/admin views) |
-| **TemporaryEventDeviceScreenController** | `TemporaryEventDeviceScreen.fxml` | Event request wizard — create event entries, attach multiple devices, submit for review |
-| **TemporaryEventDeviceGuardScreenController** | `TemporaryEventDeviceGuardScreen.fxml` | Temporary event device check-in/check-out scanning registry (`guard` view) |
 | **LogsScreenController** | `LogsScreen.fxml` | Logs explorer — filter and export gate logs (`device_logs`) and system audits (`audit_logs`) |
 | **SystemAuditLogsScreenController** | `SystemAuditLogsScreen.fxml` | Audit trail viewer — filter and inspect system actions, old/new states, and IP addresses (`super_admin` only) |
 | **ReportsScreenController** | `ReportsScreen.fxml` | Analytics hub — query, visualize, and print reports (`admin`/`super_admin` only) |
 | **ProfileScreenController** | `ProfileScreen.fxml` | User profile page — update personal information, email, and password (any authenticated user) |
 | **SystemConfigurationScreenController** | `SystemConfigurationScreen.fxml` | System-wide config panel — edit parameters like automatic check-out timeouts (`super_admin` only) |
+| **DevicesModalScreenController** | `DevicesModalScreen.fxml` | Modal dialog listing student devices to log entries or gate checkout actions |
 
 ---
 
@@ -353,20 +347,13 @@ byod-frontend/                                        ← GitHub repo root
 │       │       │   ├── AdminDashboardController.java
 │       │       │   ├── AdminSummaryDashboardController.java
 │       │       │   ├── SecurityGuardDashboardController.java
-│       │       │   ├── SecurityGuardSummaryDashboardController.java
 │       │       │   ├── SuperAdminDashboardController.java
 │       │       │   ├── SuperAdminSummaryDashboardController.java
-│       │       │   ├── DeviceManagementScreenController.java
-│       │       │   ├── PendingRegistrationApprovalScreenController.java
-│       │       │   ├── EventApprovalScreenController.java
-│       │       │   ├── QuickPendingRegistrationScreenController.java
-│       │       │   ├── StudentManagementScreenController.java
-│       │       │   ├── RegistryManagementScreenController.java
+│       │       │   ├── OnCampusDevicesScreenController.java
+│       │       │   ├── StudentsScreenController.java
 │       │       │   ├── UserManagementScreenController.java
 │       │       │   ├── IngressEgressMonitoringScreenController.java
-│       │       │   ├── ActiveDevicesInsideCampusScreenController.java
-│       │       │   ├── TemporaryEventDeviceScreenController.java
-│       │       │   ├── TemporaryEventDeviceGuardScreenController.java
+│       │       │   ├── DevicesModalScreenController.java
 │       │       │   ├── LogsScreenController.java
 │       │       │   ├── SystemAuditLogsScreenController.java
 │       │       │   ├── ReportsScreenController.java
@@ -422,21 +409,13 @@ byod-frontend/                                        ← GitHub repo root
 │               │   ├── AdminDashboard.fxml
 │               │   ├── AdminSummaryDashboard.fxml
 │               │   ├── SecurityGuardDashboard.fxml
-│               │   ├── SecurityGuardSummaryDashboard.fxml
 │               │   ├── SuperAdminDashboard.fxml
 │               │   ├── SuperAdminSummaryDashboard.fxml
-│               │   ├── DeviceManagementScreen.fxml
-│               │   ├── PendingRegistrationApprovalScreen.fxml
-│               │   ├── EventApprovalScreen.fxml
-│               │   ├── QuickPendingRegistrationScreen.fxml
-│               │   ├── StudentManagementScreen.fxml
-│               │   ├── RegistryManagementScreen.fxml
+│               │   ├── OnCampusDevicesScreen.fxml
+│               │   ├── StudentsScreen.fxml
 │               │   ├── UserManagementScreen.fxml
 │               │   ├── IngressEgressMonitoringScreen.fxml
-│               │   ├── ActiveDevicesInsideCampusScreen.fxml
-│               │   ├── ActiveDevicesAdminScreen.fxml
-│               │   ├── TemporaryEventDeviceScreen.fxml
-│               │   ├── TemporaryEventDeviceGuardScreen.fxml
+│               │   ├── DevicesModalScreen.fxml
 │               │   ├── LogsScreen.fxml
 │               │   ├── SystemAuditLogsScreen.fxml
 │               │   ├── ReportsScreen.fxml
