@@ -28,7 +28,6 @@ public class RequestsScreenController {
     @FXML private TextField searchField;
     @FXML private ComboBox<String> statusFilterBox;
     @FXML private TableView<Request> requestsTable;
-    @FXML private Button btnEditRequest;
 
     private boolean isEditMode = false;
     private int editingRequestId = -1;
@@ -171,16 +170,27 @@ public class RequestsScreenController {
                 formatTime12hr(cellData.getValue().getExpectedIngressTime()) + " - " + formatTime12hr(cellData.getValue().getExpectedEgressTime())
         ));
 
-        // Setup row View button programmatically
+        // Setup row View/Edit buttons programmatically
         colAction.setCellFactory(col -> new TableCell<Request, Void>() {
-            private final Button btn = new Button("View");
+            private final Button btnView = new Button("View");
+            private final Button btnEdit = new Button("Edit");
+            private final javafx.scene.layout.HBox container = new javafx.scene.layout.HBox(6.0, btnView, btnEdit);
             {
-                btn.getStyleClass().addAll("action-btn", "action-btn-primary");
-                btn.setStyle("-fx-font-size: 11px; -fx-padding: 4px 12px; -fx-cursor: hand;");
-                btn.setOnAction(event -> {
+                btnView.getStyleClass().addAll("action-btn", "action-btn-primary");
+                btnView.setStyle("-fx-font-size: 11px; -fx-padding: 4px 12px; -fx-cursor: hand;");
+                btnView.setOnAction(event -> {
                     Request req = getTableView().getItems().get(getIndex());
                     openReviewOverlay(req);
                 });
+
+                btnEdit.getStyleClass().addAll("action-btn", "action-btn-warning");
+                btnEdit.setStyle("-fx-font-size: 11px; -fx-padding: 4px 12px; -fx-cursor: hand;");
+                btnEdit.setOnAction(event -> {
+                    Request req = getTableView().getItems().get(getIndex());
+                    handleEditRequest(req);
+                });
+
+                container.setAlignment(javafx.geometry.Pos.CENTER);
             }
             @Override
             protected void updateItem(Void item, boolean empty) {
@@ -188,7 +198,15 @@ public class RequestsScreenController {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    setGraphic(btn);
+                    Request req = getTableView().getItems().get(getIndex());
+                    if (isRequestUpcoming(req)) {
+                        btnEdit.setVisible(true);
+                        btnEdit.setManaged(true);
+                    } else {
+                        btnEdit.setVisible(false);
+                        btnEdit.setManaged(false);
+                    }
+                    setGraphic(container);
                 }
             }
         });
@@ -196,7 +214,6 @@ public class RequestsScreenController {
         // Search Bar & Status Filtering
         filteredRequestList = new FilteredList<>(requestList, p -> true);
         requestsTable.setItems(filteredRequestList);
-        btnEditRequest.disableProperty().bind(requestsTable.getSelectionModel().selectedItemProperty().isNull());
 
         statusFilterBox.getItems().addAll("All", "Upcoming", "Ongoing", "Completed");
         statusFilterBox.getSelectionModel().select("All");
@@ -613,10 +630,13 @@ public class RequestsScreenController {
         isUpdatingFields = false;
     }
 
-    @FXML
-    public void handleEditRequest() {
-        Request req = requestsTable.getSelectionModel().getSelectedItem();
+    public void handleEditRequest(Request req) {
         if (req == null) return;
+
+        if (!isRequestUpcoming(req)) {
+            AlertHelper.showWarning("Edit Request", "Unauthorized Action", "Edits are only allowed for upcoming requests.");
+            return;
+        }
 
         isEditMode = true;
         editingRequestId = req.getRequestId();
@@ -1387,6 +1407,22 @@ public class RequestsScreenController {
         if (month == 12 && (day == 24 || day == 25)) return true; // Christmas Eve & Christmas Day
         if (month == 12 && (day == 30 || day == 31)) return true; // Rizal Day & New Year's Eve
         
+        return false;
+    }
+
+    private boolean isRequestUpcoming(Request req) {
+        if (req == null) return false;
+        String status = req.getStatus();
+        if ("rejected".equalsIgnoreCase(status) || "returned".equalsIgnoreCase(status)) {
+            return false;
+        }
+        try {
+            LocalDate today = LocalDate.now();
+            LocalDate start = LocalDate.parse(req.getStartDate());
+            return today.isBefore(start);
+        } catch (Exception e) {
+            // Fallback
+        }
         return false;
     }
 

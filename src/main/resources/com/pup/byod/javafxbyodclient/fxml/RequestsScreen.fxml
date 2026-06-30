@@ -34,7 +34,6 @@
                 <!-- Status Filter Dropdown -->
                 <ComboBox fx:id="statusFilterBox" promptText="All Statuses" styleClass="modern-combo-box" prefWidth="150.0" prefHeight="38.0"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Button fx:id="btnEditRequest" text="Edit Selected" onAction="#handleEditRequest" styleClass="action-btn, action-btn-primary" prefHeight="38.0"/>
                 <Button text="New Request" onAction="#openNewRequestOverlay" styleClass="action-btn, action-btn-warning" prefHeight="38.0"/>
                 <Button text="New Event Request" onAction="#openNewEventRequestOverlay" styleClass="action-btn, action-btn-success" prefHeight="38.0"/>
             </HBox>
@@ -48,8 +47,8 @@
                     <TableColumn fx:id="colReqType" text="Type" prefWidth="100.0"/>
                     <TableColumn fx:id="colPurpose" text="Purpose/Event" prefWidth="250.0"/>
                     <TableColumn fx:id="colDates" text="Authorized Dates" prefWidth="200.0"/>
-                    <TableColumn fx:id="colTimes" text="Gate Times" prefWidth="160.0"/>
-                    <TableColumn fx:id="colAction" text="Actions" prefWidth="100.0"/>
+                    <TableColumn fx:id="colTimes" text="Gate Times" prefWidth="130.0"/>
+                    <TableColumn fx:id="colAction" text="Actions" prefWidth="130.0"/>
                 </columns>
             </TableView>
         </VBox>
