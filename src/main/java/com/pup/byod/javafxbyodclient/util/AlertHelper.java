@@ -9,19 +9,19 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
 
 public class AlertHelper {
-    public static void showInfo(String title, String header, String content) {
+    public static void showInfo(String title, String header, Object content) {
         showAlert(AlertType.INFORMATION, title, header, content);
     }
 
-    public static void showWarning(String title, String header, String content) {
+    public static void showWarning(String title, String header, Object content) {
         showAlert(AlertType.WARNING, title, header, content);
     }
 
-    public static void showError(String title, String header, String content) {
+    public static void showError(String title, String header, Object content) {
         showAlert(AlertType.ERROR, title, header, content);
     }
 
-    private static void showAlert(AlertType alertType, String title, String header, String content) {
+    private static void showAlert(AlertType alertType, String title, String header, Object content) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
         
@@ -36,7 +36,7 @@ public class AlertHelper {
         alert.showAndWait();
     }
 
-    public static boolean showConfirmation(String title, String header, String content) {
+    public static boolean showConfirmation(String title, String header, Object content) {
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle(title);
         
@@ -46,19 +46,23 @@ public class AlertHelper {
         return result.isPresent() && result.get() == ButtonType.OK;
     }
 
-    private static void setupCustomDialog(Alert alert, String title, String header, String content, String type) {
+    private static void setupCustomDialog(Alert alert, String title, String header, Object content, String type) {
         DialogPane dialogPane = alert.getDialogPane();
         
         // Ensure standard text properties are set
         alert.setHeaderText(header != null && !header.isEmpty() ? header : title);
         
-        javafx.scene.control.Label contentLabel = new javafx.scene.control.Label(content);
-        contentLabel.setWrapText(true);
-        contentLabel.setMinHeight(javafx.scene.layout.Region.USE_PREF_SIZE);
-        contentLabel.setPrefWidth(380);
-        contentLabel.setMaxWidth(380);
-        contentLabel.getStyleClass().add("content");
-        dialogPane.setContent(contentLabel);
+        if (content instanceof String) {
+            javafx.scene.control.Label contentLabel = new javafx.scene.control.Label((String) content);
+            contentLabel.setWrapText(true);
+            contentLabel.setMinHeight(javafx.scene.layout.Region.USE_PREF_SIZE);
+            contentLabel.setPrefWidth(380);
+            contentLabel.setMaxWidth(380);
+            contentLabel.getStyleClass().add("content");
+            dialogPane.setContent(contentLabel);
+        } else if (content instanceof javafx.scene.Node) {
+            dialogPane.setContent((javafx.scene.Node) content);
+        }
         
         // Load custom dialog stylesheet
         try {

@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.chart.*;
 
 import java.time.LocalDate;
@@ -36,10 +37,10 @@ public class ReportsScreenController {
     @FXML private TabPane reportsTabPane;
     @FXML private StackPane chartContainer;
 
-    @FXML private HBox startDateContainer;
-    @FXML private HBox endDateContainer;
+    @FXML private VBox startDateContainer;
+    @FXML private VBox endDateContainer;
     @FXML private Label startDateLabel;
-    @FXML private HBox rangeSelectContainer;
+    @FXML private VBox rangeSelectContainer;
     @FXML private ComboBox<String> rangeSelectBox;
 
     private final ReportService reportService = new ReportService();

@@ -229,6 +229,15 @@ public class RequestsScreenController {
         devTypeBox.getItems().addAll(devTypes);
         evtDevTypeBox.getItems().addAll(devTypes);
 
+        // Setup validation for Inline Device Builders
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(devNameField, "Input required");
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(devSerialField, "Input required");
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(devTypeBox);
+
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(evtDevNameField, "Input required");
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(evtDevSerialField, "Input required");
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.setup(evtDevTypeBox);
+
         // Auto-generate and lock SN for Project Prototypes
         devTypeBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if ("Project Prototypes".equals(newVal)) {
@@ -998,6 +1007,10 @@ public class RequestsScreenController {
         devSerialField.clear();
         devQtyField.setText("1");
         devTypeBox.setValue(null);
+        
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(devNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(devSerialField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(devTypeBox);
     }
 
     private void clearStagedDeviceEventForm() {
@@ -1007,6 +1020,10 @@ public class RequestsScreenController {
         evtDevSerialField.clear();
         evtDevQtyField.setText("1");
         evtDevTypeBox.setValue(null);
+        
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(evtDevNameField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(evtDevSerialField);
+        com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(evtDevTypeBox);
     }
 
     @FXML

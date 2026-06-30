@@ -24,28 +24,31 @@
           style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 16px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 8, 0, 0, 2);">
         
         <!-- Controls Filter Header -->
-        <HBox spacing="15.0" alignment="CENTER_LEFT">
-            <HBox spacing="8.0" alignment="CENTER_LEFT">
+        <!-- Controls Filter Header -->
+        <HBox spacing="15.0" alignment="BOTTOM_LEFT">
+            <VBox spacing="4.0">
                 <Label text="Report Type:" styleClass="form-label"/>
                 <ComboBox fx:id="reportTypeBox" promptText="Select Report Type" prefWidth="220.0" styleClass="modern-combo-box" prefHeight="38.0"/>
-            </HBox>
+            </VBox>
             
-            <HBox fx:id="rangeSelectContainer" spacing="8.0" alignment="CENTER_LEFT" visible="false" managed="false">
+            <VBox fx:id="rangeSelectContainer" spacing="4.0" visible="false" managed="false">
                 <Label text="Range Type:" styleClass="form-label"/>
                 <ComboBox fx:id="rangeSelectBox" prefWidth="150.0" styleClass="modern-combo-box" prefHeight="38.0"/>
-            </HBox>
+            </VBox>
             
-            <HBox fx:id="startDateContainer" spacing="8.0" alignment="CENTER_LEFT">
+            <VBox fx:id="startDateContainer" spacing="4.0">
                 <Label fx:id="startDateLabel" text="From:" styleClass="form-label"/>
-                <DatePicker fx:id="startDatePicker" styleClass="modern-date-picker" prefHeight="38.0"/>
-                <ComboBox fx:id="monthSelectBox" styleClass="modern-combo-box" prefHeight="38.0" prefWidth="130.0" visible="false" managed="false"/>
-                <ComboBox fx:id="yearSelectBox" styleClass="modern-combo-box" prefHeight="38.0" prefWidth="95.0" visible="false" managed="false"/>
-            </HBox>
+                <HBox spacing="4.0">
+                    <DatePicker fx:id="startDatePicker" styleClass="modern-date-picker" prefHeight="38.0"/>
+                    <ComboBox fx:id="monthSelectBox" styleClass="modern-combo-box" prefHeight="38.0" prefWidth="130.0" visible="false" managed="false"/>
+                    <ComboBox fx:id="yearSelectBox" styleClass="modern-combo-box" prefHeight="38.0" prefWidth="95.0" visible="false" managed="false"/>
+                </HBox>
+            </VBox>
             
-            <HBox fx:id="endDateContainer" spacing="8.0" alignment="CENTER_LEFT">
+            <VBox fx:id="endDateContainer" spacing="4.0">
                 <Label text="To:" styleClass="form-label"/>
                 <DatePicker fx:id="endDatePicker" styleClass="modern-date-picker" prefHeight="38.0"/>
-            </HBox>
+            </VBox>
             
             <Pane HBox.hgrow="ALWAYS" />
             <Button text="Export to Excel" onAction="#handleExportExcel" styleClass="action-btn, action-btn-success" prefHeight="38.0"/>

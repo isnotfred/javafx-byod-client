@@ -100,18 +100,31 @@ public class OnCampusDevicesScreenController {
     }
 
     private void showDeviceDetails(Map<String, Object> device) {
-        StringBuilder details = new StringBuilder();
-        details.append("Student Name: ").append(getValueString(device, "studentName", "student_name")).append("\n");
-        details.append("Student ID: ").append(getValueString(device, "studentId", "student_id")).append("\n");
-        details.append("Course/Year: ").append(getValueString(device, "courseYearLevel", "course_year_level")).append("\n\n");
+        javafx.scene.text.TextFlow textFlow = new javafx.scene.text.TextFlow();
+        textFlow.setPrefWidth(380);
         
-        details.append("Device Name: ").append(getValueString(device, "deviceName", "device_name")).append("\n");
-        details.append("Brand: ").append(getValueString(device, "brand")).append("\n");
-        details.append("Model: ").append(getValueString(device, "model")).append("\n");
-        details.append("Device Type: ").append(getValueString(device, "deviceType", "device_type")).append("\n");
-        details.append("Serial Number: ").append(getValueString(device, "serialNumber", "serial_number")).append("\n");
+        appendBoldField(textFlow, "Student Name: ", getValueString(device, "studentName", "student_name"));
+        appendBoldField(textFlow, "Student ID: ", getValueString(device, "studentId", "student_id"));
+        appendBoldField(textFlow, "Course/Year: ", getValueString(device, "courseYearLevel", "course_year_level"));
+        textFlow.getChildren().add(new javafx.scene.text.Text("\n"));
         
-        AlertHelper.showInfo("Device Specifications", "Specifications for " + getValueString(device, "deviceName", "Device"), details.toString());
+        appendBoldField(textFlow, "Device Name: ", getValueString(device, "deviceName", "device_name"));
+        appendBoldField(textFlow, "Brand: ", getValueString(device, "brand"));
+        appendBoldField(textFlow, "Model: ", getValueString(device, "model"));
+        appendBoldField(textFlow, "Device Type: ", getValueString(device, "deviceType", "device_type"));
+        appendBoldField(textFlow, "Serial Number: ", getValueString(device, "serialNumber", "serial_number"));
+        
+        AlertHelper.showInfo("Device Specifications", "Specifications for " + getValueString(device, "deviceName", "Device"), textFlow);
+    }
+
+    private void appendBoldField(javafx.scene.text.TextFlow flow, String label, String value) {
+        javafx.scene.text.Text boldText = new javafx.scene.text.Text(label);
+        boldText.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-fill: #1E293B;"); // Using standard slate-800 color to match the text
+        
+        javafx.scene.text.Text normalText = new javafx.scene.text.Text(value + "\n");
+        normalText.setStyle("-fx-font-size: 14px; -fx-fill: #475569;"); // Slate-600
+        
+        flow.getChildren().addAll(boldText, normalText);
     }
 
     private Object getValueFromMap(Map<String, Object> map, String... keys) {
