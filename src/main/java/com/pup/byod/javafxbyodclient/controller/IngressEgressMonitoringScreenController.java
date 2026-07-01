@@ -447,6 +447,10 @@ public class IngressEgressMonitoringScreenController {
                 if (hasAnyCheckInToday) break;
             }
 
+            if (hasAnyCheckInToday) {
+                expectedAction = "Exit";
+            }
+
             List<RequestDevice> filteredDevices = new ArrayList<>();
             List<String> statuses = new ArrayList<>();
 
