@@ -34,10 +34,7 @@ public class ForgotPasswordScreenController {
                 authService.forgotPassword(email);
                 Platform.runLater(() -> {
                     AlertHelper.showInfo("Success", "Request Sent", "A password reset token has been sent to your email.");
-                    // Close this modal
-                    NavigationManager.getInstance().closeModal(event);
-                    // Open the Reset Password modal
-                    NavigationManager.getInstance().openModal("ResetPasswordScreen.fxml", "Reset Password");
+                    NavigationManager.getInstance().switchRootScene("ResetPasswordScreen.fxml");
                 });
             } catch (Exception e) {
                 Platform.runLater(() -> {
@@ -55,6 +52,6 @@ public class ForgotPasswordScreenController {
 
     @FXML
     private void handleCancel(ActionEvent event) {
-        NavigationManager.getInstance().closeModal(event);
+        NavigationManager.getInstance().switchRootScene("LoginScreen.fxml");
     }
 }

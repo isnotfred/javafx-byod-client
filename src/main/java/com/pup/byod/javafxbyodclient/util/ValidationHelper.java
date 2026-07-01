@@ -7,7 +7,8 @@ import javafx.scene.control.DatePicker;
 
 public class ValidationHelper {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
-    private static final Pattern STUDENT_ID_PATTERN = Pattern.compile("^\\d{4}-\\d{5}$");
+    private static final Pattern STUDENT_ID_PATTERN = Pattern.compile("(?i)^2\\d{3}-\\d{5,6}-SR-0$");
+    private static final Pattern COURSE_PATTERN = Pattern.compile("^[A-Za-z\\s.-]+\\s+\\d-\\d$");
 
     public static boolean isEmpty(String str) {
         return str == null || str.trim().isEmpty();
@@ -20,8 +21,12 @@ public class ValidationHelper {
 
     public static boolean isValidStudentId(String studentId) {
         if (isEmpty(studentId)) return false;
-        // Allows both general and specific formats (e.g. 2021-10023 or raw numbers if needed)
-        return studentId.length() >= 5;
+        return STUDENT_ID_PATTERN.matcher(studentId.trim()).matches();
+    }
+
+    public static boolean isValidCourseYearLevel(String courseYearLevel) {
+        if (isEmpty(courseYearLevel)) return false;
+        return COURSE_PATTERN.matcher(courseYearLevel.trim()).matches();
     }
 
     public static boolean isValidSerialNumber(String serialNumber) {
@@ -62,10 +67,10 @@ public class ValidationHelper {
         }
     }
 
-    public static void setup(TextInputControl field) {
+    public static void setup(TextInputControl field, String prompt) {
         field.focusedProperty().addListener((obs, oldVal, newVal) -> {
             if (!newVal) {
-                validateTextInput(field, "Input needed");
+                validateTextInput(field, prompt);
             }
         });
         field.textProperty().addListener((obs, oldVal, newVal) -> {
@@ -73,6 +78,10 @@ public class ValidationHelper {
                 resetValidation(field);
             }
         });
+    }
+
+    public static void setup(TextInputControl field) {
+        setup(field, "Input needed");
     }
 
     public static void setup(ComboBox<?> box) {
@@ -114,5 +123,13 @@ public class ValidationHelper {
 
     public static void resetValidation(DatePicker picker) {
         picker.setStyle("");
+    }
+
+    public static String cleanDeviceType(String type) {
+        if (type == null) return "";
+        if ("Project Prototypes (Optional SN)".equalsIgnoreCase(type.trim()) || "Project Prototypes".equalsIgnoreCase(type.trim())) {
+            return "Project Prototypes";
+        }
+        return type;
     }
 }

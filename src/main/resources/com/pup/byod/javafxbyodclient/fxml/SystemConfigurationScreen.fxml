@@ -36,19 +36,7 @@
         </HBox>
         <Separator/>
         
-        <!-- Allow Unregistered Devices -->
-        <HBox spacing="20.0" alignment="CENTER_LEFT" style="-fx-padding: 5px 0;">
-            <VBox spacing="4.0" HBox.hgrow="ALWAYS">
-                <Label text="Allow Unregistered Devices" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #102A43;"/>
-                <Label text="Whether unapproved devices can be checked in by guards" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 12px; -fx-text-fill: #64748B;"/>
-            </VBox>
-            <ToggleButton fx:id="allowUnregisteredSwitch" styleClass="switch-btn">
-                <graphic>
-                    <Region styleClass="thumb"/>
-                </graphic>
-            </ToggleButton>
-        </HBox>
-        <Separator/>
+
         
         <!-- Event Request Max Duration Days -->
         <HBox spacing="20.0" alignment="CENTER_LEFT" style="-fx-padding: 5px 0;">
@@ -60,15 +48,7 @@
         </HBox>
         <Separator/>
         
-        <!-- Auto Exit Cutoff Time -->
-        <HBox spacing="20.0" alignment="CENTER_LEFT" style="-fx-padding: 5px 0;">
-            <VBox spacing="4.0" HBox.hgrow="ALWAYS">
-                <Label text="Auto Exit Cutoff Time" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #102A43;"/>
-                <Label text="Scheduled time to automatically check out devices left on campus (8 PM, 9 PM, or 10 PM)" style="-fx-font-family: 'Inter', 'Segoe UI', sans-serif; -fx-font-size: 12px; -fx-text-fill: #64748B;"/>
-            </VBox>
-            <ComboBox fx:id="autoExitCombo" prefWidth="150.0" prefHeight="38.0" styleClass="modern-combo-box"/>
-        </HBox>
-        <Separator/>
+
         
         <HBox alignment="CENTER_RIGHT" style="-fx-padding: 20px 0 0 0;">
             <Button fx:id="saveButton" text="Save Settings" onAction="#handleSaveSettings" styleClass="action-btn, action-btn-success" prefHeight="40.0" prefWidth="180.0"/>

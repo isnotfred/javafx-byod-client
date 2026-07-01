@@ -35,4 +35,44 @@ public class DateFormatter {
             return ts;
         }
     }
+
+    public static String formatTimeOnly(String ts) {
+        if (ts == null || ts.trim().isEmpty() || "null".equalsIgnoreCase(ts)) {
+            return "-";
+        }
+        try {
+            TemporalAccessor temporal;
+            if (ts.contains("Z") || ts.contains("+") || (ts.lastIndexOf("-") > 10)) {
+                temporal = OffsetDateTime.parse(ts);
+            } else if (ts.contains("T")) {
+                temporal = LocalDateTime.parse(ts);
+            } else if (ts.contains(":")) {
+                java.time.LocalTime time;
+                try {
+                    time = java.time.LocalTime.parse(ts);
+                } catch (Exception e1) {
+                    try {
+                        time = java.time.LocalTime.parse(ts, DateTimeFormatter.ofPattern("H:mm"));
+                    } catch (Exception e2) {
+                        return ts;
+                    }
+                }
+                return time.format(DateTimeFormatter.ofPattern("h:mm a"));
+            } else {
+                return ts;
+            }
+            
+            java.time.LocalTime time;
+            if (temporal instanceof OffsetDateTime) {
+                time = ((OffsetDateTime) temporal).atZoneSameInstant(ZoneId.systemDefault()).toLocalTime();
+            } else {
+                time = ((LocalDateTime) temporal).toLocalTime();
+            }
+            
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mm a");
+            return time.format(timeFormatter);
+        } catch (Exception e) {
+            return ts;
+        }
+    }
 }

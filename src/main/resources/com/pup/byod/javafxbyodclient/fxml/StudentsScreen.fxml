@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<StackPane stylesheets="@../css/admin_dashboard_styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.pup.byod.javafxbyodclient.controller.StudentsScreenController"
+           HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+           
+    <!-- Main Content Layer -->
+    <VBox spacing="15.0">
+        <padding>
+            <Insets top="5.0" right="5.0" bottom="5.0" left="5.0"/>
+        </padding>
+        
+        <!-- Hero Header -->
+        <VBox styleClass="welcome-banner" spacing="4.0" alignment="CENTER_LEFT" maxWidth="Infinity">
+            <Label text="Student Registry Management" styleClass="welcome-title"/>
+            <Label text="View registered students, create profiles, and import registry records via CSV." styleClass="welcome-subtitle"/>
+        </VBox>
+        
+        <!-- Main Table Card -->
+        <VBox spacing="12.0" VBox.vgrow="ALWAYS"
+              style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 16px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 8, 0, 0, 2);">
+            
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <!-- Search Bar -->
+                <StackPane alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="300.0">
+                    <TextField fx:id="searchField" promptText="Search student ID or Name..." styleClass="modern-textfield, search-field-with-icon" prefHeight="38.0" maxWidth="Infinity"/>
+                    <Label text="🔍" mouseTransparent="true" style="-fx-padding: 0 0 0 10px; -fx-text-fill: #94A3B8; -fx-font-size: 13px;"/>
+                </StackPane>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Import Students" onAction="#handleImportCsv" styleClass="action-btn, action-btn-success" prefHeight="38.0"/>
+                <Button text="Add Student" onAction="#openAddOverlay" styleClass="action-btn, action-btn-warning" prefHeight="38.0"/>
+                <Button fx:id="editSelectedBtn" text="Edit Selected" onAction="#openEditOverlay" disable="true" styleClass="action-btn, action-btn-primary" prefHeight="38.0"/>
+            </HBox>
+            
+            <TableView fx:id="studentTable" VBox.vgrow="ALWAYS" styleClass="modern-table" minHeight="300.0">
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                </columnResizePolicy>
+                <columns>
+                    <TableColumn fx:id="colStudentId" text="Student ID" prefWidth="150.0"/>
+                    <TableColumn fx:id="colStudentName" text="Full Name" prefWidth="250.0"/>
+                    <TableColumn fx:id="colStudentCourse" text="Course &amp; Section" prefWidth="180.0"/>
+                    <TableColumn fx:id="colStudentContact" text="Contact Number" prefWidth="150.0"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </VBox>
+    
+    <!-- Student Profile Edit/Add Overlay -->
+    <StackPane fx:id="formOverlay" visible="false" style="-fx-background-color: rgba(16, 42, 67, 0.45);" alignment="CENTER">
+        <padding>
+            <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
+        </padding>
+        
+        <VBox spacing="0.0" maxHeight="450.0" maxWidth="500.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 15, 0, 0, 8);">
+            
+            <!-- Sticky Header -->
+            <VBox spacing="10.0" style="-fx-padding: 20px 20px 10px 20px;">
+                <HBox alignment="CENTER_LEFT">
+                    <Label fx:id="formTitleLabel" text="Student Profile Form" styleClass="module-subheader" style="-fx-font-family: 'Hanken Grotesk', 'Segoe UI Bold', sans-serif; -fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #102A43;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="✕" onAction="#handleCloseOverlay" styleClass="overlay-close-btn"/>
+                </HBox>
+                <Separator/>
+            </VBox>
+            
+            <!-- Scrollable Content -->
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS"
+                        style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+                
+                <VBox spacing="15.0" style="-fx-padding: 0px 20px 20px 20px; -fx-background-color: transparent;">
+                    
+                    <GridPane hgap="10.0" vgap="12.0">
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="30.0" halignment="RIGHT"/>
+                            <ColumnConstraints percentWidth="70.0"/>
+                        </columnConstraints>
+                        
+                        <Label text="Student ID:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
+                        <TextField fx:id="studentIdField" promptText="e.g. 2024-00481-SR-0" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                        
+                        <Label text="First Name:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
+                        <TextField fx:id="firstNameField" promptText="e.g. Juan" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                        
+                        <Label text="Last Name:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
+                        <TextField fx:id="lastNameField" promptText="e.g. Dela Cruz" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                        
+                        <Label text="Course &amp; Section:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="form-label" contentDisplay="RIGHT"><graphic><Label text="*" style="-fx-text-fill: red;"/></graphic></Label>
+                        <TextField fx:id="courseYearLevelField" promptText="e.g. BSIT 3-1" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+                        <Label text="Contact Number:" GridPane.columnIndex="0" GridPane.rowIndex="4" styleClass="form-label"/>
+                        <TextField fx:id="contactNumberField" promptText="e.g. 09171234567" styleClass="modern-textfield" prefHeight="38.0" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                    </GridPane>
+                    
+                    <Separator/>
+                    
+                    <!-- Actions -->
+                    <HBox spacing="12.0" alignment="CENTER_RIGHT">
+                        <Button text="Cancel" onAction="#handleCloseOverlay" styleClass="action-btn" prefHeight="38.0" style="-fx-background-color: #f1f5f9; -fx-border-color: #cbd5e1; -fx-border-radius: 8; -fx-text-fill: #475569;"/>
+                        <Button text="Save" onAction="#handleSave" styleClass="action-btn, action-btn-primary" prefHeight="38.0"/>
+                    </HBox>
+                </VBox>
+            </ScrollPane>
+        </VBox>
+    </StackPane>
+</StackPane>

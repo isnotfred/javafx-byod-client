@@ -52,48 +52,28 @@ public class AdminDashboardController {
     }
 
     @FXML
-    public void showRegistryManagement() {
-        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "RegistryManagementScreen.fxml");
+    public void showStudentsScreen() {
+        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "StudentsScreen.fxml");
     }
 
     @FXML
-    public void showDeviceManagement() {
-        showRegistryManagement();
+    public void showRequestsScreen() {
+        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "RequestsScreen.fxml");
     }
 
     @FXML
-    public void showPendingApprovals() {
-        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "PendingRegistrationApprovalScreen.fxml");
+    public void showOnCampusDevicesScreen() {
+        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "OnCampusDevicesScreen.fxml");
     }
 
     @FXML
-    public void showEventRequests() {
-        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "TemporaryEventDeviceGuardScreen.fxml");
+    public void showLogsScreen() {
+        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "LogsScreen.fxml");
     }
 
     @FXML
-    public void showStudentManagement() {
-        showRegistryManagement();
-    }
-
-    @FXML
-    public void showActiveDevices() {
-        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "ActiveDevicesAdminScreen.fxml");
-    }
-
-    @FXML
-    public void showReports() {
+    public void showReportsScreen() {
         NavigationManager.getInstance().loadViewIntoContainer(contentArea, "ReportsScreen.fxml");
-    }
-
-    @FXML
-    public void showSystemAuditLogs() {
-        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "SystemAuditLogsScreen.fxml");
-    }
-
-    @FXML
-    public void showProfile() {
-        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "ProfileScreen.fxml");
     }
 
     @FXML

@@ -454,6 +454,14 @@
     -fx-background-color: #243B53;
 }
 
+.guard-search-btn {
+    -fx-background-color: #F0B429;
+    -fx-text-fill: #102A43;
+}
+.guard-search-btn:hover {
+    -fx-background-color: #D39E18;
+}
+
 .action-btn-secondary {
     -fx-background-color: #F1F5F9;
     -fx-text-fill: #475569;
@@ -912,3 +920,77 @@
 .date-picker-popup .spinner .button .right-arrow {
     -fx-background-color: black;
 }
+
+/* ─── Missed Checkouts & Cancelled Rows — red highlighting ─── */
+.modern-table .table-row-cell.missed-row,
+.modern-table .table-row-cell.missed-row:odd,
+.modern-table .table-row-cell.missed-row:hover,
+.modern-table .table-row-cell.cancelled-row,
+.modern-table .table-row-cell.cancelled-row:odd,
+.modern-table .table-row-cell.cancelled-row:hover {
+    -fx-background-color: #FFE4E6;
+}
+.modern-table .table-row-cell.missed-row:selected,
+.modern-table .table-row-cell.cancelled-row:selected {
+    -fx-background-color: #FECDD3;
+}
+.modern-table .table-row-cell.missed-row .table-cell,
+.modern-table .table-row-cell.missed-row:selected .table-cell,
+.modern-table .table-row-cell.cancelled-row .table-cell,
+.modern-table .table-row-cell.cancelled-row:selected .table-cell {
+    -fx-text-fill: #DC2626;
+}
+
+/* ─── Expired & Unused Rows — soft gray highlighting ─── */
+.modern-table .table-row-cell.expired-row,
+.modern-table .table-row-cell.expired-row:odd {
+    -fx-background-color: #F1F5F9;
+}
+.modern-table .table-row-cell.expired-row:hover {
+    -fx-background-color: #E2E8F0;
+}
+.modern-table .table-row-cell.expired-row:selected {
+    -fx-background-color: #CBD5E1;
+}
+.modern-table .table-row-cell.expired-row .table-cell,
+.modern-table .table-row-cell.expired-row:selected .table-cell {
+    -fx-text-fill: #94A3B8;
+    -fx-opacity: 0.8;
+}
+
+/* Status Badge Capsules for review overlay */
+.status-badge {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+    -fx-padding: 4px 10px;
+    -fx-background-radius: 12px;
+    -fx-alignment: center;
+}
+.status-badge-pending {
+    -fx-background-color: #F0B429; /* System Gold */
+    -fx-text-fill: #102A43; /* System Navy */
+}
+.status-badge-approved {
+    -fx-background-color: #10B981; /* Green */
+    -fx-text-fill: #FFFFFF;
+}
+.status-badge-rejected {
+    -fx-background-color: #EF4444; /* Red */
+    -fx-text-fill: #FFFFFF;
+}
+.status-badge-cancelled {
+    -fx-background-color: #DC2626; /* Dark Red */
+    -fx-text-fill: #FFFFFF;
+}
+.status-badge-returned {
+    -fx-background-color: #7C3AED; /* Purple */
+    -fx-text-fill: #FFFFFF;
+}
+.status-badge-expired {
+    -fx-background-color: #94A3B8; /* Slate Gray */
+    -fx-text-fill: #FFFFFF;
+}
+
+
+

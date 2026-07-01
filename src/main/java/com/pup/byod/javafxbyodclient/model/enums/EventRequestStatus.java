@@ -4,7 +4,8 @@ public enum EventRequestStatus {
     pending("pending"),
     approved("approved"),
     returned("returned"),
-    rejected("rejected");
+    rejected("rejected"),
+    cancelled("cancelled");
 
     private final String value;
 
