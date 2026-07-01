@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.pup.byod.javafxbyodclient.controller.GuardEventsScreenController"
+           stylesheets="@../css/admin_dashboard_styles.css"
+           style="-fx-background-color: #F8FAFC;">
+           
+    <!-- Main Content Area -->
+    <VBox spacing="15.0" alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets top="15.0" right="15.0" bottom="15.0" left="15.0"/>
+        </padding>
+        
+        <!-- Welcome Hero Banner -->
+        <VBox styleClass="welcome-banner" spacing="4.0" alignment="CENTER_LEFT" maxWidth="Infinity">
+            <Label text="Active Event Registry" styleClass="welcome-title"/>
+            <Label text="View all approved group events scheduled for today and check registered device specifications." styleClass="welcome-subtitle"/>
+        </VBox>
+        
+        <!-- Events Table Card -->
+        <VBox spacing="12.0" VBox.vgrow="ALWAYS"
+              style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 1px; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 16px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 8, 0, 0, 2);" maxWidth="Infinity">
+            
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <Label text="Scheduled Events Today" style="-fx-font-family: 'Hanken Grotesk', 'Segoe UI Bold', sans-serif; -fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="🔄 Refresh" onAction="#loadEvents" styleClass="action-btn, action-btn-primary" style="-fx-padding: 6px 12px;"/>
+            </HBox>
+            
+            <TableView fx:id="eventsTable" VBox.vgrow="ALWAYS" styleClass="modern-table" minHeight="300.0">
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                </columnResizePolicy>
+                <columns>
+                    <TableColumn fx:id="colEventName" text="Event Name" prefWidth="350.0"/>
+                    <TableColumn fx:id="colVenue" text="Venue" prefWidth="250.0"/>
+                    <TableColumn fx:id="colView" text="Actions" prefWidth="150.0" style="-fx-alignment: CENTER;"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </VBox>
+    
+    <!-- Semi-transparent Black Overlay for Modal Popup background -->
+    <Region fx:id="overlay" style="-fx-background-color: rgba(0, 0, 0, 0.55);" visible="false" managed="false"/>
+    
+</StackPane>

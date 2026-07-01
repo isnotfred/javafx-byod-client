@@ -11,6 +11,10 @@
             fx:controller="com.pup.byod.javafxbyodclient.controller.SecurityGuardDashboardController"
             prefWidth="1000.0" prefHeight="700.0">
             
+    <fx:define>
+        <ToggleGroup fx:id="guardNavGroup"/>
+    </fx:define>
+            
     <!-- Top Header Bar -->
     <top>
         <HBox spacing="15.0" alignment="CENTER_LEFT" styleClass="header-bar" style="-fx-background-color: #102A43; -fx-padding: 10px 20px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 8, 0, 0, 2);">
@@ -23,6 +27,15 @@
                 <Label text="BYOD MANAGEMENT SYSTEM" style="-fx-font-family: 'Hanken Grotesk', 'Segoe UI', sans-serif; -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #FFFFFF;"/>
                 <Label fx:id="roleBadge" text="GUARD" styleClass="role-badge, role-badge-guard" style="-fx-font-size: 10px; -fx-padding: 2px 6px;"/>
             </VBox>
+            
+            <!-- Navigation Tabs for Guard: Requests & Events -->
+            <HBox spacing="10.0" alignment="CENTER_LEFT" style="-fx-padding: 0 0 0 40px;">
+                <ToggleButton fx:id="requestsBtn" text="Requests" toggleGroup="$guardNavGroup" selected="true" onAction="#showGateScan"
+                              styleClass="guard-nav-btn"/>
+                <ToggleButton fx:id="eventsBtn" text="Events" toggleGroup="$guardNavGroup" onAction="#showEventsScreen"
+                              styleClass="guard-nav-btn"/>
+            </HBox>
+            
             <Region HBox.hgrow="ALWAYS"/>
             <Button text="Logout" onAction="#handleLogout" styleClass="action-btn" style="-fx-background-color: #EF4444; -fx-text-fill: #FFFFFF; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 6px 12px; -fx-border-radius: 6px; -fx-background-radius: 6px;">
                 <graphic>

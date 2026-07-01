@@ -34,9 +34,17 @@ public class SecurityGuardDashboardController {
         showGateScan();
     }
 
+    @FXML private javafx.scene.control.ToggleButton requestsBtn;
+    @FXML private javafx.scene.control.ToggleButton eventsBtn;
+
     @FXML
     public void showGateScan() {
         NavigationManager.getInstance().loadViewIntoContainer(contentArea, "IngressEgressMonitoringScreen.fxml");
+    }
+
+    @FXML
+    public void showEventsScreen() {
+        NavigationManager.getInstance().loadViewIntoContainer(contentArea, "GuardEventsScreen.fxml");
     }
 
     @FXML

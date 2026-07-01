@@ -992,5 +992,26 @@
     -fx-text-fill: #FFFFFF;
 }
 
+/* Guard Header Navigation Buttons */
+.guard-nav-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #8BA4B9;
+    -fx-font-family: "Inter", sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20px;
+    -fx-padding: 6px 16px;
+    -fx-cursor: hand;
+}
+.guard-nav-btn:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+    -fx-text-fill: #FFFFFF;
+}
+.guard-nav-btn:selected {
+    -fx-background-color: #38BDF8; /* sky blue accent */
+    -fx-text-fill: #0F172A;
+    -fx-font-weight: bold;
+}
+
 
 
