@@ -77,5 +77,14 @@ public class ReportService {
         Map[] reports = apiClient.get("/api/reports/late-scans?from=" + from + "&to=" + to, Map[].class);
         return (List<Map<String, Object>>) (List) Arrays.asList(reports);
     }
+
+    // 9. Unused & Cancelled Requests Report
+    @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> getUnusedCancelledReport(String fromDate, String toDate) throws Exception {
+        String from = URLEncoder.encode(fromDate, StandardCharsets.UTF_8);
+        String to = URLEncoder.encode(toDate, StandardCharsets.UTF_8);
+        Map[] reports = apiClient.get("/api/reports/unused-cancelled?from=" + from + "&to=" + to, Map[].class);
+        return (List<Map<String, Object>>) (List) Arrays.asList(reports);
+    }
 }
 

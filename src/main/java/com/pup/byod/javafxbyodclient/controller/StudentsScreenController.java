@@ -43,6 +43,12 @@ public class StudentsScreenController {
     private boolean isEditMode = false;
     private Student selectedStudent = null;
 
+    private String draftStudentId = "";
+    private String draftFirstName = "";
+    private String draftLastName = "";
+    private String draftCourseYearLevel = "";
+    private String draftContactNumber = "";
+
     @FXML
     public void initialize() {
         // Table Columns Binding
@@ -105,12 +111,13 @@ public class StudentsScreenController {
         selectedStudent = null;
         formTitleLabel.setText("Add New Student Profile");
         
-        studentIdField.clear();
+        studentIdField.setText(draftStudentId);
         studentIdField.setEditable(true);
-        firstNameField.clear();
-        lastNameField.clear();
-        courseYearLevelField.clear();
-        contactNumberField.clear();
+        firstNameField.setText(draftFirstName);
+        lastNameField.setText(draftLastName);
+        courseYearLevelField.setText(draftCourseYearLevel);
+        contactNumberField.setText(draftContactNumber);
+        
         com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(studentIdField);
         com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(firstNameField);
         com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(lastNameField);
@@ -142,8 +149,46 @@ public class StudentsScreenController {
         formOverlay.setVisible(true);
     }
 
+    private void clearFormFields() {
+        studentIdField.clear();
+        firstNameField.clear();
+        lastNameField.clear();
+        courseYearLevelField.clear();
+        contactNumberField.clear();
+    }
+
     @FXML
     public void handleCloseOverlay() {
+        if (!isEditMode) {
+            boolean hasContent = !studentIdField.getText().trim().isEmpty() ||
+                                 !firstNameField.getText().trim().isEmpty() ||
+                                 !lastNameField.getText().trim().isEmpty() ||
+                                 !courseYearLevelField.getText().trim().isEmpty() ||
+                                 !contactNumberField.getText().trim().isEmpty();
+            if (hasContent) {
+                ButtonType result = AlertHelper.showYesNoCancel(
+                    "Save Draft",
+                    "Unsaved Changes",
+                    "Would you like to save your entered student details as a draft?"
+                );
+                if (result.getButtonData() == ButtonBar.ButtonData.YES) {
+                    draftStudentId = studentIdField.getText();
+                    draftFirstName = firstNameField.getText();
+                    draftLastName = lastNameField.getText();
+                    draftCourseYearLevel = courseYearLevelField.getText();
+                    draftContactNumber = contactNumberField.getText();
+                } else if (result.getButtonData() == ButtonBar.ButtonData.NO) {
+                    draftStudentId = "";
+                    draftFirstName = "";
+                    draftLastName = "";
+                    draftCourseYearLevel = "";
+                    draftContactNumber = "";
+                    clearFormFields();
+                } else {
+                    return; // Keep modal open
+                }
+            }
+        }
         formOverlay.setVisible(false);
         
         com.pup.byod.javafxbyodclient.util.ValidationHelper.resetValidation(studentIdField);
@@ -195,6 +240,14 @@ public class StudentsScreenController {
                 }
                 Platform.runLater(() -> {
                     AlertHelper.showInfo("Success", "Profile Saved", "Student registry profile successfully saved.");
+                    if (!isEditMode) {
+                        draftStudentId = "";
+                        draftFirstName = "";
+                        draftLastName = "";
+                        draftCourseYearLevel = "";
+                        draftContactNumber = "";
+                        clearFormFields();
+                    }
                     formOverlay.setVisible(false);
                     loadStudents();
                 });

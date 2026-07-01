@@ -342,35 +342,6 @@ public class IngressEgressMonitoringScreenController {
         try {
             List<RequestDevice> devices = requestService.getDevicesForRequest(req.getRequestId());
             String expectedAction = requestActionTypeMap.getOrDefault(req.getRequestId(), "Entry");
-            boolean isNormalExit = "normal".equalsIgnoreCase(req.getRequestType()) && expectedAction != null && expectedAction.startsWith("Exit");
-
-            if (isNormalExit) {
-                List<Integer> insideDeviceIds = new ArrayList<>();
-                for (RequestDevice d : devices) {
-                    List<DeviceTransaction> txs = logService.getDeviceTransactions(d.getRequestDeviceId());
-                    boolean isInside = false;
-                    for (DeviceTransaction tx : txs) {
-                        if (tx.getEgressTime() == null) {
-                            isInside = true;
-                            break;
-                        }
-                    }
-                    if (isInside) {
-                        insideDeviceIds.add(d.getRequestDeviceId());
-                    }
-                }
-
-                if (insideDeviceIds.isEmpty()) {
-                    AlertHelper.showWarning("Log Exit", "No Devices Inside", "No currently checked-in devices found to egress.");
-                    return;
-                }
-
-                int guardId = SessionManager.getInstance().getCurrentUser().getUserId();
-                logService.processBatchEgress(insideDeviceIds, guardId);
-                AlertHelper.showInfo("Gate Check Success", "Egress Logged", "Log Exit processed successfully for all (" + insideDeviceIds.size() + ") devices in entry.");
-                handleStudentSearch();
-                return;
-            }
 
             List<String> statuses = new ArrayList<>();
             for (RequestDevice d : devices) {

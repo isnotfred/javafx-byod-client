@@ -54,6 +54,7 @@ public class ReportsScreenController {
     private static final String INCIDENT_OVERRIDES = "Incident Overrides Report";
     private static final String PURPOSE_BREAKDOWN = "Purpose Breakdown Report";
     private static final String LATE_SCANS = "Late Check-ins & Check-outs Report";
+    private static final String UNUSED_CANCELLED = "Unused & Cancelled Requests Report";
 
     @FXML
     public void initialize() {
@@ -64,7 +65,8 @@ public class ReportsScreenController {
             DEVICE_FREQUENCY,
             INCIDENT_OVERRIDES,
             PURPOSE_BREAKDOWN,
-            LATE_SCANS
+            LATE_SCANS,
+            UNUSED_CANCELLED
         );
         reportsTable.setItems(reportList);
 
@@ -355,6 +357,19 @@ public class ReportsScreenController {
                     createColumn("Percentage Volume", "percentage")
                 );
                 break;
+            case UNUSED_CANCELLED:
+                reportsTable.getColumns().addAll(
+                    createColumn("Request ID", "requestId", "request_id"),
+                    createColumn("Request Type", "requestType", "request_type"),
+                    createColumn("Student ID", "studentId", "student_id"),
+                    createColumn("Student Name", "studentName", "student_name"),
+                    createColumn("Purpose", "purpose"),
+                    createColumn("Start Date", "startDate", "start_date"),
+                    createColumn("End Date", "endDate", "end_date"),
+                    createColumn("Status", "status"),
+                    createColumn("Remarks", "remarks")
+                );
+                break;
         }
 
         // Set reasonable default widths that fit headers and make Student Name the widest
@@ -530,7 +545,7 @@ public class ReportsScreenController {
                 }
                 return;
             }
-        } else if (DEVICE_FREQUENCY.equals(reportType) || INCIDENT_OVERRIDES.equals(reportType) || MISSED_CHECKOUTS.equals(reportType) || LATE_SCANS.equals(reportType)) {
+        } else if (DEVICE_FREQUENCY.equals(reportType) || INCIDENT_OVERRIDES.equals(reportType) || MISSED_CHECKOUTS.equals(reportType) || LATE_SCANS.equals(reportType) || UNUSED_CANCELLED.equals(reportType)) {
             String rangeType = rangeSelectBox != null ? rangeSelectBox.getValue() : "Today";
             if (rangeType == null) rangeType = "Today";
             
@@ -600,6 +615,8 @@ public class ReportsScreenController {
                 records = reportService.getIncidentsReport(start.toString(), end.toString());
             } else if (LATE_SCANS.equals(reportType)) {
                 records = reportService.getLateScansReport(start.toString(), end.toString());
+            } else if (UNUSED_CANCELLED.equals(reportType)) {
+                records = reportService.getUnusedCancelledReport(start.toString(), end.toString());
             } else { // PURPOSE_BREAKDOWN
                 records = reportService.getPurposeBreakdownReport();
             }
@@ -865,6 +882,25 @@ public class ReportsScreenController {
 
             barChart.getData().add(series);
             chartContainer.getChildren().add(barChart);
+        } else if (UNUSED_CANCELLED.equals(reportType)) {
+            PieChart pieChart = new PieChart();
+            pieChart.setTitle("Unused & Cancelled Requests by Status");
+            pieChart.setAnimated(false);
+
+            Map<String, Integer> statusCounts = new HashMap<>();
+            for (Map<String, Object> record : records) {
+                Object val = getValueFromMap(record, "status");
+                String status = val != null ? val.toString().toLowerCase() : "unknown";
+                statusCounts.put(status, statusCounts.getOrDefault(status, 0) + 1);
+            }
+
+            ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
+            statusCounts.forEach((status, count) -> {
+                String label = status.substring(0, 1).toUpperCase() + status.substring(1) + " (" + count + ")";
+                pieData.add(new PieChart.Data(label, count));
+            });
+            pieChart.setData(pieData);
+            chartContainer.getChildren().add(pieChart);
         }
     }
 

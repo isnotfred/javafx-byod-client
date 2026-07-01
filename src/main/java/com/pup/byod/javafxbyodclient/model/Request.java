@@ -20,7 +20,9 @@ public class Request {
     private String expectedEgressTime;
     
     private String status;
+    @com.fasterxml.jackson.annotation.JsonProperty("isSubmitted")
     private Boolean isSubmitted;
+    @com.fasterxml.jackson.annotation.JsonProperty("isAccommodated")
     private Boolean isAccommodated;
     private Integer reviewedBy;
     private String reviewedAt;

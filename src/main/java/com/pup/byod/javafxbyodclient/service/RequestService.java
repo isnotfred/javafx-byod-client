@@ -61,4 +61,11 @@ public class RequestService {
         body.put("remarks", remarks);
         apiClient.put("/api/requests/" + requestId + "/return", body, Void.class);
     }
+
+    public void cancelRequest(int requestId, int modifierId, String remarks) throws Exception {
+        java.util.Map<String, Object> body = new java.util.HashMap<>();
+        body.put("modifierUserId", modifierId);
+        body.put("remarks", remarks);
+        apiClient.put("/api/requests/" + requestId + "/cancel", body, Void.class);
+    }
 }

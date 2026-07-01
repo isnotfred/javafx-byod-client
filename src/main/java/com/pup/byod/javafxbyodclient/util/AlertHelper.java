@@ -5,6 +5,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
 
@@ -144,6 +145,23 @@ public class AlertHelper {
                 alert.getDialogPane().getScene().getWindow().sizeToScene();
             }
         });
+    }
+
+    public static ButtonType showYesNoCancel(String title, String header, String content) {
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        
+        ButtonType btnYes = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+        ButtonType btnNo = new ButtonType("No", ButtonBar.ButtonData.NO);
+        ButtonType btnCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        
+        alert.getButtonTypes().setAll(btnYes, btnNo, btnCancel);
+        setupCustomDialog(alert, title, header, content, "confirm");
+        
+        java.util.Optional<ButtonType> result = alert.showAndWait();
+        return result.orElse(btnCancel);
     }
 }
 

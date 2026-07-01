@@ -921,16 +921,42 @@
     -fx-background-color: black;
 }
 
-/* ─── Missed Checkouts Rows — red highlighting ─── */
+/* ─── Missed Checkouts & Cancelled Rows — red highlighting ─── */
 .modern-table .table-row-cell.missed-row,
 .modern-table .table-row-cell.missed-row:odd,
-.modern-table .table-row-cell.missed-row:hover {
+.modern-table .table-row-cell.missed-row:hover,
+.modern-table .table-row-cell.cancelled-row,
+.modern-table .table-row-cell.cancelled-row:odd,
+.modern-table .table-row-cell.cancelled-row:hover {
     -fx-background-color: #FFE4E6;
 }
-.modern-table .table-row-cell.missed-row:selected {
+.modern-table .table-row-cell.missed-row:selected,
+.modern-table .table-row-cell.cancelled-row:selected {
     -fx-background-color: #FECDD3;
 }
 .modern-table .table-row-cell.missed-row .table-cell,
-.modern-table .table-row-cell.missed-row:selected .table-cell {
+.modern-table .table-row-cell.missed-row:selected .table-cell,
+.modern-table .table-row-cell.cancelled-row .table-cell,
+.modern-table .table-row-cell.cancelled-row:selected .table-cell {
     -fx-text-fill: #DC2626;
 }
+
+/* ─── Expired & Unused Rows — soft gray highlighting ─── */
+.modern-table .table-row-cell.expired-row,
+.modern-table .table-row-cell.expired-row:odd {
+    -fx-background-color: #F1F5F9;
+}
+.modern-table .table-row-cell.expired-row:hover {
+    -fx-background-color: #E2E8F0;
+}
+.modern-table .table-row-cell.expired-row:selected {
+    -fx-background-color: #CBD5E1;
+}
+.modern-table .table-row-cell.expired-row .table-cell,
+.modern-table .table-row-cell.expired-row:selected .table-cell {
+    -fx-text-fill: #94A3B8;
+    -fx-opacity: 0.8;
+}
+
+
+
