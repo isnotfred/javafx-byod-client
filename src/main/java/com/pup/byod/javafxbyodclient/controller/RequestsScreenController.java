@@ -24,6 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RequestsScreenController {
+    private enum RequestLifecycle {
+        UPCOMING,
+        ONGOING,
+        COMPLETED,
+        EXPIRED,
+        CANCELED
+    }
+
     // Main components
     @FXML private TextField searchField;
     @FXML private ComboBox<String> statusFilterBox;
@@ -31,6 +39,7 @@ public class RequestsScreenController {
 
     private boolean isEditMode = false;
     private int editingRequestId = -1;
+    private int reschedulingRequestId = -1;
     private boolean isUpdatingFields = false;
     @FXML private TableColumn<Request, String> colStudentId;
     @FXML private TableColumn<Request, String> colReqType;
@@ -122,6 +131,7 @@ public class RequestsScreenController {
     @FXML private Label lblReviewStudentId;
     @FXML private Label lblReviewType;
     @FXML private Label lblReviewPurpose;
+    @FXML private Label lblReviewVenue;
     @FXML private Label lblReviewTimes;
     @FXML private TableView<RequestDevice> reviewDevicesTable;
     @FXML private TableColumn<RequestDevice, String> colRevName;
@@ -227,7 +237,7 @@ public class RequestsScreenController {
                     handleEditRequest(req);
                 });
 
-                container.setAlignment(javafx.geometry.Pos.CENTER);
+                container.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
             }
             @Override
             protected void updateItem(Void item, boolean empty) {
@@ -236,8 +246,17 @@ public class RequestsScreenController {
                     setGraphic(null);
                 } else {
                     Request req = getTableView().getItems().get(getIndex());
-                    btnEdit.setVisible(true);
-                    btnEdit.setManaged(true);
+                    RequestLifecycle lifecycle = getRequestLifecycle(req);
+                    boolean isEventRequest = "event".equalsIgnoreCase(req.getRequestType());
+                    boolean isReschedulable = !isEventRequest &&
+                                              (lifecycle == RequestLifecycle.ONGOING ||
+                                               lifecycle == RequestLifecycle.EXPIRED);
+                    boolean canEdit = lifecycle == RequestLifecycle.UPCOMING ||
+                                      isReschedulable;
+
+                    btnEdit.setText(isReschedulable ? "Reschedule" : "Edit");
+                    btnEdit.setVisible(canEdit);
+                    btnEdit.setManaged(canEdit);
                     btnEdit.setDisable(false);
                     setGraphic(container);
                 }
@@ -253,7 +272,7 @@ public class RequestsScreenController {
                 super.updateItem(req, empty);
                 if (empty || req == null) {
                     getStyleClass().removeAll("cancelled-row", "expired-row");
-                } else if ("cancelled".equalsIgnoreCase(req.getStatus())) {
+                } else if (isCanceledStatus(req.getStatus())) {
                     getStyleClass().remove("expired-row");
                     if (!getStyleClass().contains("cancelled-row")) {
                         getStyleClass().add("cancelled-row");
@@ -286,7 +305,7 @@ public class RequestsScreenController {
             }
         });
 
-        statusFilterBox.getItems().addAll("All", "Upcoming", "Ongoing", "Completed");
+        statusFilterBox.getItems().addAll("All", "Upcoming", "Ongoing", "Completed", "Expired", "Cancelled");
         statusFilterBox.getSelectionModel().select("All");
 
         searchField.textProperty().addListener((obs, oldVal, newVal) -> applyFilters());
@@ -594,37 +613,18 @@ public class RequestsScreenController {
                 return true;
             }
 
-            LocalDate today = LocalDate.now();
-            String status = req.getStatus();
-
-            boolean isUpcoming = false;
-            boolean isOngoing = false;
-            boolean isCompleted = false;
-
-            if ("approved".equalsIgnoreCase(status)) {
-                try {
-                    LocalDate start = LocalDate.parse(req.getStartDate());
-                    LocalDate end = LocalDate.parse(req.getEndDate());
-                    if (today.isBefore(start)) {
-                        isUpcoming = true;
-                    } else if (today.isAfter(end)) {
-                        isCompleted = true;
-                    } else {
-                        isOngoing = true;
-                    }
-                } catch (Exception e) {
-                    // Fallback
-                }
-            } else if ("returned".equalsIgnoreCase(status) || "rejected".equalsIgnoreCase(status)) {
-                isCompleted = true;
-            }
+            RequestLifecycle lifecycle = getRequestLifecycle(req);
 
             if ("Upcoming".equals(selectedStatus)) {
-                return isUpcoming;
+                return lifecycle == RequestLifecycle.UPCOMING;
             } else if ("Ongoing".equals(selectedStatus)) {
-                return isOngoing;
+                return lifecycle == RequestLifecycle.ONGOING;
             } else if ("Completed".equals(selectedStatus)) {
-                return isCompleted;
+                return lifecycle == RequestLifecycle.COMPLETED;
+            } else if ("Expired".equals(selectedStatus)) {
+                return lifecycle == RequestLifecycle.EXPIRED;
+            } else if ("Cancelled".equals(selectedStatus)) {
+                return lifecycle == RequestLifecycle.CANCELED;
             }
 
             return true;
@@ -657,12 +657,72 @@ public class RequestsScreenController {
         }
     }
 
+    private String getTrimmedText(TextInputControl control) {
+        return getTextValue(control).trim();
+    }
+
+    private String getTextValue(TextInputControl control) {
+        String text = control != null ? control.getText() : null;
+        return text != null ? text : "";
+    }
+
+    private void setStandardRescheduleOnly(boolean rescheduleOnly) {
+        reqStudentIdField.setDisable(rescheduleOnly);
+        reqPurposeField.setDisable(rescheduleOnly);
+        reqVenueField.setDisable(rescheduleOnly);
+        reqRemarksField.setDisable(rescheduleOnly);
+
+        devNameField.setDisable(rescheduleOnly);
+        devBrandField.setDisable(rescheduleOnly);
+        devModelField.setDisable(rescheduleOnly);
+        devSerialField.setDisable(rescheduleOnly);
+        devQtyField.setDisable(rescheduleOnly);
+        devTypeBox.setDisable(rescheduleOnly);
+        stagedNormalTable.setDisable(rescheduleOnly);
+
+        if (btnAddDeviceNormal != null) {
+            btnAddDeviceNormal.setDisable(rescheduleOnly);
+        }
+        if (btnCancelDeviceNormal != null) {
+            btnCancelDeviceNormal.setDisable(rescheduleOnly);
+        }
+    }
+
+    private void setEventRescheduleOnly(boolean rescheduleOnly) {
+        evtStudentIdField.setDisable(rescheduleOnly);
+        evtEventNameField.setDisable(rescheduleOnly);
+        evtVenueField.setDisable(rescheduleOnly);
+        evtOrgField.setDisable(rescheduleOnly);
+        evtRespPersonField.setDisable(rescheduleOnly);
+        evtPurposeField.setDisable(rescheduleOnly);
+        evtRemarksField.setDisable(rescheduleOnly);
+
+        evtDevNameField.setDisable(rescheduleOnly);
+        evtDevBrandField.setDisable(rescheduleOnly);
+        evtDevModelField.setDisable(rescheduleOnly);
+        evtDevSerialField.setDisable(rescheduleOnly);
+        evtDevQtyField.setDisable(rescheduleOnly);
+        evtDevTypeBox.setDisable(rescheduleOnly);
+        stagedEventTable.setDisable(rescheduleOnly);
+
+        if (btnAddDeviceEvent != null) {
+            btnAddDeviceEvent.setDisable(rescheduleOnly);
+        }
+        if (btnCancelDeviceEvent != null) {
+            btnCancelDeviceEvent.setDisable(rescheduleOnly);
+        }
+    }
+
     @FXML
     public void openNewRequestOverlay() {
         isEditMode = false;
         editingRequestId = -1;
+        reschedulingRequestId = -1;
+        setStandardRescheduleOnly(false);
         lblStandardRequestTitle.setText("New Standard Academic BYOD Request");
         btnSaveRequestNormal.setText("Submit Request");
+        btnSaveRequestNormal.setVisible(true);
+        btnSaveRequestNormal.setManaged(true);
         btnSaveRequestNormal.setDisable(false);
         if (btnMakeNewRequestNormal != null) {
             btnMakeNewRequestNormal.setVisible(false);
@@ -702,8 +762,12 @@ public class RequestsScreenController {
     public void openNewEventRequestOverlay() {
         isEditMode = false;
         editingRequestId = -1;
+        reschedulingRequestId = -1;
+        setEventRescheduleOnly(false);
         lblEventRequestTitle.setText("New Event BYOD Access Request");
         btnSaveRequestEvent.setText("Submit Event Request");
+        btnSaveRequestEvent.setVisible(true);
+        btnSaveRequestEvent.setManaged(true);
         btnSaveRequestEvent.setDisable(false);
         if (btnMakeNewRequestEvent != null) {
             btnMakeNewRequestEvent.setVisible(false);
@@ -746,17 +810,29 @@ public class RequestsScreenController {
     public void handleEditRequest(Request req) {
         if (req == null) return;
 
-        boolean isUpcoming = isRequestUpcoming(req);
+        RequestLifecycle lifecycle = getRequestLifecycle(req);
+        boolean isEventRequest = "event".equalsIgnoreCase(req.getRequestType());
+        boolean canSaveChanges = lifecycle == RequestLifecycle.UPCOMING ||
+                                 (!isEventRequest &&
+                                  (lifecycle == RequestLifecycle.ONGOING ||
+                                   lifecycle == RequestLifecycle.EXPIRED));
+        boolean isReschedule = !isEventRequest &&
+                               (lifecycle == RequestLifecycle.ONGOING ||
+                                lifecycle == RequestLifecycle.EXPIRED);
         isEditMode = true;
         editingRequestId = req.getRequestId();
 
-        if ("event".equalsIgnoreCase(req.getRequestType())) {
-            lblEventRequestTitle.setText("Edit Event BYOD Access Request (Req #" + editingRequestId + (isUpcoming ? "" : " - View/Copy Only") + ")");
+        if (isEventRequest) {
+            setEventRescheduleOnly(isReschedule);
+            lblEventRequestTitle.setText((isReschedule ? "Reschedule" : "Edit") + " Event BYOD Access Request (Req #" + editingRequestId + (canSaveChanges ? "" : " - View/Copy Only") + ")");
             btnSaveRequestEvent.setText("Save Changes");
-            btnSaveRequestEvent.setDisable(!isUpcoming);
+            btnSaveRequestEvent.setVisible(canSaveChanges && !isReschedule);
+            btnSaveRequestEvent.setManaged(canSaveChanges && !isReschedule);
+            btnSaveRequestEvent.setDisable(!canSaveChanges);
             if (btnMakeNewRequestEvent != null) {
-                btnMakeNewRequestEvent.setVisible(true);
-                btnMakeNewRequestEvent.setManaged(true);
+                btnMakeNewRequestEvent.setText("Reschedule");
+                btnMakeNewRequestEvent.setVisible(canSaveChanges && isReschedule);
+                btnMakeNewRequestEvent.setManaged(canSaveChanges && isReschedule);
             }
 
             isUpdatingFields = true;
@@ -793,12 +869,16 @@ public class RequestsScreenController {
                 }
             }).start();
         } else {
-            lblStandardRequestTitle.setText("Edit Standard Academic BYOD Request (Req #" + editingRequestId + (isUpcoming ? "" : " - View/Copy Only") + ")");
+            setStandardRescheduleOnly(isReschedule);
+            lblStandardRequestTitle.setText((isReschedule ? "Reschedule" : "Edit") + " Standard Academic BYOD Request (Req #" + editingRequestId + (canSaveChanges ? "" : " - View/Copy Only") + ")");
             btnSaveRequestNormal.setText("Save Changes");
-            btnSaveRequestNormal.setDisable(!isUpcoming);
+            btnSaveRequestNormal.setVisible(canSaveChanges && !isReschedule);
+            btnSaveRequestNormal.setManaged(canSaveChanges && !isReschedule);
+            btnSaveRequestNormal.setDisable(!canSaveChanges);
             if (btnMakeNewRequestNormal != null) {
-                btnMakeNewRequestNormal.setVisible(true);
-                btnMakeNewRequestNormal.setManaged(true);
+                btnMakeNewRequestNormal.setText("Reschedule");
+                btnMakeNewRequestNormal.setVisible(canSaveChanges && isReschedule);
+                btnMakeNewRequestNormal.setManaged(canSaveChanges && isReschedule);
             }
 
             isUpdatingFields = true;
@@ -912,6 +992,7 @@ public class RequestsScreenController {
         } else {
             lblReviewPurpose.setText(req.getPurpose());
         }
+        lblReviewVenue.setText(req.getVenue() != null && !req.getVenue().trim().isEmpty() ? req.getVenue() : "-");
         lblReviewTimes.setText(formatTime12hr(req.getExpectedIngressTime()) + " - " + formatTime12hr(req.getExpectedEgressTime()));
         
         reviewTitleLabel.setText("Review Access Request #" + req.getRequestId());
@@ -929,7 +1010,7 @@ public class RequestsScreenController {
         
         boolean isUnusedExpired = isExpired && !Boolean.TRUE.equals(req.getIsAccommodated()) &&
                                  !"rejected".equalsIgnoreCase(req.getStatus()) &&
-                                 !"cancelled".equalsIgnoreCase(req.getStatus());
+                                 !isCanceledStatus(req.getStatus());
         
         lblReviewStatus.getStyleClass().removeAll(
             "status-badge-pending", "status-badge-approved", "status-badge-rejected",
@@ -950,6 +1031,7 @@ public class RequestsScreenController {
                     lblReviewStatus.getStyleClass().add("status-badge-rejected");
                     break;
                 case "cancelled":
+                case "canceled":
                     lblReviewStatus.getStyleClass().add("status-badge-cancelled");
                     break;
                 case "returned":
@@ -971,8 +1053,9 @@ public class RequestsScreenController {
         btnReturn.setVisible(isPending);
         btnReturn.setManaged(isPending);
 
-        // Cancel button is shown only for upcoming or ongoing requests
-        boolean isCancellable = isRequestUpcomingOrOngoing(req);
+        // Cancel button is shown only for upcoming or ongoing requests.
+        RequestLifecycle lifecycle = getRequestLifecycle(req);
+        boolean isCancellable = lifecycle == RequestLifecycle.UPCOMING || lifecycle == RequestLifecycle.ONGOING;
         btnCancelRequest.setVisible(isCancellable);
         btnCancelRequest.setManaged(isCancellable);
 
@@ -997,24 +1080,24 @@ public class RequestsScreenController {
     @FXML
     public void handleCloseOverlays() {
         if (newRequestOverlay.isVisible() && !isEditMode) {
-            boolean hasContent = !reqStudentIdField.getText().trim().isEmpty() ||
-                                 !reqPurposeField.getText().trim().isEmpty() ||
-                                 !reqVenueField.getText().trim().isEmpty() ||
+            boolean hasContent = !getTrimmedText(reqStudentIdField).isEmpty() ||
+                                 !getTrimmedText(reqPurposeField).isEmpty() ||
+                                 !getTrimmedText(reqVenueField).isEmpty() ||
                                  reqStartDatePicker.getValue() != null ||
                                  reqEndDatePicker.getValue() != null ||
                                  reqIngressHour.getValue() != null ||
                                  reqEgressHour.getValue() != null ||
-                                 !reqRemarksField.getText().trim().isEmpty() ||
+                                 !getTrimmedText(reqRemarksField).isEmpty() ||
                                  !normalStagedList.isEmpty();
             
-            boolean changedFromDraft = !reqStudentIdField.getText().equals(draftNormalStudentId) ||
-                                       !reqPurposeField.getText().equals(draftNormalPurpose) ||
-                                       !reqVenueField.getText().equals(draftNormalVenue) ||
+            boolean changedFromDraft = !getTextValue(reqStudentIdField).equals(draftNormalStudentId) ||
+                                       !getTextValue(reqPurposeField).equals(draftNormalPurpose) ||
+                                       !getTextValue(reqVenueField).equals(draftNormalVenue) ||
                                        (reqStartDatePicker.getValue() != draftNormalStartDate) ||
                                        (reqEndDatePicker.getValue() != draftNormalEndDate) ||
                                        !java.util.Objects.equals(reqIngressHour.getValue(), draftNormalIngressHour) ||
                                        !java.util.Objects.equals(reqEgressHour.getValue(), draftNormalEgressHour) ||
-                                       !reqRemarksField.getText().equals(draftNormalRemarks) ||
+                                       !getTextValue(reqRemarksField).equals(draftNormalRemarks) ||
                                        (normalStagedList.size() != draftNormalStagedDevices.size());
             
             if (hasContent && changedFromDraft) {
@@ -1024,9 +1107,9 @@ public class RequestsScreenController {
                     "Would you like to save your standard request details as a draft?"
                 );
                 if (result.getButtonData() == ButtonBar.ButtonData.YES) {
-                    draftNormalStudentId = reqStudentIdField.getText();
-                    draftNormalPurpose = reqPurposeField.getText();
-                    draftNormalVenue = reqVenueField.getText();
+                    draftNormalStudentId = getTextValue(reqStudentIdField);
+                    draftNormalPurpose = getTextValue(reqPurposeField);
+                    draftNormalVenue = getTextValue(reqVenueField);
                     draftNormalStartDate = reqStartDatePicker.getValue();
                     draftNormalEndDate = reqEndDatePicker.getValue();
                     draftNormalIngressHour = reqIngressHour.getValue();
@@ -1035,7 +1118,7 @@ public class RequestsScreenController {
                     draftNormalEgressHour = reqEgressHour.getValue();
                     draftNormalEgressMinute = reqEgressMinute.getValue();
                     draftNormalEgressAmpm = reqEgressAmpm.getValue();
-                    draftNormalRemarks = reqRemarksField.getText();
+                    draftNormalRemarks = getTextValue(reqRemarksField);
                     draftNormalStagedDevices = new ArrayList<>(normalStagedList);
                 } else if (result.getButtonData() == ButtonBar.ButtonData.NO) {
                     draftNormalStudentId = "";
@@ -1059,30 +1142,30 @@ public class RequestsScreenController {
         }
 
         if (newEventRequestOverlay.isVisible() && !isEditMode) {
-            boolean hasContent = !evtStudentIdField.getText().trim().isEmpty() ||
-                                 !evtEventNameField.getText().trim().isEmpty() ||
-                                 !evtVenueField.getText().trim().isEmpty() ||
-                                 !evtOrgField.getText().trim().isEmpty() ||
-                                 !evtRespPersonField.getText().trim().isEmpty() ||
-                                 !evtPurposeField.getText().trim().isEmpty() ||
+            boolean hasContent = !getTrimmedText(evtStudentIdField).isEmpty() ||
+                                 !getTrimmedText(evtEventNameField).isEmpty() ||
+                                 !getTrimmedText(evtVenueField).isEmpty() ||
+                                 !getTrimmedText(evtOrgField).isEmpty() ||
+                                 !getTrimmedText(evtRespPersonField).isEmpty() ||
+                                 !getTrimmedText(evtPurposeField).isEmpty() ||
                                  evtStartDatePicker.getValue() != null ||
                                  evtEndDatePicker.getValue() != null ||
                                  evtIngressHour.getValue() != null ||
                                  evtEgressHour.getValue() != null ||
-                                 !evtRemarksField.getText().trim().isEmpty() ||
+                                 !getTrimmedText(evtRemarksField).isEmpty() ||
                                  !eventStagedList.isEmpty();
 
-            boolean changedFromDraft = !evtStudentIdField.getText().equals(draftEventStudentId) ||
-                                       !evtEventNameField.getText().equals(draftEventName) ||
-                                       !evtVenueField.getText().equals(draftEventVenue) ||
-                                       !evtOrgField.getText().equals(draftEventOrg) ||
-                                       !evtRespPersonField.getText().equals(draftEventRespPerson) ||
-                                       !evtPurposeField.getText().equals(draftEventPurpose) ||
+            boolean changedFromDraft = !getTextValue(evtStudentIdField).equals(draftEventStudentId) ||
+                                       !getTextValue(evtEventNameField).equals(draftEventName) ||
+                                       !getTextValue(evtVenueField).equals(draftEventVenue) ||
+                                       !getTextValue(evtOrgField).equals(draftEventOrg) ||
+                                       !getTextValue(evtRespPersonField).equals(draftEventRespPerson) ||
+                                       !getTextValue(evtPurposeField).equals(draftEventPurpose) ||
                                        (evtStartDatePicker.getValue() != draftEventStartDate) ||
                                        (evtEndDatePicker.getValue() != draftEventEndDate) ||
                                        !java.util.Objects.equals(evtIngressHour.getValue(), draftEventIngressHour) ||
                                        !java.util.Objects.equals(evtEgressHour.getValue(), draftEventEgressHour) ||
-                                       !evtRemarksField.getText().equals(draftEventRemarks) ||
+                                       !getTextValue(evtRemarksField).equals(draftEventRemarks) ||
                                        (eventStagedList.size() != draftEventStagedDevices.size());
 
             if (hasContent && changedFromDraft) {
@@ -1092,12 +1175,12 @@ public class RequestsScreenController {
                     "Would you like to save your event request details as a draft?"
                 );
                 if (result.getButtonData() == ButtonBar.ButtonData.YES) {
-                    draftEventStudentId = evtStudentIdField.getText();
-                    draftEventName = evtEventNameField.getText();
-                    draftEventVenue = evtVenueField.getText();
-                    draftEventOrg = evtOrgField.getText();
-                    draftEventRespPerson = evtRespPersonField.getText();
-                    draftEventPurpose = evtPurposeField.getText();
+                    draftEventStudentId = getTextValue(evtStudentIdField);
+                    draftEventName = getTextValue(evtEventNameField);
+                    draftEventVenue = getTextValue(evtVenueField);
+                    draftEventOrg = getTextValue(evtOrgField);
+                    draftEventRespPerson = getTextValue(evtRespPersonField);
+                    draftEventPurpose = getTextValue(evtPurposeField);
                     draftEventStartDate = evtStartDatePicker.getValue();
                     draftEventEndDate = evtEndDatePicker.getValue();
                     draftEventIngressHour = evtIngressHour.getValue();
@@ -1106,7 +1189,7 @@ public class RequestsScreenController {
                     draftEventEgressHour = evtEgressHour.getValue();
                     draftEventEgressMinute = evtEgressMinute.getValue();
                     draftEventEgressAmpm = evtEgressAmpm.getValue();
-                    draftEventRemarks = evtRemarksField.getText();
+                    draftEventRemarks = getTextValue(evtRemarksField);
                     draftEventStagedDevices = new ArrayList<>(eventStagedList);
                 } else if (result.getButtonData() == ButtonBar.ButtonData.NO) {
                     draftEventStudentId = "";
@@ -1189,11 +1272,11 @@ public class RequestsScreenController {
     // --- Device Staging Methods ---
     @FXML
     public void addStagedDeviceNormal() {
-        String name = devNameField.getText().trim();
-        String brand = devBrandField.getText().trim();
-        String model = devModelField.getText().trim();
-        String serial = devSerialField.getText().trim();
-        String qtyStr = devQtyField.getText().trim();
+        String name = getTrimmedText(devNameField);
+        String brand = getTrimmedText(devBrandField);
+        String model = getTrimmedText(devModelField);
+        String serial = getTrimmedText(devSerialField);
+        String qtyStr = getTrimmedText(devQtyField);
         String type = devTypeBox.getValue();
 
         if (ValidationHelper.isEmpty(name) || ValidationHelper.isEmpty(serial) || type == null) {
@@ -1246,11 +1329,11 @@ public class RequestsScreenController {
 
     @FXML
     public void addStagedDeviceEvent() {
-        String name = evtDevNameField.getText().trim();
-        String brand = evtDevBrandField.getText().trim();
-        String model = evtDevModelField.getText().trim();
-        String serial = evtDevSerialField.getText().trim();
-        String qtyStr = evtDevQtyField.getText().trim();
+        String name = getTrimmedText(evtDevNameField);
+        String brand = getTrimmedText(evtDevBrandField);
+        String model = getTrimmedText(evtDevModelField);
+        String serial = getTrimmedText(evtDevSerialField);
+        String qtyStr = getTrimmedText(evtDevQtyField);
         String type = evtDevTypeBox.getValue();
 
         if (ValidationHelper.isEmpty(name) || ValidationHelper.isEmpty(serial) || type == null) {
@@ -1352,9 +1435,9 @@ public class RequestsScreenController {
     // --- Access Requests Saving ---
     @FXML
     public void handleSaveRequestNormal() {
-        String studentId = reqStudentIdField.getText().trim();
-        String purpose = reqPurposeField.getText().trim();
-        String venue = reqVenueField.getText().trim();
+        String studentId = getTrimmedText(reqStudentIdField);
+        String purpose = getTrimmedText(reqPurposeField);
+        String venue = getTrimmedText(reqVenueField);
         LocalDate start = reqStartDatePicker.getValue();
         LocalDate end = start; // Force 1-day duration (end date matches start date)
         java.time.LocalTime ingressTime = parseTime(reqIngressHour.getValue(), reqIngressMinute.getValue(), reqIngressAmpm.getValue());
@@ -1401,7 +1484,7 @@ public class RequestsScreenController {
 
         String ingress = formatLocalTime(ingressTime);
         String egress = formatLocalTime(egressTime);
-        String remarks = reqRemarksField.getText().trim();
+        String remarks = getTrimmedText(reqRemarksField);
 
         Request req = new Request();
         req.setRequestType("normal");
@@ -1435,9 +1518,17 @@ public class RequestsScreenController {
                         loadRequests();
                     });
                 } else {
+                    int originalRequestId = reschedulingRequestId;
+                    if (originalRequestId > 0) {
+                        int modifierId = SessionManager.getInstance().getCurrentUser().getUserId();
+                        requestService.cancelRequest(originalRequestId, modifierId, "Cancelled due to reschedule");
+                    }
                     requestService.createRequest(req);
                     Platform.runLater(() -> {
-                        AlertHelper.showInfo("Success", "Request Submitted", "Standard access request successfully submitted.");
+                        AlertHelper.showInfo("Success",
+                                originalRequestId > 0 ? "Request Rescheduled" : "Request Submitted",
+                                originalRequestId > 0 ? "Original request cancelled and replacement request submitted." : "Standard access request successfully submitted.");
+                        reschedulingRequestId = -1;
                         draftNormalStudentId = "";
                         draftNormalPurpose = "";
                         draftNormalVenue = "";
@@ -1466,12 +1557,12 @@ public class RequestsScreenController {
 
     @FXML
     public void handleSaveRequestEvent() {
-        String studentId = evtStudentIdField.getText().trim();
-        String eventName = evtEventNameField.getText().trim();
-        String venue = evtVenueField.getText().trim();
-        String org = evtOrgField.getText().trim();
-        String respPerson = evtRespPersonField.getText().trim();
-        String purpose = evtPurposeField.getText().trim();
+        String studentId = getTrimmedText(evtStudentIdField);
+        String eventName = getTrimmedText(evtEventNameField);
+        String venue = getTrimmedText(evtVenueField);
+        String org = getTrimmedText(evtOrgField);
+        String respPerson = getTrimmedText(evtRespPersonField);
+        String purpose = getTrimmedText(evtPurposeField);
         LocalDate start = evtStartDatePicker.getValue();
         LocalDate end = evtEndDatePicker.getValue();
         java.time.LocalTime ingressTime = parseTime(evtIngressHour.getValue(), evtIngressMinute.getValue(), evtIngressAmpm.getValue());
@@ -1514,7 +1605,7 @@ public class RequestsScreenController {
 
         String ingress = formatLocalTime(ingressTime);
         String egress = formatLocalTime(egressTime);
-        String remarks = evtRemarksField.getText().trim();
+        String remarks = getTrimmedText(evtRemarksField);
 
         Request req = new Request();
         req.setRequestType("event");
@@ -1761,10 +1852,49 @@ public class RequestsScreenController {
         return false;
     }
 
+    private RequestLifecycle getRequestLifecycle(Request req) {
+        if (req == null) return RequestLifecycle.COMPLETED;
+        if (isCanceledStatus(req.getStatus())) {
+            return RequestLifecycle.CANCELED;
+        }
+        if ("rejected".equalsIgnoreCase(req.getStatus()) || "returned".equalsIgnoreCase(req.getStatus())) {
+            return RequestLifecycle.COMPLETED;
+        }
+
+        try {
+            LocalDate today = LocalDate.now();
+            LocalDate start = LocalDate.parse(req.getStartDate());
+            LocalDate end = LocalDate.parse(req.getEndDate());
+
+            boolean isPastEnd = today.isAfter(end);
+            boolean isUnusedExpired = isPastEnd &&
+                                      !Boolean.TRUE.equals(req.getIsAccommodated()) &&
+                                      !"rejected".equalsIgnoreCase(req.getStatus());
+
+            if (isUnusedExpired) {
+                return RequestLifecycle.EXPIRED;
+            }
+            if (today.isBefore(start)) {
+                return RequestLifecycle.UPCOMING;
+            }
+            if (!isPastEnd) {
+                return RequestLifecycle.ONGOING;
+            }
+        } catch (Exception e) {
+            // Fallback to stored status below.
+        }
+
+        return RequestLifecycle.COMPLETED;
+    }
+
+    private boolean isCanceledStatus(String status) {
+        return "cancelled".equalsIgnoreCase(status) || "canceled".equalsIgnoreCase(status);
+    }
+
     private boolean isRequestUpcoming(Request req) {
         if (req == null) return false;
         String status = req.getStatus();
-        if ("rejected".equalsIgnoreCase(status) || "returned".equalsIgnoreCase(status) || "cancelled".equalsIgnoreCase(status)) {
+        if ("rejected".equalsIgnoreCase(status) || "returned".equalsIgnoreCase(status) || isCanceledStatus(status)) {
             return false;
         }
         try {
@@ -1780,7 +1910,7 @@ public class RequestsScreenController {
     private boolean isRequestUpcomingOrOngoing(Request req) {
         if (req == null) return false;
         String status = req.getStatus();
-        if ("rejected".equalsIgnoreCase(status) || "returned".equalsIgnoreCase(status) || "cancelled".equalsIgnoreCase(status)) {
+        if ("rejected".equalsIgnoreCase(status) || "returned".equalsIgnoreCase(status) || isCanceledStatus(status)) {
             return false;
         }
         try {
@@ -1820,6 +1950,7 @@ public class RequestsScreenController {
 
     @FXML
     public void handleMakeNewRequestNormal() {
+        reschedulingRequestId = editingRequestId;
         isEditMode = false;
         editingRequestId = -1;
         handleSaveRequestNormal();

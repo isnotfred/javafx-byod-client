@@ -129,15 +129,25 @@ public class DevicesModalScreenController {
             btnAction.setDisable(true);
         }
 
-        // Wrap devices and default to selected = true
+        // Wrap devices and determine intelligent default selection
         selectionList.clear();
+        boolean isEntry = "Entry".equalsIgnoreCase(expectedAction) || (expectedAction != null && expectedAction.startsWith("Entry"));
+        boolean isExit = "Exit".equalsIgnoreCase(expectedAction) || (expectedAction != null && expectedAction.startsWith("Exit")) || "Missed".equalsIgnoreCase(expectedAction);
+
         for (int i = 0; i < devices.size(); i++) {
             RequestDevice dev = devices.get(i);
             String campusStatus = deviceStatuses.size() > i ? deviceStatuses.get(i) : "Outside";
             
             DeviceSelectionModel model = new DeviceSelectionModel(dev, campusStatus);
-            // Default select behavior: Check all devices by default
-            model.setSelected(true);
+            if (isEntry) {
+                // If checking in, default select only the devices that are currently outside
+                model.setSelected("Outside".equalsIgnoreCase(campusStatus));
+            } else if (isExit) {
+                // If checking out, default select only the devices that are currently inside
+                model.setSelected("Inside".equalsIgnoreCase(campusStatus));
+            } else {
+                model.setSelected(false);
+            }
             selectionList.add(model);
         }
     }

@@ -46,9 +46,9 @@
                     <TableColumn fx:id="colStudentId" text="Student ID" prefWidth="120.0"/>
                     <TableColumn fx:id="colReqType" text="Type" prefWidth="100.0"/>
                     <TableColumn fx:id="colPurpose" text="Purpose/Event" prefWidth="250.0"/>
-                    <TableColumn fx:id="colDates" text="Authorized Dates" prefWidth="200.0"/>
+                    <TableColumn fx:id="colDates" text="Authorized Dates" prefWidth="180.0"/>
                     <TableColumn fx:id="colTimes" text="Gate Times" prefWidth="130.0"/>
-                    <TableColumn fx:id="colAction" text="Actions" prefWidth="130.0"/>
+                    <TableColumn fx:id="colAction" text="Actions" prefWidth="150.0"/>
                 </columns>
             </TableView>
         </VBox>
@@ -390,11 +390,14 @@
                     <Label text="Purpose / Event:" style="-fx-font-weight: bold; -fx-text-fill: #64748B;" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
                     <Label fx:id="lblReviewPurpose" text="-" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
                     
-                    <Label text="Expected Times:" style="-fx-font-weight: bold; -fx-text-fill: #64748B;" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                    <Label fx:id="lblReviewTimes" text="-" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                    <Label text="Venue:" style="-fx-font-weight: bold; -fx-text-fill: #64748B;" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                    <Label fx:id="lblReviewVenue" text="-" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                    
+                    <Label text="Expected Times:" style="-fx-font-weight: bold; -fx-text-fill: #64748B;" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                    <Label fx:id="lblReviewTimes" text="-" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
 
-                    <Label text="Status:" style="-fx-font-weight: bold; -fx-text-fill: #64748B;" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-                    <Label fx:id="lblReviewStatus" text="-" styleClass="status-badge" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                    <Label text="Status:" style="-fx-font-weight: bold; -fx-text-fill: #64748B;" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                    <Label fx:id="lblReviewStatus" text="-" styleClass="status-badge" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
                 </GridPane>
                 
                 <Label text="Device Line Items:" styleClass="form-label" style="-fx-text-fill: #0284C7;"/>
