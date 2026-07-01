@@ -160,11 +160,11 @@ public class StudentsScreenController {
     @FXML
     public void handleCloseOverlay() {
         if (!isEditMode) {
-            boolean hasContent = !studentIdField.getText().trim().isEmpty() ||
-                                 !firstNameField.getText().trim().isEmpty() ||
-                                 !lastNameField.getText().trim().isEmpty() ||
-                                 !courseYearLevelField.getText().trim().isEmpty() ||
-                                 !contactNumberField.getText().trim().isEmpty();
+            boolean hasContent = !getSafeTrimmedText(studentIdField).isEmpty() ||
+                                 !getSafeTrimmedText(firstNameField).isEmpty() ||
+                                 !getSafeTrimmedText(lastNameField).isEmpty() ||
+                                 !getSafeTrimmedText(courseYearLevelField).isEmpty() ||
+                                 !getSafeTrimmedText(contactNumberField).isEmpty();
             if (hasContent) {
                 ButtonType result = AlertHelper.showYesNoCancel(
                     "Save Draft",
@@ -199,11 +199,11 @@ public class StudentsScreenController {
 
     @FXML
     public void handleSave() {
-        String studentId = studentIdField.getText().trim();
-        String firstName = firstNameField.getText().trim();
-        String lastName = lastNameField.getText().trim();
-        String courseYearLevel = courseYearLevelField.getText().trim();
-        String contactNumber = contactNumberField.getText().trim();
+        String studentId = getSafeTrimmedText(studentIdField);
+        String firstName = getSafeTrimmedText(firstNameField);
+        String lastName = getSafeTrimmedText(lastNameField);
+        String courseYearLevel = getSafeTrimmedText(courseYearLevelField);
+        String contactNumber = getSafeTrimmedText(contactNumberField);
 
         if (ValidationHelper.isEmpty(studentId) || ValidationHelper.isEmpty(firstName) ||
             ValidationHelper.isEmpty(lastName) || ValidationHelper.isEmpty(courseYearLevel)) {
@@ -288,5 +288,12 @@ public class StudentsScreenController {
                 });
             }
         }).start();
+    }
+
+    private String getSafeTrimmedText(TextField field) {
+        if (field == null || field.getText() == null) {
+            return "";
+        }
+        return field.getText().trim();
     }
 }
