@@ -96,7 +96,7 @@
                         
                         <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                             <HBox spacing="2.0"><Label text="Venue:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
-                            <TextField fx:id="reqVenueField" promptText="e.g. Gym / Room 302" styleClass="modern-textfield" prefHeight="38.0"/>
+                            <TextField fx:id="reqVenueField" promptText="e.g. Room 101 / Room 302" styleClass="modern-textfield" prefHeight="38.0"/>
                         </VBox>
                         
                         <!-- Row 2: Ingress Time & Egress Time -->
@@ -250,7 +250,7 @@
 
                         <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                             <HBox spacing="2.0"><Label text="Venue:" styleClass="form-label"/><Label text="*" style="-fx-text-fill: red;"/></HBox>
-                            <TextField fx:id="evtVenueField" promptText="e.g. Gymnasium" styleClass="modern-textfield" prefHeight="38.0"/>
+                            <TextField fx:id="evtVenueField" promptText="e.g. Room 101" styleClass="modern-textfield" prefHeight="38.0"/>
                         </VBox>
                         
                         <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="3">
@@ -392,6 +392,9 @@
                     
                     <Label text="Expected Times:" style="-fx-font-weight: bold; -fx-text-fill: #64748B;" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
                     <Label fx:id="lblReviewTimes" text="-" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                    <Label text="Status:" style="-fx-font-weight: bold; -fx-text-fill: #64748B;" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                    <Label fx:id="lblReviewStatus" text="-" styleClass="status-badge" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
                 </GridPane>
                 
                 <Label text="Device Line Items:" styleClass="form-label" style="-fx-text-fill: #0284C7;"/>

@@ -75,9 +75,9 @@ public class AlertHelper {
         
         dialogPane.getStyleClass().add("custom-dialog-pane");
         dialogPane.setMinHeight(javafx.scene.layout.Region.USE_PREF_SIZE);
-        dialogPane.setMinWidth(450);
-        dialogPane.setPrefWidth(450);
-        dialogPane.setMaxWidth(450);
+        dialogPane.setMinWidth(500);
+        dialogPane.setPrefWidth(500);
+        dialogPane.setMaxWidth(500);
         
         if (!"confirm".equals(type)) {
             // Create custom flat SVG graphic
@@ -106,35 +106,23 @@ public class AlertHelper {
         // Add a listener to style buttons dynamically when the dialog becomes visible in scene graph
         alert.showingProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                // Style OK / YES button
-                Button okBtn = (Button) dialogPane.lookupButton(ButtonType.OK);
-                if (okBtn != null) {
-                    okBtn.getStyleClass().clear();
-                    okBtn.getStyleClass().addAll("button", "dialog-btn", "confirm".equals(type) ? "dialog-confirm-btn" : "dialog-primary-btn");
-                }
-                Button yesBtn = (Button) dialogPane.lookupButton(ButtonType.YES);
-                if (yesBtn != null) {
-                    yesBtn.getStyleClass().clear();
-                    yesBtn.getStyleClass().addAll("button", "dialog-btn", "confirm".equals(type) ? "dialog-confirm-btn" : "dialog-primary-btn");
-                }
-                
-                // Style CANCEL / NO button
-                Button cancelBtn = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
-                if (cancelBtn != null) {
-                    cancelBtn.getStyleClass().clear();
-                    cancelBtn.getStyleClass().addAll("button", "dialog-btn", "dialog-cancel-btn");
-                }
-                Button noBtn = (Button) dialogPane.lookupButton(ButtonType.NO);
-                if (noBtn != null) {
-                    noBtn.getStyleClass().clear();
-                    noBtn.getStyleClass().addAll("button", "dialog-btn", "dialog-cancel-btn");
-                }
-                
-                // Style CLOSE button
-                Button closeBtn = (Button) dialogPane.lookupButton(ButtonType.CLOSE);
-                if (closeBtn != null) {
-                    closeBtn.getStyleClass().clear();
-                    closeBtn.getStyleClass().addAll("button", "dialog-btn", "dialog-primary-btn");
+                for (ButtonType bt : dialogPane.getButtonTypes()) {
+                    Button btn = (Button) dialogPane.lookupButton(bt);
+                    if (btn != null) {
+                        btn.getStyleClass().clear();
+                        ButtonBar.ButtonData data = bt.getButtonData();
+                        if (bt == ButtonType.CLOSE) {
+                            btn.getStyleClass().addAll("button", "dialog-btn", "dialog-primary-btn");
+                        } else if (data == ButtonBar.ButtonData.OK_DONE || data == ButtonBar.ButtonData.YES) {
+                            btn.getStyleClass().addAll("button", "dialog-btn", "confirm".equals(type) ? "dialog-confirm-btn" : "dialog-primary-btn");
+                        } else if (data == ButtonBar.ButtonData.NO) {
+                            btn.getStyleClass().addAll("button", "dialog-btn", "dialog-no-btn");
+                        } else if (data == ButtonBar.ButtonData.CANCEL_CLOSE) {
+                            btn.getStyleClass().addAll("button", "dialog-btn", "dialog-cancel-btn");
+                        } else {
+                            btn.getStyleClass().addAll("button", "dialog-btn", "dialog-primary-btn");
+                        }
+                    }
                 }
             }
         });
@@ -153,9 +141,9 @@ public class AlertHelper {
         alert.setHeaderText(header);
         alert.setContentText(content);
         
-        ButtonType btnYes = new ButtonType("Yes", ButtonBar.ButtonData.YES);
-        ButtonType btnNo = new ButtonType("No", ButtonBar.ButtonData.NO);
-        ButtonType btnCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType btnYes = new ButtonType("Save Draft", ButtonBar.ButtonData.YES);
+        ButtonType btnNo = new ButtonType("Discard", ButtonBar.ButtonData.NO);
+        ButtonType btnCancel = new ButtonType("Keep Editing", ButtonBar.ButtonData.CANCEL_CLOSE);
         
         alert.getButtonTypes().setAll(btnYes, btnNo, btnCancel);
         setupCustomDialog(alert, title, header, content, "confirm");

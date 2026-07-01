@@ -958,5 +958,39 @@
     -fx-opacity: 0.8;
 }
 
+/* Status Badge Capsules for review overlay */
+.status-badge {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+    -fx-padding: 4px 10px;
+    -fx-background-radius: 12px;
+    -fx-alignment: center;
+}
+.status-badge-pending {
+    -fx-background-color: #F0B429; /* System Gold */
+    -fx-text-fill: #102A43; /* System Navy */
+}
+.status-badge-approved {
+    -fx-background-color: #10B981; /* Green */
+    -fx-text-fill: #FFFFFF;
+}
+.status-badge-rejected {
+    -fx-background-color: #EF4444; /* Red */
+    -fx-text-fill: #FFFFFF;
+}
+.status-badge-cancelled {
+    -fx-background-color: #DC2626; /* Dark Red */
+    -fx-text-fill: #FFFFFF;
+}
+.status-badge-returned {
+    -fx-background-color: #7C3AED; /* Purple */
+    -fx-text-fill: #FFFFFF;
+}
+.status-badge-expired {
+    -fx-background-color: #94A3B8; /* Slate Gray */
+    -fx-text-fill: #FFFFFF;
+}
+
 
 

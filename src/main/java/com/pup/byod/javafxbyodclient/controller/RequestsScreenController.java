@@ -129,6 +129,7 @@ public class RequestsScreenController {
     @FXML private TableColumn<RequestDevice, String> colRevModel;
     @FXML private TableColumn<RequestDevice, String> colRevSerial;
     @FXML private TableColumn<RequestDevice, Integer> colRevQty;
+    @FXML private Label lblReviewStatus;
     @FXML private Button btnApprove;
     @FXML private Button btnReject;
     @FXML private Button btnReturn;
@@ -257,7 +258,7 @@ public class RequestsScreenController {
                     if (!getStyleClass().contains("cancelled-row")) {
                         getStyleClass().add("cancelled-row");
                     }
-                } else if ("approved".equalsIgnoreCase(req.getStatus())) {
+                } else {
                     getStyleClass().remove("cancelled-row");
                     boolean isExpired = false;
                     try {
@@ -268,15 +269,19 @@ public class RequestsScreenController {
                     } catch (Exception e) {
                         // ignore
                     }
-                    if (isExpired && !Boolean.TRUE.equals(req.getIsAccommodated())) {
+                    // Expiration highlight is shown for any active, unaccommodated request whose date has passed (approved, pending, returned)
+                    // but not rejected or cancelled requests.
+                    boolean isUnusedExpired = isExpired && 
+                                             !Boolean.TRUE.equals(req.getIsAccommodated()) &&
+                                             !"rejected".equalsIgnoreCase(req.getStatus());
+                    
+                    if (isUnusedExpired) {
                         if (!getStyleClass().contains("expired-row")) {
                             getStyleClass().add("expired-row");
                         }
                     } else {
                         getStyleClass().remove("expired-row");
                     }
-                } else {
-                    getStyleClass().removeAll("cancelled-row", "expired-row");
                 }
             }
         });
@@ -909,7 +914,53 @@ public class RequestsScreenController {
         }
         lblReviewTimes.setText(formatTime12hr(req.getExpectedIngressTime()) + " - " + formatTime12hr(req.getExpectedEgressTime()));
         
-        reviewTitleLabel.setText("Review Access Request #" + req.getRequestId() + " (" + req.getStatus().toUpperCase() + ")");
+        reviewTitleLabel.setText("Review Access Request #" + req.getRequestId());
+
+        // Determine request status dynamically, including expiration
+        boolean isExpired = false;
+        try {
+            if (req.getEndDate() != null) {
+                LocalDate endDate = LocalDate.parse(req.getEndDate());
+                isExpired = LocalDate.now().isAfter(endDate);
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+        
+        boolean isUnusedExpired = isExpired && !Boolean.TRUE.equals(req.getIsAccommodated()) &&
+                                 !"rejected".equalsIgnoreCase(req.getStatus()) &&
+                                 !"cancelled".equalsIgnoreCase(req.getStatus());
+        
+        lblReviewStatus.getStyleClass().removeAll(
+            "status-badge-pending", "status-badge-approved", "status-badge-rejected",
+            "status-badge-cancelled", "status-badge-returned", "status-badge-expired"
+        );
+        
+        if (isUnusedExpired) {
+            lblReviewStatus.setText("EXPIRED");
+            lblReviewStatus.getStyleClass().add("status-badge-expired");
+        } else {
+            String status = req.getStatus() != null ? req.getStatus().toLowerCase() : "";
+            lblReviewStatus.setText(status.toUpperCase());
+            switch (status) {
+                case "approved":
+                    lblReviewStatus.getStyleClass().add("status-badge-approved");
+                    break;
+                case "rejected":
+                    lblReviewStatus.getStyleClass().add("status-badge-rejected");
+                    break;
+                case "cancelled":
+                    lblReviewStatus.getStyleClass().add("status-badge-cancelled");
+                    break;
+                case "returned":
+                    lblReviewStatus.getStyleClass().add("status-badge-returned");
+                    break;
+                case "pending":
+                default:
+                    lblReviewStatus.getStyleClass().add("status-badge-pending");
+                    break;
+            }
+        }
 
         // Manage action buttons visibility based on status
         boolean isPending = "pending".equalsIgnoreCase(req.getStatus());

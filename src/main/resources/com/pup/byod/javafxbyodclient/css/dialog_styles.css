@@ -49,7 +49,7 @@
 
 /* Graphic SVG colors matching the system themes */
 .custom-dialog-pane .dialog-svg-confirm {
-    -fx-fill: #10B981; /* Success Green */
+    -fx-fill: #F0B429; /* Gold */
 }
 
 .custom-dialog-pane .dialog-svg-info {
@@ -84,7 +84,7 @@
     -fx-background-radius: 8px; /* 8px rounded corners to match system */
     -fx-padding: 8px 18px;
     -fx-cursor: hand;
-    -fx-min-width: 140px;
+    -fx-min-width: 120px;
     -fx-alignment: center;
     -fx-border-color: transparent;
 }
@@ -111,6 +111,21 @@
     -fx-background-color: #F8FAFC;
     -fx-border-color: #94A3B8;
     -fx-text-fill: #1E293B;
+}
+
+.dialog-no-btn {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #FDA4AF; /* Soft red border */
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-text-fill: #E11D48; /* Crimson / Rose red text */
+}
+
+.dialog-no-btn:hover {
+    -fx-background-color: #FFF1F2; /* Soft red hover */
+    -fx-border-color: #F43F5E;
+    -fx-text-fill: #BE123C;
 }
 
 .dialog-primary-btn {
