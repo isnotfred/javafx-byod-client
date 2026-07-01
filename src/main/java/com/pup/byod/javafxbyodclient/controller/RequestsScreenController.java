@@ -955,24 +955,22 @@ public class RequestsScreenController {
             isUpdatingFields = true;
             try {
                 ampmBox.setValue(ampm);
-                if ("AM".equals(ampm)) {
-                    hourBox.getItems().setAll("07", "08", "09", "10", "11");
-                } else {
-                    hourBox.getItems().setAll("12", "01", "02", "03", "04", "05", "06", "07", "08", "09");
+                
+                // Populate all hours (01 to 12) to match choices in Create Request
+                List<String> hours = new ArrayList<>();
+                for (int val = 1; val <= 12; val++) {
+                    hours.add(String.format("%02d", val));
                 }
+                hourBox.getItems().setAll(hours);
                 hourBox.setValue(String.format("%02d", h));
                 
-                if ("PM".equals(ampm) && h == 9) {
-                    minuteBox.getItems().setAll("00");
-                    minuteBox.setValue("00");
-                } else {
-                    List<String> mins = new ArrayList<>();
-                    for (int minVal = 0; minVal < 60; minVal += 5) {
-                        mins.add(String.format("%02d", minVal));
-                    }
-                    minuteBox.getItems().setAll(mins);
-                    minuteBox.setValue(String.format("%02d", roundedMin));
+                // Populate all minutes in 5-minute increments
+                List<String> mins = new ArrayList<>();
+                for (int minVal = 0; minVal < 60; minVal += 5) {
+                    mins.add(String.format("%02d", minVal));
                 }
+                minuteBox.getItems().setAll(mins);
+                minuteBox.setValue(String.format("%02d", roundedMin));
             } finally {
                 isUpdatingFields = false;
             }
